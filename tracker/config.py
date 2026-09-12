@@ -173,6 +173,7 @@ class VenueConfig:
     slug: str
     numeric_id: str
     active: bool
+    show_in_dashboard: bool
     facilities: tuple[FacilityConfig, ...]
 
     @property
@@ -214,6 +215,23 @@ class Config:
 
     def courts_for_sport(self, sport: Sport) -> list[tuple[VenueConfig, FacilityConfig]]:
         return [(v, f) for v, f in self.active_courts() if f.sport is sport]
+
+    def dashboard_venues(self) -> list[VenueConfig]:
+        """Venues the dashboard presents.
+
+        Deliberately independent of ``active``, which governs *polling*. A venue
+        can be collected and not shown: hiding one loses nothing, while dropping
+        it from the poll opens a permanent hole in a forward-only dataset. Padel
+        Up is the live case -- zero bookings ever observed, so its flat 0% line
+        reads as a broken collector rather than as a finding.
+        """
+        return [venue for venue in self.venues if venue.show_in_dashboard]
+
+    def dashboard_venue_uuids(self) -> frozenset[str]:
+        return frozenset(venue.uuid for venue in self.dashboard_venues())
+
+    def hidden_venue_uuids(self) -> frozenset[str]:
+        return frozenset(v.uuid for v in self.venues if not v.show_in_dashboard)
 
     def venue_by_uuid(self, venue_uuid: str) -> VenueConfig | None:
         return next((v for v in self.venues if v.uuid == venue_uuid), None)
@@ -258,6 +276,7 @@ def _load_venue(raw: Mapping[str, Any], where: str) -> VenueConfig:
         slug=str(_require(raw, "slug", where)),
         numeric_id=str(_require(raw, "numeric_id", where)),
         active=bool(_require(raw, "active", where)),
+        show_in_dashboard=bool(raw.get("show_in_dashboard", True)),
         facilities=facilities,
     )
 

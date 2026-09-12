@@ -94,6 +94,24 @@ def last_observed_at(synthetic_history: SyntheticHistory) -> dt.datetime:
 
 
 @pytest.fixture()
+def all_venues_config(test_config: Config) -> Config:
+    """``config.yaml`` with every venue visible.
+
+    The shipped config hides Padel Up from the dashboard, which is the right
+    default but would silently gut the cross-venue assertions: Padel Up is the
+    only 60-minute-grid venue, so hiding it removes the very asymmetry the
+    court-minute normalization guards exist to catch. Tests about normalization
+    use this; tests about hiding use ``client``.
+    """
+    return dataclasses.replace(
+        test_config,
+        venues=tuple(
+            dataclasses.replace(venue, show_in_dashboard=True) for venue in test_config.venues
+        ),
+    )
+
+
+@pytest.fixture()
 def client(
     test_config: Config,
     synthetic_history_storage: SyntheticHistory,
@@ -108,12 +126,30 @@ def client(
 
 
 @pytest.fixture()
-def empty_client(test_config: Config, last_observed_at: dt.datetime) -> Iterator[TestClient]:
-    """The API over a database that has never been collected into."""
+def full_client(
+    all_venues_config: Config,
+    synthetic_history_storage: SyntheticHistory,
+    last_observed_at: dt.datetime,
+) -> Iterator[TestClient]:
+    """The API with no venue hidden, for cross-venue assertions."""
+    storage = synthetic_history_storage.storage
+    assert storage is not None
+    yield from _client(
+        all_venues_config, storage, last_observed_at + dt.timedelta(minutes=FRESH_OFFSET_MINUTES)
+    )
+
+
+@pytest.fixture()
+def empty_client(all_venues_config: Config, last_observed_at: dt.datetime) -> Iterator[TestClient]:
+    """The API over a database that has never been collected into.
+
+    Built on the all-visible config so this stays a test about an empty
+    database rather than quietly also becoming a test about venue hiding.
+    """
     storage = SQLiteStorage("sqlite://")
     storage.initialize()
     try:
-        yield from _client(test_config, storage, last_observed_at)
+        yield from _client(all_venues_config, storage, last_observed_at)
     finally:
         storage.close()
 
@@ -290,7 +326,7 @@ def test_a_single_snapshot_still_reports_occupancy(one_snapshot_client: TestClie
 
 
 def test_occupancy_daily_is_in_court_hours_and_does_not_under_report_a_60_minute_venue(
-    client: TestClient, synthetic_history: SyntheticHistory
+    full_client: TestClient, synthetic_history: SyntheticHistory
 ) -> None:
     """THE NORMALIZATION TEST, at the HTTP boundary.
 
@@ -300,7 +336,7 @@ def test_occupancy_daily_is_in_court_hours_and_does_not_under_report_a_60_minute
     correctly, 1.0 against 0.5, so the API serves court-hours.
     """
     business_date = synthetic_history.normalization_business_date.isoformat()
-    body = _get(client, "/api/occupancy/daily", start=business_date, end=business_date)
+    body = _get(full_client, "/api/occupancy/daily", start=business_date, end=business_date)
     rows = {row["venue_uuid"]: row for row in body["rows"]}
 
     assert rows[PADEL_UP_VENUE]["slots"] == rows[PADEL_FORT_VENUE]["slots"] == 1
@@ -388,14 +424,14 @@ def test_pricing_by_hour_states_that_no_venue_varies_price_by_hour(client: TestC
     assert all(venue["is_flat"] for venue in body["venues"])
 
 
-def test_pricing_is_served_per_court_hour_not_per_slot(client: TestClient) -> None:
+def test_pricing_is_served_per_court_hour_not_per_slot(full_client: TestClient) -> None:
     """Regression: ranking venues on slot price, which inverts the true order.
 
     Play Padel's 1000 per 30-minute slot is 2000 per court-hour -- the most
     expensive of the three -- while Padel Up's 1800 per 60-minute slot is the
     cheapest per hour and the dearest per slot.
     """
-    body = _get(client, "/api/pricing/by-hour", sport="all")
+    body = _get(full_client, "/api/pricing/by-hour", sport="all")
     prices = {venue["venue_uuid"]: venue["flat_price_per_court_hour"] for venue in body["venues"]}
     assert prices[PLAY_PADEL_VENUE] == 2000.0
     assert prices[PADEL_UP_VENUE] == 1800.0
@@ -419,14 +455,14 @@ def test_a_flat_price_timeline_says_so_rather_than_inventing_a_change(
 # --------------------------------------------------------------------------
 
 
-def test_market_share_exposes_padel_ups_no_bookings_flag(client: TestClient) -> None:
+def test_market_share_exposes_padel_ups_no_bookings_flag(full_client: TestClient) -> None:
     """Regression: a venue's 0% demand share reading as a broken collector.
 
     Padel Up has never been observed with a booking. Its share is genuinely
     0.0, and the response must carry the flag that says so, together with the
     supply share that proves the collector is still seeing its inventory.
     """
-    body = _get(client, "/api/market/share")
+    body = _get(full_client, "/api/market/share")
     quality = {row["venue_uuid"]: row for row in body["venues"]}
     assert "no_bookings_ever_observed" in quality[PADEL_UP_VENUE]["flags"]
     assert quality[PADEL_UP_VENUE]["booked_court_hours"] == 0.0
@@ -438,10 +474,10 @@ def test_market_share_exposes_padel_ups_no_bookings_flag(client: TestClient) -> 
     assert all(row["supply_share"] is not None for row in padel_up_rows)
 
 
-def test_venues_carry_the_same_data_quality_flags_as_market_share(client: TestClient) -> None:
+def test_venues_carry_the_same_data_quality_flags_as_market_share(full_client: TestClient) -> None:
     """Regression: two surfaces disagreeing about whether a venue is trustworthy."""
-    venues = {row["venue_uuid"]: row for row in _get(client, "/api/venues")["venues"]}
-    share = {row["venue_uuid"]: row for row in _get(client, "/api/market/share")["venues"]}
+    venues = {row["venue_uuid"]: row for row in _get(full_client, "/api/venues")["venues"]}
+    share = {row["venue_uuid"]: row for row in _get(full_client, "/api/market/share")["venues"]}
     assert venues[PADEL_UP_VENUE]["data_quality"]["flags"] == share[PADEL_UP_VENUE]["flags"]
 
 
@@ -787,3 +823,57 @@ def test_the_injected_storage_is_not_closed_by_the_lifespan(
     with TestClient(app):
         pass
     assert storage.latest_snapshot() is not None
+
+
+# --------------------------------------------------------------------------
+# Contract: a venue can be collected and still withheld from the dashboard
+# --------------------------------------------------------------------------
+
+
+def test_a_hidden_venue_is_absent_from_every_default_response(client: TestClient) -> None:
+    """Regression: Padel Up's flat 0% line reappearing somewhere and reading as a bug.
+
+    ``show_in_dashboard: false`` has to hold across every endpoint at once. A
+    venue withheld from the headline chart but still counted in a denominator
+    somewhere else would be worse than either showing it or dropping it.
+    """
+    listed = [row["venue_uuid"] for row in _get(client, "/api/venues")["venues"]]
+    assert PADEL_UP_VENUE not in listed
+    assert PLAY_PADEL_VENUE in listed and PADEL_FORT_VENUE in listed
+
+    for path in ("/api/occupancy/daily", "/api/market/share", "/api/pricing/by-hour"):
+        body = _get(client, path)
+        blob = str(body)
+        assert PADEL_UP_VENUE not in blob, f"{path} still carries the hidden venue"
+
+
+def test_a_hidden_venue_is_excluded_from_the_market_share_denominator(
+    client: TestClient, full_client: TestClient
+) -> None:
+    """Regression: hiding a venue visually while still dividing by its court-hours.
+
+    Share must be computed over the venues actually shown, or the percentages
+    will not add up to what the chart displays.
+    """
+    hidden = {row["venue_uuid"] for row in _get(client, "/api/market/share")["venues"]}
+    shown = {row["venue_uuid"] for row in _get(full_client, "/api/market/share")["venues"]}
+    assert PADEL_UP_VENUE in shown
+    assert PADEL_UP_VENUE not in hidden
+    assert hidden == shown - {PADEL_UP_VENUE}
+
+
+def test_naming_a_hidden_venue_explicitly_still_returns_it(client: TestClient) -> None:
+    """Regression: hiding a venue making its collected data unreachable.
+
+    Hiding is a dashboard default, not an access control. The data is still
+    being collected every cycle and must stay queryable on request, otherwise
+    there is no way to check whether Padel Up has started selling.
+    """
+    listed = [
+        row["venue_uuid"] for row in _get(client, "/api/venues", venue=PADEL_UP_VENUE)["venues"]
+    ]
+    assert listed == [PADEL_UP_VENUE]
+
+    body = _get(client, "/api/occupancy/daily", venue=PADEL_UP_VENUE)
+    assert PADEL_UP_VENUE in str(body)
+    assert PLAY_PADEL_VENUE not in str(body)

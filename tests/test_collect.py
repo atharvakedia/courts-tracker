@@ -1271,3 +1271,24 @@ def test_cli_serve_hands_the_app_to_uvicorn_as_a_string() -> None:
         check=True,
     )
     assert probe.stdout.strip() == "False"
+
+
+def test_a_cycle_records_the_venue_and_facility_dimensions(
+    test_config: Config, memory_storage: Storage, grids: dict[str, Any]
+) -> None:
+    """Regression: dimension tables left empty, so first_seen/last_seen never exist.
+
+    ``first_seen``/``last_seen`` are what make "when did a fourth venue appear"
+    answerable from the data months later rather than only from a drift alert
+    someone happened to read at the time. The upserts existed but nothing
+    called them, so both tables stayed at zero rows through a real collect.
+    """
+    run_collect(test_config, memory_storage, FakeSlotsClient(grids), now=NOW)
+
+    venues = {dim.venue_uuid: dim for dim in memory_storage.list_venue_dims()}
+    facilities = {dim.facility_uuid: dim for dim in memory_storage.list_facility_dims()}
+    assert set(venues) == {venue.uuid for venue in test_config.venues}
+    assert set(facilities) == {
+        facility.uuid for venue in test_config.venues for facility in venue.facilities
+    }, "equipment facilities belong here too: the table records what we decided, not what we polled"
+    assert all(dim.first_seen == NOW for dim in venues.values())

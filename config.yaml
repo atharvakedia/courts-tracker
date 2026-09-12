@@ -77,6 +77,13 @@ venues:
     slug: "padel-up" # verified
     numeric_id: "772576" # verified
     active: true
+    # Collected but hidden from the dashboard. Zero bookings observed in 31 days
+    # at 1800/court-hour, while both competitors book daily, so a flat 0% line
+    # reads as a broken collector rather than as a finding. Polling continues:
+    # hiding costs nothing and is reversible, while not collecting opens a
+    # permanent hole in a forward-only dataset and is the only way to ever learn
+    # whether Padel Up starts selling through Hudle. Flip to true when it does.
+    show_in_dashboard: false
     facilities:
       - uuid: e27518b2-9cee-49a9-aa6f-8685e5c543f3
         name: "Padel Court"

@@ -51,11 +51,13 @@ from tracker.config import Config, FacilityConfig, VenueConfig
 from tracker.hudle import CircuitOpenError, HudleApiError, HudleError, HudleHttpError
 from tracker.storage import Storage
 from tracker.types import (
+    FacilityDim,
     FacilityFetch,
     SlotFirstBooked,
     SlotObservation,
     SlotState,
     StateTransition,
+    VenueDim,
     local_wall_clock,
     to_utc_text,
 )
@@ -365,6 +367,8 @@ def run_collect(
         if dry_run
         else storage.create_snapshot(poll_key, now, poll.horizon_days)
     )
+    if not dry_run:
+        record_dimensions(config, storage, observed_at=now)
     logger.info(
         "collect_run_started",
         extra={
@@ -544,6 +548,48 @@ def _collect_facility(
         ),
         tuple(observations),
     )
+
+
+def record_dimensions(config: Config, storage: Storage, *, observed_at: dt.datetime) -> None:
+    """Mirror the configured venues and facilities into the dimension tables.
+
+    Called every cycle so ``last_seen`` tracks the poll, while the stored
+    ``first_seen`` always wins on conflict. That pair is what makes "when did a
+    fourth venue appear" answerable from the data months later rather than only
+    from a drift alert someone happened to read at the time.
+
+    Every facility is recorded, equipment included: the table then describes
+    what we decided about the world, not merely what we polled, so a facility
+    reclassified later is still explicable from history.
+    """
+    for venue in config.venues:
+        storage.upsert_venue_dim(
+            VenueDim(
+                venue_uuid=venue.uuid,
+                name=venue.name,
+                short_name=venue.short_name,
+                slug=venue.slug,
+                numeric_id=venue.numeric_id,
+                tz=config.timezone,
+                active=venue.active,
+                first_seen=observed_at,
+                last_seen=observed_at,
+            )
+        )
+        for facility in venue.facilities:
+            storage.upsert_facility_dim(
+                FacilityDim(
+                    facility_uuid=facility.uuid,
+                    venue_uuid=venue.uuid,
+                    name=facility.name,
+                    kind=facility.kind,
+                    sport=facility.sport,
+                    grid_minutes=facility.grid_minutes,
+                    active=facility.active,
+                    first_seen=observed_at,
+                    last_seen=observed_at,
+                )
+            )
 
 
 def slot_counts_by_state(observations: Iterable[SlotObservation]) -> dict[SlotState, int]:

@@ -46,6 +46,16 @@ class Filters:
     sport: Sport | None
     sport_label: str
     venue_uuid: str | None
+    #: Venues this request may read. Normally the dashboard-visible set, so a
+    #: collected-but-hidden venue never lands in a denominator by accident.
+    #: Naming a venue explicitly overrides it, which keeps a hidden venue
+    #: queryable on request rather than unreachable.
+    visible_venue_uuids: frozenset[str]
+
+    @property
+    def hides_venues(self) -> bool:
+        """True when some collected venue is being withheld from this response."""
+        return self.venue_uuid is None
 
 
 def get_config(request: Request) -> Config:
@@ -129,6 +139,9 @@ def get_filters(
         sport=resolved_sport,
         sport_label=label,
         venue_uuid=venue,
+        visible_venue_uuids=(
+            frozenset({venue}) if venue is not None else config.dashboard_venue_uuids()
+        ),
     )
 
 

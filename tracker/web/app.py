@@ -316,6 +316,8 @@ def venues(
 
     rows: list[VenueOut] = []
     for venue in config.venues:
+        if venue.uuid not in filters.visible_venue_uuids:
+            continue
         dim = dims.get(venue.uuid)
         rows.append(
             VenueOut(
@@ -851,15 +853,20 @@ def _catalog_reason(
 
 
 def _observations(storage: Storage, filters: Filters) -> list[SlotObservation]:
-    """Every observation the filters ask for, materialized for repeated passes."""
-    return list(
-        storage.iter_observations(
-            venue_uuid=filters.venue_uuid,
-            sport=filters.sport,
-            business_date_from=filters.start,
-            business_date_to=filters.end,
-        )
+    """Every observation the filters ask for, materialized for repeated passes.
+
+    Dashboard-hidden venues are dropped here, in the one place every endpoint
+    loads observations through, rather than in each metric. A venue withheld in
+    some charts and counted in others would be worse than either choice.
+    """
+    rows = storage.iter_observations(
+        venue_uuid=filters.venue_uuid,
+        sport=filters.sport,
+        business_date_from=filters.start,
+        business_date_to=filters.end,
     )
+    visible = filters.visible_venue_uuids
+    return [row for row in rows if row.venue_uuid in visible]
 
 
 def _all_snapshots(storage: Storage) -> list[SnapshotRecord]:

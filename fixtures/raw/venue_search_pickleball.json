@@ -1,0 +1,4457 @@
+{
+  "code": 200,
+  "data": [
+    {
+      "id": "440cfb3f-31ec-418d-8d47-b280be5613ec",
+      "share_url": "https://hudle.in/venues/maidaan-jaipur/369005",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Maidaan | Jaipur",
+      "rating": "5",
+      "price_onwards": 600,
+      "created_at": "2026-06-01 12:45:53",
+      "updated_at": "2026-09-09 17:29:09",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "511235d8424092cec6008715e8f22214b0123bab",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/440cfb3f-31ec-418d-8d47-b280be5613ec/original/1780298153-1780298153980?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "59605112d490967ca1d976d85c14439b8db98e6f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/440cfb3f-31ec-418d-8d47-b280be5613ec/original/1780298153-1780298153980?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ec91477ed113c304e9ee9f3bf08058c2e0da3db2",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/440cfb3f-31ec-418d-8d47-b280be5613ec/original/1780298153-1780298153980?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ae10973a1b4f5fcf0b4b61cc136894b385bf0170",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/440cfb3f-31ec-418d-8d47-b280be5613ec/original/1780298153-1780298153980?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "9cf6b95dc725ecb064bbc279aa7abf5bc80f5bf1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/440cfb3f-31ec-418d-8d47-b280be5613ec/original/1780298153-1780298153980?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "46ea7efe9cd1976006a26558476d435ed211f141",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/440cfb3f-31ec-418d-8d47-b280be5613ec/original/1780298153-1780298153980?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "465d692d75a147677f469abb5938080370c78234",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/440cfb3f-31ec-418d-8d47-b280be5613ec/original/1780298153-1780298153980?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "afd000ba-11cc-4b25-9bb8-1aac53fc8993",
+      "share_url": "https://hudle.in/venues/centrecourt-mansarovar/947472",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "CentreCourt | Mansarovar",
+      "rating": null,
+      "price_onwards": 800,
+      "created_at": "2026-04-02 12:47:34",
+      "updated_at": "2026-08-05 19:10:37",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "4af4d43224383b84cf12f74f79aa2c7d098fe7dd",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/afd000ba-11cc-4b25-9bb8-1aac53fc8993/original/1775460651-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "46aa284b111d52615c6d44033aff63eeaf16de04",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/afd000ba-11cc-4b25-9bb8-1aac53fc8993/original/1775460651-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "a5fac8c1d4feabea2f072f7c82529d0e258e5c6b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/afd000ba-11cc-4b25-9bb8-1aac53fc8993/original/1775460651-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ab360d5f6a57b44970aaaa2db493033de859e1f5",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/afd000ba-11cc-4b25-9bb8-1aac53fc8993/original/1775460651-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d33233093b1e738b4f2a1c4c978b0d86affe6d40",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/afd000ba-11cc-4b25-9bb8-1aac53fc8993/original/1775460651-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "309c758352df7414a72bd73e353297c015861165",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/afd000ba-11cc-4b25-9bb8-1aac53fc8993/original/1775460651-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b40b0b7e-0a96-4a50-b7f4-bdc4ec790bc1",
+      "share_url": "https://hudle.in/venues/he-south-pickleball-arena/395796",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Ṭhe South PickleBall Arena",
+      "rating": "5",
+      "price_onwards": 300,
+      "created_at": "2026-03-10 16:17:59",
+      "updated_at": "2026-06-03 15:19:07",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "4490c4bc054925abdf093031041c2b78325cb925",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/b40b0b7e-0a96-4a50-b7f4-bdc4ec790bc1/original/1773466868-image_cropper_2496d644-ddbb-40dc-9e91-0d64bf592d9f-8214-000002d9e69d0aba.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "863205f6d8f527801028569bfb01a49d1f9d83eb",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/b40b0b7e-0a96-4a50-b7f4-bdc4ec790bc1/original/1773466868-image_cropper_2496d644-ddbb-40dc-9e91-0d64bf592d9f-8214-000002d9e69d0aba.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f0b64c8f621b376209068997871375cb7ec4f44d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/b40b0b7e-0a96-4a50-b7f4-bdc4ec790bc1/original/1773466868-image_cropper_2496d644-ddbb-40dc-9e91-0d64bf592d9f-8214-000002d9e69d0aba.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "76a2d4bc-1313-4860-bdfc-80a92b42dc10",
+      "share_url": "https://hudle.in/venues/rally-play-more/935890",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "RPM | Rally Play More",
+      "rating": null,
+      "price_onwards": 500,
+      "created_at": "2026-04-13 15:51:28",
+      "updated_at": "2026-09-11 19:48:34",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "7749fd7ed008c19b5d39fc7b366328c5ca97e9ce",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/76a2d4bc-1313-4860-bdfc-80a92b42dc10/original/1776076004-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "492bce8a3c74434436e0195b7734a9fd032d3d21",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/76a2d4bc-1313-4860-bdfc-80a92b42dc10/original/1776076004-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "c8df667eb86d7a15fbba4d6c52404ac416c3be36",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/76a2d4bc-1313-4860-bdfc-80a92b42dc10/original/1776076004-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f254efc051cb5cf0a12e029019fe547de6f934d9",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/76a2d4bc-1313-4860-bdfc-80a92b42dc10/original/1776076004-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "669d97c0-eb14-4a4f-98c3-41ba13c4f361",
+      "share_url": "https://hudle.in/venues/pickle-pro-club-jaipur/594900",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Pickle Pro Club",
+      "rating": null,
+      "price_onwards": 300,
+      "created_at": "2026-03-03 16:05:35",
+      "updated_at": "2026-09-11 16:47:30",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "8e97eee2ed8c696c3291fb3fc16cf02535b0f7a9",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/669d97c0-eb14-4a4f-98c3-41ba13c4f361/original/1775037396-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "b3ce1cf6bb77b2d5aef794c6a5043fb0f7877083",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/669d97c0-eb14-4a4f-98c3-41ba13c4f361/original/1775037396-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "c666f1f070ea51899f3502615daec0eceb2b1cd6",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/669d97c0-eb14-4a4f-98c3-41ba13c4f361/original/1775037396-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "90283be32f5ddacef1267889567c4c1082543db3",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/669d97c0-eb14-4a4f-98c3-41ba13c4f361/original/1775037396-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "76c527070f24446105846468fc307f0a9a75ce66",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/669d97c0-eb14-4a4f-98c3-41ba13c4f361/original/1775037396-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "3b51853a-6236-4e04-9f04-942a98c2696f",
+      "share_url": "https://hudle.in/venues/odd-orange-dink-day/402083",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "ODD | Orange Dink Day",
+      "rating": "5",
+      "price_onwards": 300,
+      "created_at": "2026-03-19 15:28:05",
+      "updated_at": "2026-09-11 21:18:14",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "4cf48fc661e3c83113c728b341c2a3ea260c7b4c",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3b51853a-6236-4e04-9f04-942a98c2696f/original/1774791696-image_cropper_4274a864-c2d6-4262-a570-4cbccec8fb7a-13384-000002bc0a199f66.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "18ed36cb1b188a3f93add700bdc9f0d9e8d64f71",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3b51853a-6236-4e04-9f04-942a98c2696f/original/1774791696-image_cropper_4274a864-c2d6-4262-a570-4cbccec8fb7a-13384-000002bc0a199f66.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "99746ff2bf60a595700431f3f756967601ac5dc1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3b51853a-6236-4e04-9f04-942a98c2696f/original/1774791696-image_cropper_4274a864-c2d6-4262-a570-4cbccec8fb7a-13384-000002bc0a199f66.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d73c150ab0df0054311972ba019ab0a8972055db",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3b51853a-6236-4e04-9f04-942a98c2696f/original/1774791696-image_cropper_4274a864-c2d6-4262-a570-4cbccec8fb7a-13384-000002bc0a199f66.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "505677c009cb4d4ba87b70a8ff1e1f03310ab954",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3b51853a-6236-4e04-9f04-942a98c2696f/original/1774791696-image_cropper_4274a864-c2d6-4262-a570-4cbccec8fb7a-13384-000002bc0a199f66.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8a521cee89fb37a81edfe98af0e1088399847197",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3b51853a-6236-4e04-9f04-942a98c2696f/original/1774791696-image_cropper_4274a864-c2d6-4262-a570-4cbccec8fb7a-13384-000002bc0a199f66.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "09787e91e14fbbf34b07cb223a21edc0452c94be",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3b51853a-6236-4e04-9f04-942a98c2696f/original/1774791696-image_cropper_4274a864-c2d6-4262-a570-4cbccec8fb7a-13384-000002bc0a199f66.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "eb117626-ec65-4adb-b82f-cfab26652a9b",
+      "share_url": "https://hudle.in/venues/servee-jaipur/836631",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Servee | Jaipur",
+      "rating": "5",
+      "price_onwards": 350,
+      "created_at": "2026-02-24 12:53:08",
+      "updated_at": "2026-09-06 18:55:43",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "f57adeb700cc280d28e74cbb211fce13324584fd",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "a13bd5128d6937cca507f04ec445fb83c4dcc441",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "2463c1367a94d25d95a3e765e24942c37cc7d939",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "a76a9e1726fd28b1d2f5f9dbf7ecd213043ef9d7",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "5944960ba801b567cf6905737905fd22891b379e",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "97403093647c7e7dabe935cff7a3fe99ea4a45c1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "edfb5017e38b8ef75134681176e4ba7f30421374",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e988058118aecbdeb1a6d4c31a8e64464c95dbe3",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "254a20cbb342315f47c96c4e77388c064e282929",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "098c2ea02bf60e719f09a7cfe6bfa4193e2d447b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/eb117626-ec65-4adb-b82f-cfab26652a9b/original/1771918683-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "b45d0642-d943-4d2e-a50f-25dda66f5c53",
+      "share_url": "https://hudle.in/venues/the-pickle-house-mansarovar/486867",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "The Pickle House | Mansarovar",
+      "rating": null,
+      "price_onwards": 600,
+      "created_at": "2026-04-23 15:22:05",
+      "updated_at": "2026-09-10 22:27:05",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "5cfb79d56597acffcce5cec8f216ee0d323028d8",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/b45d0642-d943-4d2e-a50f-25dda66f5c53/original/1777581666-image_cropper_a3558b36-e20e-4819-9ffa-476a98fe5a86-3609-000001b811ba7d20.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "86a5131db6d6e4f7796a65f50e69ae755ccf05c5",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/b45d0642-d943-4d2e-a50f-25dda66f5c53/original/1777581666-image_cropper_a3558b36-e20e-4819-9ffa-476a98fe5a86-3609-000001b811ba7d20.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8e01395fefa62a3f8e8e5b7b79d059394e09b449",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/b45d0642-d943-4d2e-a50f-25dda66f5c53/original/1777581666-image_cropper_a3558b36-e20e-4819-9ffa-476a98fe5a86-3609-000001b811ba7d20.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d4a53ed0d365ed2a8bbf2859637586c86f4d7a67",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/b45d0642-d943-4d2e-a50f-25dda66f5c53/original/1777581666-image_cropper_a3558b36-e20e-4819-9ffa-476a98fe5a86-3609-000001b811ba7d20.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "14bf0cf0-f0fa-4d23-9b31-9f932e33cbe0",
+      "share_url": "https://hudle.in/venues/pickleball-infinia-rajapark-jaipur/611795",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Pickleball Infinia | Rajapark",
+      "rating": "5",
+      "price_onwards": 499,
+      "created_at": "2026-04-24 12:10:04",
+      "updated_at": "2026-09-11 17:07:04",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "570815e52db798437aa833d75bad41d48b3ad19a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/14bf0cf0-f0fa-4d23-9b31-9f932e33cbe0/original/1777012804-1777012800063?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0b6d8e93f358aece910ba5287627f65901e23825",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/14bf0cf0-f0fa-4d23-9b31-9f932e33cbe0/original/1777012804-1777012800063?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ff718b8aeef70a1383646fb7f06d4fda10d59f14",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/14bf0cf0-f0fa-4d23-9b31-9f932e33cbe0/original/1777012804-1777012800063?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "bbd224e6f4978c868de549b59f0cc6a7b6d849df",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/14bf0cf0-f0fa-4d23-9b31-9f932e33cbe0/original/1777012804-1777012800063?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "690d35e41096190cc125238d6ad68e1eee286801",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/14bf0cf0-f0fa-4d23-9b31-9f932e33cbe0/original/1777012804-1777012800063?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "6c90cb8a-ccc0-4b73-b930-9f33af873685",
+      "share_url": "https://hudle.in/venues/county-sports-vaishali-nagar/596789",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "County Sports Pickleball | Vaishali Nagar",
+      "rating": null,
+      "price_onwards": 300,
+      "created_at": "2026-04-27 14:25:13",
+      "updated_at": "2026-09-10 09:11:40",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "324a78c43ef6a4340954edac7beb86e6742c5951",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6c90cb8a-ccc0-4b73-b930-9f33af873685/original/1783574358-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "2872eb93b264b7783122dcc3f16b54c0afffac76",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6c90cb8a-ccc0-4b73-b930-9f33af873685/original/1783574358-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6dab4f309f82d7f513a1b8f653128d2e192c5585",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6c90cb8a-ccc0-4b73-b930-9f33af873685/original/1783574358-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e386432cb34fdf062f795557902b61dcfcacac14",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6c90cb8a-ccc0-4b73-b930-9f33af873685/original/1783574358-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "2aada2cf-fb06-455e-bbea-e09ed3380687",
+      "share_url": "https://hudle.in/venues/smasho-indoor-pickleball/331067",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Smasho Indoor Pickleball",
+      "rating": "5",
+      "price_onwards": 349,
+      "created_at": "2026-05-07 16:22:51",
+      "updated_at": "2026-09-10 14:38:00",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "b11e5cdd76c1f59b44c866ee2d7bc5eb6bda1ee2",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/2aada2cf-fb06-455e-bbea-e09ed3380687/original/1778151792-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "096134108c4d715918af749b870f728deb60a150",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/2aada2cf-fb06-455e-bbea-e09ed3380687/original/1778151792-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "b4f0810765245286cb7771e1c4f58310f25a36ee",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/2aada2cf-fb06-455e-bbea-e09ed3380687/original/1778151792-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "2b7a7a31e2c59ebbde4ba23cf61120f451c25e60",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/2aada2cf-fb06-455e-bbea-e09ed3380687/original/1778151792-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "5caccc59eddc6e410e41ff2cc4560653bdc55965",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/2aada2cf-fb06-455e-bbea-e09ed3380687/original/1778151792-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "77aa4a44b15c185097a8a0906e09d45554515306",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/2aada2cf-fb06-455e-bbea-e09ed3380687/original/1778151792-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "00b5f5dd-fe71-48f4-bcb6-b858c8c1d84c",
+      "share_url": "https://hudle.in/venues/jj-pickleball-jaipur/893251",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "JJ Pickleball | Jaipur",
+      "rating": "2",
+      "price_onwards": 800,
+      "created_at": "2026-05-08 18:01:55",
+      "updated_at": "2026-09-08 20:31:07",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "31bda61666b7c3e45a16d4ac139ec28be5393355",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/00b5f5dd-fe71-48f4-bcb6-b858c8c1d84c/original/1778244022-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "d7d741a7-cd81-4747-9a4a-4a0edb5f42f9",
+      "share_url": "https://hudle.in/venues/pickle-tickle-jaipur/772373",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Pickle Tickle | Jaipur",
+      "rating": "5",
+      "price_onwards": 300,
+      "created_at": "2026-05-20 15:56:47",
+      "updated_at": "2026-08-09 15:28:44",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "703d183ddc7e37c6941b77f50c1b2aa4c520184c",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/d7d741a7-cd81-4747-9a4a-4a0edb5f42f9/original/1779272807-1779272805880?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "2f1c7b667abffe9aa0c3886f3f42c2164957e05b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/d7d741a7-cd81-4747-9a4a-4a0edb5f42f9/original/1779272807-1779272805880?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "adaff943-0c7e-4497-8c75-cd853557d486",
+      "share_url": "https://hudle.in/venues/pickleball-socials-x-quyus/277857",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "PICKLEBALL SOCIALS X QUYU'S",
+      "rating": null,
+      "price_onwards": 300,
+      "created_at": "2026-02-26 12:17:23",
+      "updated_at": "2026-09-06 18:57:59",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "a83e19fb97402a59e5bf1d2e3e08afbe8109be1a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/adaff943-0c7e-4497-8c75-cd853557d486/original/1773815725-image_cropper_1773815714257.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e98794ca73ead010ab73c121b70852af09d126ae",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/adaff943-0c7e-4497-8c75-cd853557d486/original/1773815725-image_cropper_1773815714257.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f4a69f03a112ad11831737152aa6e307d84451c6",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/adaff943-0c7e-4497-8c75-cd853557d486/original/1773815725-image_cropper_1773815714257.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "9f6ba3eb-5a64-4b7a-8d70-674a2d765d82",
+      "share_url": "https://hudle.in/venues/skypod-pickleball-cafe/321130",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Skypod Pickleball Cafe",
+      "rating": null,
+      "price_onwards": 300,
+      "created_at": "2025-10-15 13:21:16",
+      "updated_at": "2026-09-09 20:48:12",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "d176aac48f0185a28b0a8fb8fe4f4040a5ccf276",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "fabcc2f2caeda2e2f1ad2a501eaf38f7b8a7a23a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f114121805307661f537d4afca76220e1ee6a20f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "11ce92ab512590e4c6f8b0fe976dbc07c1cee9ac",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e023489ab922d30406af14d483c77752be6f6fc3",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d0b8ef6e7c964593e8a1fb57dfca862bb1650841",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "a78d895b48df7a3806e51a025e80ac3a512014fc",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "80fa217a398899c7037d2099905b02eb04a959bc",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "492f90c66ea8b891334e862642977878666506ee",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9f6ba3eb-5a64-4b7a-8d70-674a2d765d82/original/1765360996-image_cropper_391045d7-56eb-4c1e-9af5-f924bb5de40b-22127-0000050862fed81e.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "8e57635b-0c36-4fdb-861d-1cd17c58caf4",
+      "share_url": "https://hudle.in/venues/cross-courts/916563",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Cross Courts",
+      "rating": "5",
+      "price_onwards": 200,
+      "created_at": "2026-03-24 13:12:59",
+      "updated_at": "2026-09-06 18:26:27",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "7be2520d00ac8fc69d420feef2bf5888dfc4f7d1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ba71457e333a13fd8c8cbffffc08799b88e976ec",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8bea3a348d7cee92efd7adeba1f1bd835ebaa926",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "77e0248e318a3f69a5de871eb9d66e33230bcd37",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ea9ac6baab4be69ff334fa49e563f89873ce7fff",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d8c09ce69bb938d556bef2702cafc681b0a40b67",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "3845bb4b55d00686e515031cbf431532e68e311f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0df4c2eafa17b35572965053c96e55be54ee33e1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "78fe7567a619c645d85fa1e01c0466ea6402a1ec",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e57635b-0c36-4fdb-861d-1cd17c58caf4/original/1777012264-image_cropper_1777012260317.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "8e213217-1255-4435-9a60-7be5cfab7774",
+      "share_url": "https://hudle.in/venues/mahapragya-sports-academy/100859",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Mahapragya Sports Academy",
+      "rating": "5",
+      "price_onwards": 600,
+      "created_at": "2026-06-03 12:11:52",
+      "updated_at": "2026-08-03 14:40:28",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "6a85e3fdb23d525d85a028d2f9fde891de9232d4",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e213217-1255-4435-9a60-7be5cfab7774/original/1780468912-1780468910157?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "72626c73e3e326f98ec736fee548c4678603f98c",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e213217-1255-4435-9a60-7be5cfab7774/original/1780468912-1780468910157?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e07d00b51de291e52cf8d84186f0c80a2658bb33",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/8e213217-1255-4435-9a60-7be5cfab7774/original/1780468912-1780468910157?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "83b8bb9d-830b-4218-b690-614522ace363",
+      "share_url": "https://hudle.in/venues/pickle-at-kk-royal-hotel-and-convention-centre-jaipur/943764",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Pickle at KK Royal Hotel | Jaipur",
+      "rating": null,
+      "price_onwards": 800,
+      "created_at": "2026-06-10 10:47:51",
+      "updated_at": "2026-06-23 11:41:16",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "d8c8c4e71b244475c469fe3632795ad1ae525b66",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/83b8bb9d-830b-4218-b690-614522ace363/original/1781068671-1781068671225?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "126c931bf4089a255051929ab2c39d1945226d8d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/83b8bb9d-830b-4218-b690-614522ace363/original/1781068671-1781068671225?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "3ac54483cea600d71e77f4eba641a8cd8a7e2f20",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/83b8bb9d-830b-4218-b690-614522ace363/original/1781068671-1781068671225?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0f766980695f55295159fa72d6fa09b30b5c5bad",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/83b8bb9d-830b-4218-b690-614522ace363/original/1781068671-1781068671225?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "19b11bddaae9d718cd539e2ebe6f20363208149b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/83b8bb9d-830b-4218-b690-614522ace363/original/1781068671-1781068671225?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dc11cc7b-df0e-48df-8a4c-51ff3058b31b",
+      "share_url": "https://hudle.in/venues/sundowner-sports-cafe-malviya-nagar/555372",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Sundowner Sports & Cafe | Malviya Nagar",
+      "rating": "5",
+      "price_onwards": 150,
+      "created_at": "2026-06-15 13:54:00",
+      "updated_at": "2026-09-11 17:05:41",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "dc81f4e1b731d5b266dbf816e8a5801d6ad7ab5e",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "012d1f103ee7e75b8413853f0a892ad4e9dcc5cd",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "27f06469861184a9784c84700a4707667db73dac",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "5240359450d171af887c6df5df86dd1808ca740f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "3cc6a92147f5bd3b349e0dfc07fb946bfb12bb05",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e4ad2bc0b4a2346a9bed36a1a93ca71eb3c4d78a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "13c9f0f75a544892ce2e6b92f09d69c5b96e487d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "25854ea5e4cbbaed19d6e817b1fbcef41b5276fb",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "88c6e1c64482b366dddfd932506db959de3858dd",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/dc11cc7b-df0e-48df-8a4c-51ff3058b31b/original/1781511840-1781511839746?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "5",
+          "name": "Billiard",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/5/v2/original/54287705badf07e77ec911a931aa7aa996c45016?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/5/v2/original/54287705badf07e77ec911a931aa7aa996c45016?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 512,
+              "height": 512,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/5/v2/original/54287705badf07e77ec911a931aa7aa996c45016"
+          }
+        },
+        {
+          "id": "27",
+          "name": "Cricket Nets",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/27/v2/original/db05eecab02e6f06f854067d685518c7a498cdbc?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/27/v2/original/db05eecab02e6f06f854067d685518c7a498cdbc?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 512,
+              "height": 512,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/27/v2/original/db05eecab02e6f06f854067d685518c7a498cdbc"
+          }
+        },
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "855ed04d-b4d6-4bd2-8b93-e4e77f7cd235",
+      "share_url": "https://hudle.in/venues/pickleball-reserve/670222",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Pickleball Reserve",
+      "rating": "4.4705882352941",
+      "price_onwards": 300,
+      "created_at": "2025-10-08 13:49:46",
+      "updated_at": "2026-09-04 17:30:32",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "e4c6edefaaad5b96603e7eb281dcae0490ecbdbe",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/855ed04d-b4d6-4bd2-8b93-e4e77f7cd235/original/1760615549-image_cropper_14896933-bb37-4a15-ba07-28413eee604b-29672-000007a1c6b6525a.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "5a785e3b90daf9b7c1b9083e4b8c5f6be8ed7e76",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/855ed04d-b4d6-4bd2-8b93-e4e77f7cd235/original/1760615549-image_cropper_14896933-bb37-4a15-ba07-28413eee604b-29672-000007a1c6b6525a.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "c38a4886926e956abd928ad2b53751e5967994a9",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/855ed04d-b4d6-4bd2-8b93-e4e77f7cd235/original/1760615549-image_cropper_14896933-bb37-4a15-ba07-28413eee604b-29672-000007a1c6b6525a.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "5a227010-58e4-45da-8ec4-75191b07aa40",
+      "share_url": "https://hudle.in/venues/the-court-club/216931",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "The Court Club",
+      "rating": "2.75",
+      "price_onwards": 50,
+      "created_at": "2025-10-15 14:52:51",
+      "updated_at": "2026-08-29 18:01:25",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "cd7f36f0f67a12f8206e592ec16e459e52219244",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5a227010-58e4-45da-8ec4-75191b07aa40/original/1760866151-image_cropper_4f5b374b-d1d2-4ac6-8d17-9c7efebc2a66-26108-00002876dfe78b57.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "67bf024baef1bfb876813b8d7322f9d399b84ca2",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5a227010-58e4-45da-8ec4-75191b07aa40/original/1760866151-image_cropper_4f5b374b-d1d2-4ac6-8d17-9c7efebc2a66-26108-00002876dfe78b57.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "1e1481a32b08f0303f97c05c9af9ac182ca41d85",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5a227010-58e4-45da-8ec4-75191b07aa40/original/1760866151-image_cropper_4f5b374b-d1d2-4ac6-8d17-9c7efebc2a66-26108-00002876dfe78b57.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0f7f4ec6e6f6f771aba98252c092f4fd5dcb8b2a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5a227010-58e4-45da-8ec4-75191b07aa40/original/1760866151-image_cropper_4f5b374b-d1d2-4ac6-8d17-9c7efebc2a66-26108-00002876dfe78b57.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "32d067da083b394631422840869b3e6b215e5217",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5a227010-58e4-45da-8ec4-75191b07aa40/original/1760866151-image_cropper_4f5b374b-d1d2-4ac6-8d17-9c7efebc2a66-26108-00002876dfe78b57.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "fc537e4abc5f46c57a6964b729953b476ac4980b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5a227010-58e4-45da-8ec4-75191b07aa40/original/1760866151-image_cropper_4f5b374b-d1d2-4ac6-8d17-9c7efebc2a66-26108-00002876dfe78b57.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "6f915d3d-4765-4446-965e-e0847ed33101",
+      "share_url": "https://hudle.in/venues/pickle-king-jaipur/452253",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Pickle King | Jaipur",
+      "rating": null,
+      "price_onwards": 350,
+      "created_at": "2026-06-26 12:49:52",
+      "updated_at": "2026-08-03 14:47:56",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "7d43ccc4ebca279ca986f22df9bdaba0499d89cb",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6f915d3d-4765-4446-965e-e0847ed33101/original/1782719908-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "b850733683a09d9380540d3a5ef61e806519b6f2",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6f915d3d-4765-4446-965e-e0847ed33101/original/1782719908-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "3ec90668ffab654c250917077cd23863c7b8933d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6f915d3d-4765-4446-965e-e0847ed33101/original/1782719908-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "9127ba35c2ff8a7af8889b18e7f62d2c9b450306",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6f915d3d-4765-4446-965e-e0847ed33101/original/1782719908-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "47c8f4f01d95e81ae550522f2e687cc8948fc671",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6f915d3d-4765-4446-965e-e0847ed33101/original/1782719908-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4233bb3fa4f70c3fbf538d401e7e97078e86c4c7",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6f915d3d-4765-4446-965e-e0847ed33101/original/1782719908-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "118edf21-dcee-42bd-82a7-4c75d9f547f5",
+      "share_url": "https://hudle.in/venues/the-pickleball-club-narayan-vihar/306324",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Jaipur Pickleball Club | Narayan Vihar",
+      "rating": null,
+      "price_onwards": 200,
+      "created_at": "2026-05-21 12:32:24",
+      "updated_at": "2026-08-17 14:27:49",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "3dc27e00fbf4af1dce167d99c851a839ddf2e46b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/118edf21-dcee-42bd-82a7-4c75d9f547f5/original/1780311682-image_cropper_1780311668132.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "353c8c96313e21a778ca0094239b63b953493993",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/118edf21-dcee-42bd-82a7-4c75d9f547f5/original/1780311682-image_cropper_1780311668132.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "cc638acf0b268bcb06bbca2961a7a4999e4d226a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/118edf21-dcee-42bd-82a7-4c75d9f547f5/original/1780311682-image_cropper_1780311668132.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d7b0a1c053755ba02cf4e3910274b7491d5112e4",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/118edf21-dcee-42bd-82a7-4c75d9f547f5/original/1780311682-image_cropper_1780311668132.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8df204317d0432890428d43ec221a44b1a338940",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/118edf21-dcee-42bd-82a7-4c75d9f547f5/original/1780311682-image_cropper_1780311668132.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "893a9029ec57f3b76a4c40930df1b348fd7798ac",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/118edf21-dcee-42bd-82a7-4c75d9f547f5/original/1780311682-image_cropper_1780311668132.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "89d36632-a63d-455b-a5d3-35ba58ba4f6d",
+      "share_url": "https://hudle.in/venues/the-galaxy-pickle/954583",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "The Galaxy Pickle",
+      "rating": null,
+      "price_onwards": 300,
+      "created_at": "2026-07-01 16:23:07",
+      "updated_at": "2026-09-05 15:21:03",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "ace4de2374b558b4e3921733581f3cd05b3c356f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/89d36632-a63d-455b-a5d3-35ba58ba4f6d/original/1783148001-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "71be26a9af583293adca93957ecc8522eda825cf",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/89d36632-a63d-455b-a5d3-35ba58ba4f6d/original/1783148001-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "73ab6893ad1e7807ed49ff89b268f5bc5758290d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/89d36632-a63d-455b-a5d3-35ba58ba4f6d/original/1783148001-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "460f09a2-ef0d-419b-bfc9-e0aca0d3589d",
+      "share_url": "https://hudle.in/venues/smashcity/120108",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "SmashCity | Jaipur",
+      "rating": "5",
+      "price_onwards": 200,
+      "created_at": "2025-11-04 00:26:40",
+      "updated_at": "2026-09-11 21:55:18",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "9401a6226645cde96d8aa59824486287a83eb18e",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/460f09a2-ef0d-419b-bfc9-e0aca0d3589d/original/1768657409-image_cropper_e73cfdd1-1df2-45f7-a57d-0a1d434ee644-73601-000009a4bc60c632.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "25dd620706285c7146978ffe53675a1cae3ed270",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/460f09a2-ef0d-419b-bfc9-e0aca0d3589d/original/1768657409-image_cropper_e73cfdd1-1df2-45f7-a57d-0a1d434ee644-73601-000009a4bc60c632.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "06a9674cf22381dc94ef5d10a01657806ba4128a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/460f09a2-ef0d-419b-bfc9-e0aca0d3589d/original/1768657409-image_cropper_e73cfdd1-1df2-45f7-a57d-0a1d434ee644-73601-000009a4bc60c632.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "7768636d187e7e761d6e445c61b8afe0ce131640",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/460f09a2-ef0d-419b-bfc9-e0aca0d3589d/original/1768657409-image_cropper_e73cfdd1-1df2-45f7-a57d-0a1d434ee644-73601-000009a4bc60c632.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8317e6a61030f100df116df4cb1b6edcb99856d6",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/460f09a2-ef0d-419b-bfc9-e0aca0d3589d/original/1768657409-image_cropper_e73cfdd1-1df2-45f7-a57d-0a1d434ee644-73601-000009a4bc60c632.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "698bd64c6ca191bfc4e68ad9b37d44941341b261",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/460f09a2-ef0d-419b-bfc9-e0aca0d3589d/original/1768657409-image_cropper_e73cfdd1-1df2-45f7-a57d-0a1d434ee644-73601-000009a4bc60c632.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "cd7beffb39ecbb271801f73a6edd296d7f41fed4",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/460f09a2-ef0d-419b-bfc9-e0aca0d3589d/original/1768657409-image_cropper_e73cfdd1-1df2-45f7-a57d-0a1d434ee644-73601-000009a4bc60c632.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "5e52beb3-02e8-4b14-bf71-c59a9f45204b",
+      "share_url": "https://hudle.in/venues/terra-jaipur/316085",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Terra | Indoor Courts n Café",
+      "rating": "5",
+      "price_onwards": 400,
+      "created_at": "2026-04-14 14:32:34",
+      "updated_at": "2026-09-12 01:00:37",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "af5c601dba2111dad3596a63a5f5019c43d27efc",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "c6c69f0f9f4084cb0962eb418630009394870d69",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "02c5c94a182d70066d9723e3a5994759a25d2b9b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "a44479562d5bfbe676ad3b83eda04cc463b59fe1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "7c6501ec338188e1e163b55a830cc142cd7c7f04",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "20c1cf11e88a9e1e23c8abe0b740348f0bbe0a2f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f25f33ed8b6570ac0ac11497324b164e6e887915",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "2c82c1847bcc7b42b4c02cff8738bd09502f09ea",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "234075482440566661cbff9d85760b51ce8c4320",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "17a735a6c199141a566a1bca10ac255269dfd9c4",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/5e52beb3-02e8-4b14-bf71-c59a9f45204b/original/1776762303-image_cropper_1776762258168.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e161ebf7-78c7-4a45-bad8-49841f38b18a",
+      "share_url": "https://hudle.in/venues/padel-fort/155289",
+      "is_hudle_exclusive": true,
+      "offer_text": "20% OFF",
+      "name": "Padel Fort",
+      "rating": null,
+      "price_onwards": 450,
+      "created_at": "2026-07-21 11:54:44",
+      "updated_at": "2026-09-11 17:34:17",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "19c1f9b1946262461bb70cb28bcfecc6e5bf50a9",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e161ebf7-78c7-4a45-bad8-49841f38b18a/original/1785567084-image_cropper_4a1956cf-eead-47cb-96f8-8fdb70dc548e-35182-00000ed29fbfbde1.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "91b5b48858a9e3de27ee508cfb6ae2ecce24d752",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e161ebf7-78c7-4a45-bad8-49841f38b18a/original/1785567084-image_cropper_4a1956cf-eead-47cb-96f8-8fdb70dc548e-35182-00000ed29fbfbde1.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "20b5bf5784a37288de0569b557b9031705e6eefb",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e161ebf7-78c7-4a45-bad8-49841f38b18a/original/1785567084-image_cropper_4a1956cf-eead-47cb-96f8-8fdb70dc548e-35182-00000ed29fbfbde1.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "44",
+          "name": "Padel",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 512,
+              "height": 512,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a"
+          }
+        },
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "f1fc0769-48bb-4bdd-bc1c-2da07ba6a9c6",
+      "share_url": "https://hudle.in/venues/the-rally-retreat/470076",
+      "is_hudle_exclusive": false,
+      "offer_text": "40% OFF",
+      "name": "The Rally Retreat | Pickleball & Stay",
+      "rating": null,
+      "price_onwards": 200,
+      "created_at": "2025-12-23 16:49:09",
+      "updated_at": "2026-09-11 20:40:56",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "85fc440e120fd53256f725597f42eff3e305a5e1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/f1fc0769-48bb-4bdd-bc1c-2da07ba6a9c6/original/1768657024-image_cropper_0d69c8be-a533-46d6-b56a-2a03c8008235-73601-000009a29cf16945.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "de2cd0b6095f68a98e64218cdd4229fe4d09afcd",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/f1fc0769-48bb-4bdd-bc1c-2da07ba6a9c6/original/1768657024-image_cropper_0d69c8be-a533-46d6-b56a-2a03c8008235-73601-000009a29cf16945.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "24c91b79caf57dfd00e8ba0d0e676faeeea361ae",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/f1fc0769-48bb-4bdd-bc1c-2da07ba6a9c6/original/1768657024-image_cropper_0d69c8be-a533-46d6-b56a-2a03c8008235-73601-000009a29cf16945.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "31e3f72702da6e02198777008755955e73d2a02e",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/f1fc0769-48bb-4bdd-bc1c-2da07ba6a9c6/original/1768657024-image_cropper_0d69c8be-a533-46d6-b56a-2a03c8008235-73601-000009a29cf16945.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "3b8304bd6b8525292ae62047915a46494138a0b6",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/f1fc0769-48bb-4bdd-bc1c-2da07ba6a9c6/original/1768657024-image_cropper_0d69c8be-a533-46d6-b56a-2a03c8008235-73601-000009a29cf16945.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "08771387fe8300279086afd9fa0faeaa3c221e53",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/f1fc0769-48bb-4bdd-bc1c-2da07ba6a9c6/original/1768657024-image_cropper_0d69c8be-a533-46d6-b56a-2a03c8008235-73601-000009a29cf16945.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0bf52c0ddf2de228efa3ebeeb1fc3c1ba9426830",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/f1fc0769-48bb-4bdd-bc1c-2da07ba6a9c6/original/1768657024-image_cropper_0d69c8be-a533-46d6-b56a-2a03c8008235-73601-000009a29cf16945.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "beef351d-e450-4fd5-bcee-5a19a08721f6",
+      "share_url": "https://hudle.in/venues/paddleone/967608",
+      "is_hudle_exclusive": false,
+      "offer_text": "20% OFF",
+      "name": "PaddleOne | Vaishali",
+      "rating": null,
+      "price_onwards": 150,
+      "created_at": "2026-08-11 16:45:52",
+      "updated_at": "2026-08-17 12:49:48",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "b7725dcfb45faad1c47f147b7768bdb3e579a18b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/beef351d-e450-4fd5-bcee-5a19a08721f6/original/1786447333-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "151602e15e8a11cdfdb61b5382835da1f74bcb94",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/beef351d-e450-4fd5-bcee-5a19a08721f6/original/1786447333-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d98f701fc43054bfc4c58755cb57e3b3723e89b5",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/beef351d-e450-4fd5-bcee-5a19a08721f6/original/1786447333-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e50077635b077b4f20c6a8650ddce9fc50b5e2f1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/beef351d-e450-4fd5-bcee-5a19a08721f6/original/1786447333-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "7fe3faf2-c6cf-4f3a-b99d-2ec9d42fe678",
+      "share_url": "https://hudle.in/venues/pickle-pavillion/629829",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Pickle Pavillion",
+      "rating": "5",
+      "price_onwards": 1000,
+      "created_at": "2025-12-09 11:02:17",
+      "updated_at": "2026-09-10 21:43:50",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "8df806591edf99aa14d88c895617fdab29d46289",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7fe3faf2-c6cf-4f3a-b99d-2ec9d42fe678/original/1768496011-image_cropper_0e959478-390d-4dd7-ba23-da1553ff29be-60384-00000826f2f86c12.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "144a0b27ae95df53fc31fdec83aee57be540c337",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7fe3faf2-c6cf-4f3a-b99d-2ec9d42fe678/original/1768496011-image_cropper_0e959478-390d-4dd7-ba23-da1553ff29be-60384-00000826f2f86c12.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "241c74c059f9bdb7207b686c19588c2ead4e131d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7fe3faf2-c6cf-4f3a-b99d-2ec9d42fe678/original/1768496011-image_cropper_0e959478-390d-4dd7-ba23-da1553ff29be-60384-00000826f2f86c12.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ac29cedb734406d337950b386fdb2718733f649c",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7fe3faf2-c6cf-4f3a-b99d-2ec9d42fe678/original/1768496011-image_cropper_0e959478-390d-4dd7-ba23-da1553ff29be-60384-00000826f2f86c12.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "3cdd12a1-5216-4e08-b46b-dc9ad2ca6549",
+      "share_url": "https://hudle.in/venues/playall-sports-complex-orbit-mall-jaipur/840513",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "PlayAll Orbit Mall",
+      "rating": "4.1826923076923",
+      "price_onwards": 400,
+      "created_at": "2022-09-21 12:57:26",
+      "updated_at": "2026-09-06 18:38:39",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "c4b746850768f99c6f491a48202d612f8271d98b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3cdd12a1-5216-4e08-b46b-dc9ad2ca6549/original/1664769400-image_cropper_B3652B31-9D54-4F43-B528-28732154462E-6453-000002985FDB34E2.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f9ab2cc3dd53edf3c01e4e4f93dccc3cae5ab903",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3cdd12a1-5216-4e08-b46b-dc9ad2ca6549/original/1664769400-image_cropper_B3652B31-9D54-4F43-B528-28732154462E-6453-000002985FDB34E2.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "915be9488234e960f9fd372921d4d7f7dde50aaf",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3cdd12a1-5216-4e08-b46b-dc9ad2ca6549/original/1664769400-image_cropper_B3652B31-9D54-4F43-B528-28732154462E-6453-000002985FDB34E2.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "9999d8259a189f3acc9cc19814589309abc75f1f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3cdd12a1-5216-4e08-b46b-dc9ad2ca6549/original/1664769400-image_cropper_B3652B31-9D54-4F43-B528-28732154462E-6453-000002985FDB34E2.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "498b850a5972a2d66a85e8147baa6074e14995e5",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3cdd12a1-5216-4e08-b46b-dc9ad2ca6549/original/1664769400-image_cropper_B3652B31-9D54-4F43-B528-28732154462E-6453-000002985FDB34E2.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e713fbff792a421bbbcf97ea59cdeba685d1c7ac",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3cdd12a1-5216-4e08-b46b-dc9ad2ca6549/original/1664769400-image_cropper_B3652B31-9D54-4F43-B528-28732154462E-6453-000002985FDB34E2.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        },
+        {
+          "id": "24",
+          "name": "Box Cricket",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/24/v2/original/5b7eb8aeeda7995d8eaaa3e7285a8bdd4159c9ca?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/24/v2/original/5b7eb8aeeda7995d8eaaa3e7285a8bdd4159c9ca?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 512,
+              "height": 512,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/24/v2/original/5b7eb8aeeda7995d8eaaa3e7285a8bdd4159c9ca"
+          }
+        }
+      ]
+    },
+    {
+      "id": "9b288765-eee9-4d8a-b309-a4f09b11abcc",
+      "share_url": "https://hudle.in/venues/pickleball-by-play-padel-clarks-amer-hotel/417565",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Play Padel | Pickleball | Clarks Amer Hotel",
+      "rating": "4.9739413680782",
+      "price_onwards": 1000,
+      "created_at": "2025-03-17 11:15:10",
+      "updated_at": "2026-09-12 01:12:49",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "37e91e2671f28472aaa99591dea3014325948b5d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e345736e0c9445136a35feb39a45038742ce7ff1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4e15fe2ccfb8c9f6031ebe7bcd692e5e9fd1412f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "dcade0ad6c1f44f877dace145735f468ba7a9644",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8b117f5c758e6f385a859f0a1963ab411d217187",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4e2fc60fcf1fc914bf98cf37bdb1c42a46c19f4a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4b3527282bc7543f1884aefed167a95a40930069",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6813be077a81d74ee03ee5dc78f0df6247e5723b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "1fba67ea174fb4e5064bf67bf32a26f5959ab2c8",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "34a194143b341fb547eb07f13e20d1a4cbbce31c",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        },
+        {
+          "id": "44",
+          "name": "Padel",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 512,
+              "height": 512,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a"
+          }
+        }
+      ]
+    },
+    {
+      "id": "960ad412-5b9a-4ba9-b006-0b19e8204a60",
+      "share_url": "https://hudle.in/venues/the-pickleball-arena/228403",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "The Pickleball Arena",
+      "rating": "4.8947368421053",
+      "price_onwards": 800,
+      "created_at": "2025-05-05 14:04:47",
+      "updated_at": "2026-09-03 11:38:58",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "3def490d2921a84cebf2e60008e8094c4866036f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/960ad412-5b9a-4ba9-b006-0b19e8204a60/original/1747724680-image_cropper_1747724672014.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "182e88f8f48fee182c316337f8a9077df9c365f3",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/960ad412-5b9a-4ba9-b006-0b19e8204a60/original/1747724680-image_cropper_1747724672014.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6adeda36f56bce45cc81135e980268fd5e69154e",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/960ad412-5b9a-4ba9-b006-0b19e8204a60/original/1747724680-image_cropper_1747724672014.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "00b1a8a70061f61ab88bc927d1aaee359ad7f502",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/960ad412-5b9a-4ba9-b006-0b19e8204a60/original/1747724680-image_cropper_1747724672014.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ca0f2d7a-6fcc-406b-bf81-1f6b45bae5f2",
+      "share_url": "https://hudle.in/venues/pickleball-socials-gandhi-path-west/342982",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Pickleball Socials | Gandhi Path West",
+      "rating": null,
+      "price_onwards": 200,
+      "created_at": "2025-04-11 14:11:50",
+      "updated_at": "2026-06-03 15:34:46",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "39663eb3f27baa6c191c320bc50509f76edd8735",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/ca0f2d7a-6fcc-406b-bf81-1f6b45bae5f2/original/1746511639-image_cropper_A185BF12-571F-4BEB-927D-B3856DD08583-6870-000033DB81B0FB0F.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.57,
+          "is_video_preview": false
+        },
+        {
+          "id": "289a6be236be87bf1722b91ffca86a00c8904e3b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/ca0f2d7a-6fcc-406b-bf81-1f6b45bae5f2/original/1746511639-image_cropper_A185BF12-571F-4BEB-927D-B3856DD08583-6870-000033DB81B0FB0F.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.57,
+          "is_video_preview": false
+        },
+        {
+          "id": "fd5e305d51bd801e005e5cd1f369a8886a11f49f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/ca0f2d7a-6fcc-406b-bf81-1f6b45bae5f2/original/1746511639-image_cropper_A185BF12-571F-4BEB-927D-B3856DD08583-6870-000033DB81B0FB0F.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.57,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "6cc9f2dd-53d2-45f1-bf77-3688b73e4f4d",
+      "share_url": "https://hudle.in/venues/the-pickleball-yard/708570",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "The Pickleball Yard",
+      "rating": "4.25",
+      "price_onwards": 300,
+      "created_at": "2025-07-30 15:55:19",
+      "updated_at": "2026-07-12 18:47:16",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "aa5d94695e8967de0c819b8872a2d2efd8428c6f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6cc9f2dd-53d2-45f1-bf77-3688b73e4f4d/original/1753871882-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "cc98bc7acc239ace1a5daf593fe9df9ddd8261c2",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6cc9f2dd-53d2-45f1-bf77-3688b73e4f4d/original/1753871882-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d5491dc632c8a37b1629538495b7375a9b42abfd",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6cc9f2dd-53d2-45f1-bf77-3688b73e4f4d/original/1753871882-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "95f11ff03e53ce70c26ed2c9e2c34943b7e5a763",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6cc9f2dd-53d2-45f1-bf77-3688b73e4f4d/original/1753871882-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "3f80d051699bcef650b18f851aa2e8bcd88e136e",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6cc9f2dd-53d2-45f1-bf77-3688b73e4f4d/original/1753871882-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4867139f3842d08ab2b87c1e0366169ef435fb80",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6cc9f2dd-53d2-45f1-bf77-3688b73e4f4d/original/1753871882-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e3d6b73a-dd8b-41a7-ba71-8c92baef6ace",
+      "share_url": "https://hudle.in/venues/dsa-pickleball-dhabriya-sports-arena/742455",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "DSA Pickleball | Dhabriya Sports Arena",
+      "rating": "4.75",
+      "price_onwards": 200,
+      "created_at": "2025-01-07 16:45:42",
+      "updated_at": "2026-09-11 21:43:03",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "d9ab1c86b16a059ce87f106adebaeef90cd853a2",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e3d6b73a-dd8b-41a7-ba71-8c92baef6ace/original/1764365168-image_cropper_96e28be7-1ce6-4365-b5ab-5b2847136496-22595-000005fe3c2dda39.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "22b6c44af1acf02e0fe9d7ff6ae91a85a6439f0b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e3d6b73a-dd8b-41a7-ba71-8c92baef6ace/original/1764365168-image_cropper_96e28be7-1ce6-4365-b5ab-5b2847136496-22595-000005fe3c2dda39.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "dc96b52d41182589d9bd001dad06b12068d7ced3",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e3d6b73a-dd8b-41a7-ba71-8c92baef6ace/original/1764365168-image_cropper_96e28be7-1ce6-4365-b5ab-5b2847136496-22595-000005fe3c2dda39.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "badbd2c5c9134bc27d9a116c68c444923d1ac4e0",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e3d6b73a-dd8b-41a7-ba71-8c92baef6ace/original/1764365168-image_cropper_96e28be7-1ce6-4365-b5ab-5b2847136496-22595-000005fe3c2dda39.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6d9c695862f77ecf506fb442e405378c19086b4e",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e3d6b73a-dd8b-41a7-ba71-8c92baef6ace/original/1764365168-image_cropper_96e28be7-1ce6-4365-b5ab-5b2847136496-22595-000005fe3c2dda39.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "7b15357a-3873-4a35-998e-0aaa571e4d10",
+      "share_url": "https://hudle.in/venues/pickleball-socials-jagatpura/803587",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Pickleball Socials | Jagatpura",
+      "rating": "4.8333333333333",
+      "price_onwards": 250,
+      "created_at": "2025-08-11 18:27:22",
+      "updated_at": "2026-09-10 18:52:10",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "347f2379b5172a3af8196dac35f9a84883b2a269",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7b15357a-3873-4a35-998e-0aaa571e4d10/original/1754918147-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "1db391430d7f9531ac0f2d93177c5fd8c62de291",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7b15357a-3873-4a35-998e-0aaa571e4d10/original/1754918147-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "fe0515c2ac840e3856ae267a88c86b8dd7f21bb4",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7b15357a-3873-4a35-998e-0aaa571e4d10/original/1754918147-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6eb13fc0ddc2705afcc15f3838acc3826cfc082b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7b15357a-3873-4a35-998e-0aaa571e4d10/original/1754918147-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "a0f2d3958eb234e0ffa536a7b84dab382f97d1ff",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/7b15357a-3873-4a35-998e-0aaa571e4d10/original/1754918147-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "59a4586d-eb05-4f27-a813-4132218ed960",
+      "share_url": "https://hudle.in/venues/pickleball-101/650968",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Pickleball 101",
+      "rating": "4.8297872340426",
+      "price_onwards": 600,
+      "created_at": "2025-06-17 16:14:56",
+      "updated_at": "2026-09-11 21:36:22",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "28d5b0d95136b8a907509c8d6e2cbef39e800537",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/59a4586d-eb05-4f27-a813-4132218ed960/original/1778494598-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8ddea1ebc7ef23be519cefda0a522ec242989a64",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/59a4586d-eb05-4f27-a813-4132218ed960/original/1778494598-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0affac1a4179acaef403afed6f6d8530b3ab87c3",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/59a4586d-eb05-4f27-a813-4132218ed960/original/1778494598-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "58e11af3700ac56079e46b482f23195d7e34ae53",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/59a4586d-eb05-4f27-a813-4132218ed960/original/1778494598-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "c079ef25789a1dd872a88ba07fe9562a41cc2944",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/59a4586d-eb05-4f27-a813-4132218ed960/original/1778494598-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "aae58e7ff7f424a52a1f11c4bbe11d994427b2c8",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/59a4586d-eb05-4f27-a813-4132218ed960/original/1778494598-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8d03e3c634449d2a42cdc3a5d6608bc5535585aa",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/59a4586d-eb05-4f27-a813-4132218ed960/original/1778494598-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "7f4d8beff699354d9bdf8ef8cfc3c1746ea53601",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/59a4586d-eb05-4f27-a813-4132218ed960/original/1778494598-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "4f6119b8-7e61-42a2-bc3a-6e601e4f9cc7",
+      "share_url": "https://hudle.in/venues/court-botanica-pickleball-club/173316",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Court Botanica | Covered Pickleball Club",
+      "rating": "4.5",
+      "price_onwards": 650,
+      "created_at": "2025-10-01 14:47:25",
+      "updated_at": "2026-09-11 23:07:56",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "7f9b698eb55546afaee72ac0cab8221f597e0263",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4f6119b8-7e61-42a2-bc3a-6e601e4f9cc7/original/1780462388-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "fea623d821b2090738992d7d5eeecb39f924ac9f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4f6119b8-7e61-42a2-bc3a-6e601e4f9cc7/original/1780462388-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "69f10a75e867e65c2ebf6acb93893519e894c52d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4f6119b8-7e61-42a2-bc3a-6e601e4f9cc7/original/1780462388-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "194b8b85f5e638bb5d91a020adac25f7ba42d14f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4f6119b8-7e61-42a2-bc3a-6e601e4f9cc7/original/1780462388-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "a2415ad579646f7ab7fd0264ba1c4fc1c2cb6961",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4f6119b8-7e61-42a2-bc3a-6e601e4f9cc7/original/1780462388-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "1f10f3c6777acb45b8a3c4f601d9cc5a037e7941",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4f6119b8-7e61-42a2-bc3a-6e601e4f9cc7/original/1780462388-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "942ed7bb02575a8f01a2cdf8d6dbaa678f899d48",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4f6119b8-7e61-42a2-bc3a-6e601e4f9cc7/original/1780462388-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "592661de-ca21-4d76-bc63-af53da0013c7",
+      "share_url": "https://hudle.in/venues/court-co-jaipur/442226",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Court N Co. | Jaipur",
+      "rating": null,
+      "price_onwards": 400,
+      "created_at": "2025-10-01 17:01:48",
+      "updated_at": "2026-08-22 22:22:56",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "71f7d7ad656f6f6fb7b4b01fac486f3254713605",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/592661de-ca21-4d76-bc63-af53da0013c7/original/1766747651-image_cropper_f54e1418-43ac-4d8b-b016-2f24043d257d-591-00000010d1ee916a.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "dc61d7487088b815d6d6ac0871dbe9e578999c23",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/592661de-ca21-4d76-bc63-af53da0013c7/original/1766747651-image_cropper_f54e1418-43ac-4d8b-b016-2f24043d257d-591-00000010d1ee916a.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "1849715452287528b9c686fa8b00af40e7f64d04",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/592661de-ca21-4d76-bc63-af53da0013c7/original/1766747651-image_cropper_f54e1418-43ac-4d8b-b016-2f24043d257d-591-00000010d1ee916a.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "c2a68b3013ea7220aef5e77970f2de4af4d4739f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/592661de-ca21-4d76-bc63-af53da0013c7/original/1766747651-image_cropper_f54e1418-43ac-4d8b-b016-2f24043d257d-591-00000010d1ee916a.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0090b5fceebbfdb6185c08ce449773dc3d800e8b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/592661de-ca21-4d76-bc63-af53da0013c7/original/1766747651-image_cropper_f54e1418-43ac-4d8b-b016-2f24043d257d-591-00000010d1ee916a.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "eed940bdcfb6823fa881a272694984ce58a9525f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/592661de-ca21-4d76-bc63-af53da0013c7/original/1766747651-image_cropper_f54e1418-43ac-4d8b-b016-2f24043d257d-591-00000010d1ee916a.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "668d6193-708a-437f-91e8-85244d1ce6c1",
+      "share_url": "https://hudle.in/venues/the-kitchen-court/410642",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "The Kitchen Court",
+      "rating": "4.2142857142857",
+      "price_onwards": 800,
+      "created_at": "2025-10-28 13:16:32",
+      "updated_at": "2026-09-01 20:01:53",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "f05c9afde58a9bcfa74326b608a0a1d596b876ef",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/668d6193-708a-437f-91e8-85244d1ce6c1/original/1763284453-image_cropper_c84226ef-7441-494e-8834-533b246ea33b-5333-000001bd35a8da68.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "aa6b5433b8e2343975211554787d3529a8ee4e1a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/668d6193-708a-437f-91e8-85244d1ce6c1/original/1763284453-image_cropper_c84226ef-7441-494e-8834-533b246ea33b-5333-000001bd35a8da68.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "2ad53b29ae4176287fbc694ee2f9f8ff6b6e5253",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/668d6193-708a-437f-91e8-85244d1ce6c1/original/1763284453-image_cropper_c84226ef-7441-494e-8834-533b246ea33b-5333-000001bd35a8da68.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "07e1e7c300991b7d77c153ebc9c58106e8ebf754",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/668d6193-708a-437f-91e8-85244d1ce6c1/original/1763284453-image_cropper_c84226ef-7441-494e-8834-533b246ea33b-5333-000001bd35a8da68.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "cc9e00e5f0366c68ee67801988f97f3dd2caf4ca",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/668d6193-708a-437f-91e8-85244d1ce6c1/original/1763284453-image_cropper_c84226ef-7441-494e-8834-533b246ea33b-5333-000001bd35a8da68.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "d5455c20-ddd0-4627-8377-81f086cd331f",
+      "share_url": "https://hudle.in/venues/002-pickleball-club-sikar-road/606243",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "002 Pickleball Club | Sikar Road",
+      "rating": "4.4090909090909",
+      "price_onwards": 400,
+      "created_at": "2025-04-11 13:33:18",
+      "updated_at": "2026-09-11 18:59:54",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "195cfcc12e256ab49f3acc379dcd37f7d5f64c5c",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/d5455c20-ddd0-4627-8377-81f086cd331f/original/1745511004-image_cropper_1745510983181.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6af311796bbbbc47d3122e1c3f5746e4770f6694",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/d5455c20-ddd0-4627-8377-81f086cd331f/original/1745511004-image_cropper_1745510983181.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8030b201400784dbd78da38aebf627286cc0c279",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/d5455c20-ddd0-4627-8377-81f086cd331f/original/1745511004-image_cropper_1745510983181.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "3638452d-277c-45e5-8dbb-9a1853214c45",
+      "share_url": "https://hudle.in/venues/picka-ball/606102",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Pick'a Ball",
+      "rating": "4.6666666666667",
+      "price_onwards": 300,
+      "created_at": "2025-08-27 16:46:43",
+      "updated_at": "2026-09-11 20:28:18",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "8f2cbea074bb1d0bf91b4970f5b0596b40f01420",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3638452d-277c-45e5-8dbb-9a1853214c45/original/1756466128-image_cropper_1756466108531.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8b5520c2811344c2ffb4606432285fcb7f001d95",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3638452d-277c-45e5-8dbb-9a1853214c45/original/1756466128-image_cropper_1756466108531.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e1a58e15da40ddec6dc94fafb14206a65c79ec3a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3638452d-277c-45e5-8dbb-9a1853214c45/original/1756466128-image_cropper_1756466108531.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f1f810084d2b149e9a59be69f5d000b961cefca5",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3638452d-277c-45e5-8dbb-9a1853214c45/original/1756466128-image_cropper_1756466108531.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "7a26e7feffdac60409e6b5ebea0369fb4b6eb61f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3638452d-277c-45e5-8dbb-9a1853214c45/original/1756466128-image_cropper_1756466108531.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "783945258e773247acb22f1f85773be75b323e7d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3638452d-277c-45e5-8dbb-9a1853214c45/original/1756466128-image_cropper_1756466108531.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4d78bd775a2c2dc42ae5b5325d39b549a6f639c3",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3638452d-277c-45e5-8dbb-9a1853214c45/original/1756466128-image_cropper_1756466108531.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "06931099-33fe-4ec7-b3c0-ef3f4a25469c",
+      "share_url": "https://hudle.in/venues/rds-pickleball-academy-pratap-nagar/140217",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "RD's Pickleball Academy | Pratap Nagar",
+      "rating": "0.5",
+      "price_onwards": 800,
+      "created_at": "2023-12-22 17:33:12",
+      "updated_at": "2026-06-03 15:26:54",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "0a306d10c27134af6fdcd83fc347074f77ea8072",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/06931099-33fe-4ec7-b3c0-ef3f4a25469c/original/1703247710-image_cropper_1703247690420.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "09dac94ca3c0914647ad753a473752df23dfd69f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/06931099-33fe-4ec7-b3c0-ef3f4a25469c/original/1703247710-image_cropper_1703247690420.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f8e207ef5b21003249a239ac85763f95d5c4a509",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/06931099-33fe-4ec7-b3c0-ef3f4a25469c/original/1703247710-image_cropper_1703247690420.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "4def90e8-84a6-4ca3-8b6f-0db343e4af57",
+      "share_url": "https://hudle.in/venues/the-pickled-arena/209367",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "The Pickled Arena",
+      "rating": "4.1666666666667",
+      "price_onwards": 500,
+      "created_at": "2025-12-15 17:05:17",
+      "updated_at": "2026-09-10 15:43:43",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "7bfb0ae162c786cabcc60ccdec6b3469a2ae1bed",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4def90e8-84a6-4ca3-8b6f-0db343e4af57/original/1766427128-image_cropper_1766427124818.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "9695083613fbc82901ac5c39f2e85c131464e2ca",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4def90e8-84a6-4ca3-8b6f-0db343e4af57/original/1766427128-image_cropper_1766427124818.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "2940cee933bf903572779bf668e565241d7e679f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4def90e8-84a6-4ca3-8b6f-0db343e4af57/original/1766427128-image_cropper_1766427124818.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "f0137cb1062a6541fdec77171bd43ecf69686bb8",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4def90e8-84a6-4ca3-8b6f-0db343e4af57/original/1766427128-image_cropper_1766427124818.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d865edd148c124ba000be21f65b0bfe4f7cdbb8d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4def90e8-84a6-4ca3-8b6f-0db343e4af57/original/1766427128-image_cropper_1766427124818.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "9c3ce6bda66b9eb923b33b66baa86692cc7002cb",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/4def90e8-84a6-4ca3-8b6f-0db343e4af57/original/1766427128-image_cropper_1766427124818.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "6b8d6729-97a6-4891-9f90-9a4877852c7d",
+      "share_url": "https://hudle.in/venues/the-pickle-club-vatika/590950",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "The Pickle Club Vatika",
+      "rating": null,
+      "price_onwards": 600,
+      "created_at": "2025-12-19 16:43:47",
+      "updated_at": "2026-06-24 16:36:26",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "1512ba8b0d537403ccd0ead179c375a9103eea70",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6b8d6729-97a6-4891-9f90-9a4877852c7d/original/1766143254-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "021c019e939197d87be631d041c1693ebef2b015",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6b8d6729-97a6-4891-9f90-9a4877852c7d/original/1766143254-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0efd505a4f75a7b6dc9ce10e62f61b7bacd1a44b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/6b8d6729-97a6-4891-9f90-9a4877852c7d/original/1766143254-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "58ec0db7-e6e3-4e73-929b-b354f2a56cf3",
+      "share_url": "https://hudle.in/venues/the-pickle-lounge-jaipur/372527",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "The Pickle Lounge | Rajapark",
+      "rating": null,
+      "price_onwards": 800,
+      "created_at": "2025-12-26 15:45:38",
+      "updated_at": "2026-09-11 19:45:36",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "4febc0c26a3339e2e366412cd8d32e88acddcd98",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/58ec0db7-e6e3-4e73-929b-b354f2a56cf3/original/1766992928-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "705984f5b48177aef0fb62a32c07db62bca487e5",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/58ec0db7-e6e3-4e73-929b-b354f2a56cf3/original/1766992928-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4731e55719ff6ce3b9780e93f5f5c221757d49f9",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/58ec0db7-e6e3-4e73-929b-b354f2a56cf3/original/1766992928-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "580056af5c59c654d5d9eeebd8645ca7ddef4992",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/58ec0db7-e6e3-4e73-929b-b354f2a56cf3/original/1766992928-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6b5e3eb5f6400ec02cbac2762769bb04c9a59461",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/58ec0db7-e6e3-4e73-929b-b354f2a56cf3/original/1766992928-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ce1fd2f6b79ff30f644b917d9914d6646ac2a580",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/58ec0db7-e6e3-4e73-929b-b354f2a56cf3/original/1766992928-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "7e7b2a703b61f8cf090fdfc23ed1491c5e4d6c02",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/58ec0db7-e6e3-4e73-929b-b354f2a56cf3/original/1766992928-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6d1524a99cb71a2c3197342808340e8e28ddef9d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/58ec0db7-e6e3-4e73-929b-b354f2a56cf3/original/1766992928-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "88b069ce-4570-4821-b6cc-e2004185b8bc",
+      "share_url": "https://hudle.in/venues/ce-courts/375703",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "CE Indoor Courts",
+      "rating": "4.8846153846154",
+      "price_onwards": 240,
+      "created_at": "2026-02-11 11:52:02",
+      "updated_at": "2026-09-11 21:59:36",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "afe61abc50c452a1fdb474f931fe2f99dd37d87c",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/88b069ce-4570-4821-b6cc-e2004185b8bc/original/1788932345-image_cropper_1788932340829.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "ff49fc08174747757024b446a31c98567d3d5c02",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/88b069ce-4570-4821-b6cc-e2004185b8bc/original/1788932345-image_cropper_1788932340829.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "fb0ee9e87e99d4f47ebaa56ac264f0173d3226cb",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/88b069ce-4570-4821-b6cc-e2004185b8bc/original/1788932345-image_cropper_1788932340829.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "34278d716012f0a856727ae47153fdbc642ce26b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/88b069ce-4570-4821-b6cc-e2004185b8bc/original/1788932345-image_cropper_1788932340829.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "838ffe72106e5b02bd3014a857202b8d8c1c46d6",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/88b069ce-4570-4821-b6cc-e2004185b8bc/original/1788932345-image_cropper_1788932340829.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "3dfff526-ae87-4345-a73f-677bfc7a7f6f",
+      "share_url": "https://hudle.in/venues/smash-zone/948955",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Smash Zone",
+      "rating": "5",
+      "price_onwards": 250,
+      "created_at": "2026-02-11 17:44:08",
+      "updated_at": "2026-08-29 20:46:02",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "9a1c45a06310093b725d1e85c07dacb3129fa09b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3dfff526-ae87-4345-a73f-677bfc7a7f6f/original/1771395787-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0812ef08106efd5b02c01628e68e388a027a9d10",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3dfff526-ae87-4345-a73f-677bfc7a7f6f/original/1771395787-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "5b211f2ab8a5614c7733aaaae4f1ec8bdf75a030",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3dfff526-ae87-4345-a73f-677bfc7a7f6f/original/1771395787-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "fd6587e5e99d552fbeb5adc951dab26552c7eaca",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/3dfff526-ae87-4345-a73f-677bfc7a7f6f/original/1771395787-web_image?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    },
+    {
+      "id": "1d68210c-7e9a-4f96-a7f7-e3a94ad3b0c6",
+      "share_url": "https://hudle.in/venues/skyline-smash-jaipur/834918",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Skyline Smash | Jaipur",
+      "rating": "0.5",
+      "price_onwards": 300,
+      "created_at": "2026-01-29 12:51:19",
+      "updated_at": "2026-08-25 20:14:58",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "52f53d494bc3b99c6195117489338c4ab421d533",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/1d68210c-7e9a-4f96-a7f7-e3a94ad3b0c6/original/1770015834-image_cropper_1770015804198.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "85c7cc7f68df1efd3cfe3c6d2521901fe38b4ac5",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/1d68210c-7e9a-4f96-a7f7-e3a94ad3b0c6/original/1770015834-image_cropper_1770015804198.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "121432cedee2623e86825740fd10ecf5621fbb3e",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/1d68210c-7e9a-4f96-a7f7-e3a94ad3b0c6/original/1770015834-image_cropper_1770015804198.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d9b5a387ada2c738063e082f23bff1deb0c818b1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/1d68210c-7e9a-4f96-a7f7-e3a94ad3b0c6/original/1770015834-image_cropper_1770015804198.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "b42c47b136c7143bb0424b2f22c38158d077ce81",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/1d68210c-7e9a-4f96-a7f7-e3a94ad3b0c6/original/1770015834-image_cropper_1770015804198.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "total": 57,
+      "count": 50,
+      "per_page": 50,
+      "current_page": 1,
+      "total_pages": 2,
+      "links": {
+        "next": "https://api.hudle.in/api/v1/venue-search?per_page=50&cityId=8&preferred_sports=56&api_secret=REDACTED&scope=0&vendor_id=40&device=3&client=consumer&device_id=1524028&page=2"
+      }
+    }
+  }
+}

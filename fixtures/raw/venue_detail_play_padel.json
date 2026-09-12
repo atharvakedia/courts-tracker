@@ -1,0 +1,276 @@
+{
+  "success": true,
+  "code": 200,
+  "data": {
+    "id": "9b288765-eee9-4d8a-b309-a4f09b11abcc",
+    "name": "Play Padel | Pickleball | Clarks Amer Hotel",
+    "description": "Play Padel is proud to introduce 2 luxury Pickleball courts and 1 Padel court in Jaipur, located inside the iconic Clarks Amer Hotel, which is on JLN Marg next to Malviya Nagar. Secure your spot at this stunning facility in a convenient and safe location in the heart of Jaipur.\r\n\r\nThis luxury facility offers USA-grade Pickleball courts and European-grade Padel court with Spanish turf. Food & beverage options by Clarks are available at the court area itself.\r\n\r\nKindly book your court well in advance on the 'Hudle' app. Racquets and balls are available on rent.",
+    "address": "Inside Clarks Amer Hotel, The Library Restaurant Garden Area, Jawahar Lal Nehru Marg, Durgapura, Close to Malviya Nagar",
+    "short_address": null,
+    "closest_metro": "NA",
+    "latitude": 26.8463907,
+    "longitude": 75.8009269,
+    "available_time_period": 1,
+    "payment_options": "Cash, Card, UPI",
+    "tax": "18.00",
+    "rating": "4.9739413680782",
+    "rating_count": "307",
+    "is_approved": true,
+    "view_count": 2,
+    "lead_count": 2,
+    "is_interested": false,
+    "pay_at_venue": false,
+    "is_hudle_exclusive": true,
+    "price_onwards": 1000,
+    "share_url": "https://hudle.in/venues/pickleball-by-play-padel-clarks-amer-hotel/417565",
+    "offer_text": "10% OFF",
+    "cancellation_policy_url": "https://api.hudle.in/venues/9b288765-eee9-4d8a-b309-a4f09b11abcc/cancellation-policy",
+    "rescheduling_policy_url": "https://api.hudle.in/venues/9b288765-eee9-4d8a-b309-a4f09b11abcc/reschedule-policy",
+    "is_cancellable": true,
+    "web_url": "https://hudle.in/venues/pickleball-by-play-padel-clarks-amer-hotel/417565",
+    "slug": "pickleball-by-play-padel-clarks-amer-hotel",
+    "deep_link": "https://hudle.page.link/RvBbRKpo7B9GCsTb9",
+    "credit_plans_count": 0,
+    "is_daily_view_enabled": true,
+    "is_coaching": false,
+    "is_bookable": true,
+    "company_logo": null,
+    "logo_type": 1,
+    "is_outbound_venue": false,
+    "photos": [
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image",
+        "aspect_ratio": {
+          "width": 1200,
+          "height": 675,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141926-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141926-web_image",
+        "aspect_ratio": {
+          "width": 1085,
+          "height": 610,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141929-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141929-web_image",
+        "aspect_ratio": {
+          "width": 1083,
+          "height": 609,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141931-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141931-web_image",
+        "aspect_ratio": {
+          "width": 1082,
+          "height": 609,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141933-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141933-web_image",
+        "aspect_ratio": {
+          "width": 1083,
+          "height": 609,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141972-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141972-web_image",
+        "aspect_ratio": {
+          "width": 1250,
+          "height": 703,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780142008-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780142008-web_image",
+        "aspect_ratio": {
+          "width": 1280,
+          "height": 720,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780142012-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780142012-web_image",
+        "aspect_ratio": {
+          "width": 1280,
+          "height": 720,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780142015-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780142015-web_image",
+        "aspect_ratio": {
+          "width": 1280,
+          "height": 720,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      },
+      {
+        "small": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780142017-web_image",
+        "normal": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780142017-web_image",
+        "aspect_ratio": {
+          "width": 1280,
+          "height": 720,
+          "ratio": 1.78,
+          "inverse_ratio": 0.56,
+          "orientation": "landscape"
+        }
+      }
+    ],
+    "meta": {
+      "is_vision_enabled": false
+    },
+    "created_at": "2025-03-17 11:15:10",
+    "updated_at": "2026-09-12 01:12:49",
+    "city": {
+      "id": 8,
+      "name": "Jaipur",
+      "latitude": 26.9124336,
+      "longitude": 75.7872709,
+      "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+      "show_metro_station": true,
+      "cluster": {
+        "id": 8,
+        "name": "Jaipur",
+        "type": "CITY"
+      }
+    },
+    "extra_features": [
+      {
+        "id": "4",
+        "name": "Cafe",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/4/original/1521524342-cafe.png?v=a5f78aedefc93c72e18880849bb06461"
+      },
+      {
+        "id": "5",
+        "name": "Drinking Water",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/5/original/1521524351-drinking-water.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+      },
+      {
+        "id": "6",
+        "name": "Flood Lights",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/6/original/1521524462-flood-lights.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+      },
+      {
+        "id": "7",
+        "name": "Locker Room",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/7/original/1521524473-locker-room.png?v=a5f78aedefc93c72e18880849bb06461"
+      },
+      {
+        "id": "8",
+        "name": "Parking",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/8/original/1521524482-parking.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+      },
+      {
+        "id": "9",
+        "name": "Rental Equipment",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/9/original/1521524512-rental-equipment.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+      },
+      {
+        "id": "10",
+        "name": "Seating Area",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/10/original/1521524527-seating-lounge.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+      },
+      {
+        "id": "12",
+        "name": "Sound System",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/12/original/1521524552-sound-system.png?v=a5f78aedefc93c72e18880849bb06461"
+      },
+      {
+        "id": "17",
+        "name": "Washroom",
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/17/original/1521524615-wash-room.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+      }
+    ],
+    "sports": [
+      {
+        "id": "56",
+        "name": "Pickleball",
+        "photo": {
+          "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+          "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+          "aspect_ratio": {
+            "width": 445,
+            "height": 445,
+            "ratio": 1,
+            "inverse_ratio": 1,
+            "orientation": "square"
+          },
+          "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+        }
+      },
+      {
+        "id": "44",
+        "name": "Padel",
+        "photo": {
+          "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+          "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+          "aspect_ratio": {
+            "width": 512,
+            "height": 512,
+            "ratio": 1,
+            "inverse_ratio": 1,
+            "orientation": "square"
+          },
+          "path": "sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a"
+        }
+      }
+    ],
+    "activities": [
+      {
+        "id": 1618,
+        "name": "Pickleball (Outdoor)",
+        "note": "•\tWe have different rates for 6+ people/court\n\n•\tPlayers will be liable for damages to the facility\n\n•\tPlay Padel is not responsible for injuries\n\n•\tPlay Padel is not responsible for lost/stolen items\n\n•\tKindly no walk-ins. All court bookings are well in advance on Hudle\n\n•\tIn case of health concerns, consult a medical specialist before playing",
+        "has_split_payment": false,
+        "price_onwards": 1000,
+        "cost_onwards": 1000,
+        "sequence_number": null,
+        "created_at": "2023-09-04 20:01:14",
+        "updated_at": "2025-06-09 16:09:25"
+      },
+      {
+        "id": 1812,
+        "name": "Padel (Outdoor)",
+        "note": "•\tWe have different rates for 6+ people/court\n\n•\tPlayers will be liable for damages to the facility\n\n•\tPlay Padel is not responsible for injuries.\n\n•\tPlay Padel is not responsible for lost/stolen items.\n\n•\tKindly no walk-ins. All court bookings are well in advance on Hudle.\n\n•\tIn case of health concerns, consult a medical specialist before playing.",
+        "has_split_payment": false,
+        "price_onwards": 1000,
+        "cost_onwards": 1000,
+        "sequence_number": null,
+        "created_at": "2024-12-18 22:57:36",
+        "updated_at": "2025-06-09 16:09:26"
+      }
+    ]
+  }
+}

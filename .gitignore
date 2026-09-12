@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+# The database is the one irreplaceable artefact and it is also machine-local:
+# it is never committed, and it can never be reconstructed from a commit.
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.db-shm
+# Scheduler output. Append-only and unbounded; rotate or delete freely.
+data/*.log
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+.DS_Store

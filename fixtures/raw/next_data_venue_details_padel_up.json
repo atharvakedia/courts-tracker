@@ -1,0 +1,232 @@
+{
+  "id": "e606e880-0b2c-4c69-b1a8-193c8f915328",
+  "name": "Padel Up | Sanskar School",
+  "description": "Welcome to Padel Up, the premier padel court nestled within the Sanskar School in Jaipur. Whether you're a seasoned player or new to the sport, Padel Up offers facilities for enthusiasts of all levels. \r\n\r\nImmerse yourself in the fast-paced action of padel, surrounded by a vibrant and supportive community. Discover the joy of padel at Padel Up, where passion meets performance!",
+  "address": "Sanskar School, 117-121, Vishwamitra Marg, Sirsi Road, Jaipur - 302012",
+  "short_address": null,
+  "closest_metro": "Mansarovar (7 KM)",
+  "latitude": 26.9225484,
+  "longitude": 75.7358754,
+  "available_time_period": 1,
+  "payment_options": "Cash, Card",
+  "tax": "0.00",
+  "rating": "3.6875",
+  "rating_count": "8",
+  "is_approved": true,
+  "view_count": 2,
+  "lead_count": 2,
+  "is_interested": false,
+  "pay_at_venue": false,
+  "is_hudle_exclusive": false,
+  "price_onwards": 1800,
+  "share_url": "https://hudle.in/venues/padel-up/772576",
+  "offer_text": "10% OFF",
+  "cancellation_policy_url": "https://api.hudle.in/venues/e606e880-0b2c-4c69-b1a8-193c8f915328/cancellation-policy",
+  "rescheduling_policy_url": "https://api.hudle.in/venues/e606e880-0b2c-4c69-b1a8-193c8f915328/reschedule-policy",
+  "is_cancellable": true,
+  "web_url": "https://hudle.in/venues/padel-up/772576",
+  "slug": "padel-up",
+  "deep_link": "https://hudle.page.link/ZnLTDoY6EeDTYqqG8",
+  "credit_plans_count": 0,
+  "is_daily_view_enabled": true,
+  "is_coaching": false,
+  "is_bookable": true,
+  "company_logo": null,
+  "logo_type": 1,
+  "is_outbound_venue": false,
+  "photos": [
+    {
+      "id": "c433d0ee-6e35-4cf1-a8bd-a5ad768b64b0",
+      "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030715-image_cropper_06CFB929-7F1B-4A75-9DB1-0D4EAA611CC7-4807-000003B1F0173EEF.jpg",
+      "type": "venue",
+      "mime_type": "image/jpeg",
+      "aspect_ratio": 0.56,
+      "is_video_preview": false
+    },
+    {
+      "id": "517673ea-4988-41fd-8058-b64fd66e6669",
+      "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030736-image_cropper_2BB56CE5-728A-4335-AB80-0F3619D2BA9F-4807-000003B20DBCBEB4.jpg",
+      "type": "venue",
+      "mime_type": "image/jpeg",
+      "aspect_ratio": 0.56,
+      "is_video_preview": false
+    },
+    {
+      "id": "d4226d5e-4ea4-4f80-88f0-60c2f0074c01",
+      "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030744-image_cropper_B4356EC0-F625-4C26-A59E-E302A9BDA237-4807-000003B2194175CE.jpg",
+      "type": "venue",
+      "mime_type": "image/jpeg",
+      "aspect_ratio": 0.56,
+      "is_video_preview": false
+    },
+    {
+      "id": "e0bb6908-59f3-43f2-9222-d034b4930a2e",
+      "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030754-image_cropper_5EE47D89-0AB7-48D8-A726-9AD9BEE35070-4807-000003B227A5B9B3.jpg",
+      "type": "venue",
+      "mime_type": "image/jpeg",
+      "aspect_ratio": 0.56,
+      "is_video_preview": false
+    },
+    {
+      "id": "924a996c-9a1c-4b39-88aa-c4c6d2598468",
+      "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030765-image_cropper_9E450A58-2738-4325-807A-16D061B9F2E7-4807-000003B237F88E2D.jpg",
+      "type": "venue",
+      "mime_type": "image/jpeg",
+      "aspect_ratio": 0.56,
+      "is_video_preview": false
+    },
+    {
+      "id": "a3273b34-2c83-47a9-8ee5-30dd63ad6119",
+      "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030783-image_cropper_5FE033E2-5B36-435A-B2EE-D07DDD6FF0F1-4807-000003B251B0EC53.jpg",
+      "type": "venue",
+      "mime_type": "image/jpeg",
+      "aspect_ratio": 0.56,
+      "is_video_preview": false
+    }
+  ],
+  "meta": {
+    "is_vision_enabled": false
+  },
+  "created_at": "2024-07-10 14:14:23",
+  "updated_at": "2026-08-30 12:32:44",
+  "city": {
+    "id": "8",
+    "name": "Jaipur",
+    "latitude": 26.9124336,
+    "longitude": 75.7872709,
+    "photo": "https://d3mt0x61rkkfy3.cloudfront.net/users//photo?v=1536645807",
+    "show_metro_station": true,
+    "cluster": {
+      "id": 8,
+      "name": "Jaipur",
+      "type": "CITY"
+    }
+  },
+  "extra_features": [
+    {
+      "id": "3",
+      "name": "Ball Boy",
+      "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/3/original/1521524332-ball-boy.png?v=a5f78aedefc93c72e18880849bb06461"
+    },
+    {
+      "id": "6",
+      "name": "Flood Lights",
+      "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/6/original/1521524462-flood-lights.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+    },
+    {
+      "id": "7",
+      "name": "Locker Room",
+      "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/7/original/1521524473-locker-room.png?v=a5f78aedefc93c72e18880849bb06461"
+    },
+    {
+      "id": "8",
+      "name": "Parking",
+      "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/8/original/1521524482-parking.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+    },
+    {
+      "id": "9",
+      "name": "Rental Equipment",
+      "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/9/original/1521524512-rental-equipment.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+    },
+    {
+      "id": "10",
+      "name": "Seating Area",
+      "photo": "https://d3mt0x61rkkfy3.cloudfront.net/feature/10/original/1521524527-seating-lounge.png?v=d88e2f97719ad0ae424945ad60d61f9f"
+    }
+  ],
+  "sports": [
+    {
+      "id": "44",
+      "name": "Padel",
+      "photo": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461"
+    }
+  ],
+  "activities": [
+    {
+      "id": 1637,
+      "name": "Padel Court",
+      "note": "▪️Booking amount includes equipment rental charges.\n\n▪️Non-marking shoes are preferred.\n\n▪️Please carry your own water bottle.\n\n▪️Players will be allowed to play during the booked slot timings only.",
+      "has_split_payment": false,
+      "price_onwards": 1800,
+      "cost_onwards": 1800,
+      "sequence_number": null,
+      "created_at": "2023-11-09 15:58:52",
+      "updated_at": "2026-05-28 15:24:47",
+      "facilities": [
+        {
+          "id": "e27518b2-9cee-49a9-aa6f-8685e5c543f3",
+          "facility_id": 8359,
+          "name": "Padel Court",
+          "concurrency": 1,
+          "slot_length": 60,
+          "price": "1800",
+          "start_time": "05:00:00",
+          "end_time": "00:00:00",
+          "concurrency_count": 1,
+          "enabled": true,
+          "split_payment_config": {
+            "players": {
+              "max": "6",
+              "min": "2",
+              "default": "4"
+            }
+          },
+          "has_split_payment": false,
+          "price_onwards": 1800,
+          "cost_onwards": 1800,
+          "slot_gap": {
+            "gap_length": "0",
+            "gap_frequency": "1"
+          },
+          "has_linked_facilities": false,
+          "is_rent_facility": false,
+          "is_vision_enabled": false,
+          "created_at": "2024-07-10 15:14:43",
+          "updated_at": "2026-08-13 12:40:02",
+          "sports": [
+            {
+              "id": "44",
+              "name": "Padel",
+              "photo": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "credit_plans": [
+    {
+      "id": "52136cd4-e8ce-4107-87eb-4a2721ad48da",
+      "name": "Monthly Membership",
+      "title": "Monthly Membership",
+      "subtitle": "21000 credits for ₹16800",
+      "price": 16800,
+      "credits": 21000,
+      "validity": 40,
+      "status": 2,
+      "note": "▪️This membership is valid for accessing Padel Courts.\r\n\r\n▪️Membership is valid for 40 days and credits expire once validity is over.",
+      "isUnlimited": false,
+      "isDisabled": false,
+      "baseAmount": 16800,
+      "tax": 0,
+      "taxAmount": 0,
+      "shareUrl": "https://hudle.page.link/xfDu",
+      "isFeatured": false,
+      "venues_count": "1",
+      "background_color": {
+        "startColor": "#fdfdfd",
+        "endColor": "#fdfdfd"
+      },
+      "heading_color": "#1e517f",
+      "sub_heading_color": "#00a392",
+      "background_image": "http://api.hudle.in/images/credit-plan-background/star.png",
+      "sports": [
+        {
+          "id": "44",
+          "name": "Padel",
+          "photo": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461"
+        }
+      ]
+    }
+  ]
+}

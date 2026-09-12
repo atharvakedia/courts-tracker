@@ -1,0 +1,1689 @@
+/* ==========================================================================
+   Jaipur padel court tracker — design system
+
+   One family, Archivo variable, two widths. Display figures are set expanded
+   and everything else at normal width; that width contrast is the page's type
+   treatment and the only place the design raises its voice.
+
+   Colour carries meaning and nothing else.
+
+     turf teal   court-time that sold
+     sand amber  court-time a venue withdrew from sale
+     crimson     the collector itself being in trouble
+     blue /
+     violet /
+     rose        the three venues, identically in every chart
+
+   The venue triad deliberately avoids teal, amber and crimson: a venue is a
+   category, not a state, and a line that borrowed the "sold" colour would say
+   something about the venue it does not mean.
+
+   Motion has four durations and one curve. 120ms answers a pointer, 240ms
+   changes a state, 420ms brings something in, 700ms is reserved for the hero
+   bar growing to the shape of its own data. Nothing bounces.
+   ========================================================================== */
+
+/* --- tokens --------------------------------------------------------------- */
+
+:root {
+  color-scheme: light;
+
+  /* surfaces and ink */
+  --ground: #eef2f0;
+  --surface: #ffffff;
+  --surface-sunk: #f4f7f6;
+  --ink: #0d2422;
+  --ink-soft: #3c5451;
+  --ink-faint: #566d6a;
+  --line: #dde5e2;
+  --line-strong: #c3d1cd;
+
+  /* meaning */
+  --booked: #0d6f62;
+  --booked-soft: #d5ebe6;
+  --open: #b3c8c3;
+  --open-soft: #e4ecea;
+  --blocked: #9c611a;
+  --blocked-soft: #f6e8d4;
+  --alert: #a92c40;
+  --alert-soft: #f9e0e3;
+  --accent: #0d6f62;
+  --on-accent: #ffffff;
+
+  /* the occupancy ramp: one hue, sequential, with real separation at the
+     bottom because the data lives there — most cells are under 30% */
+  --ramp-0: #e6eeeb;
+  --ramp-1: #abd8c7;
+  --ramp-2: #7cc6ae;
+  --ramp-3: #3ea88e;
+  --ramp-4: #14866f;
+  --ramp-5: #0a5a4d;
+  --ramp-null: #d3d8d7;
+
+  /* venue identity */
+  --v1: #2d5bd1;
+  --v2: #7f45c6;
+  --v3: #bd3c7b;
+
+  /* type scale — a 1.22 line from 15px, with one display size far above it */
+  --t-xs: 0.75rem;
+  --t-sm: 0.8125rem;
+  --t-base: 0.9375rem;
+  --t-md: 1.0625rem;
+  --t-lg: 1.3125rem;
+  --t-xl: 1.75rem;
+  --t-2xl: 2.625rem;
+  --t-hero: clamp(3.75rem, 12vw, 7rem);
+
+  /* spacing — 4px base */
+  --s1: 0.25rem;
+  --s2: 0.5rem;
+  --s3: 0.75rem;
+  --s4: 1rem;
+  --s5: 1.5rem;
+  --s6: 2rem;
+  --s7: 3rem;
+  --s8: 4.5rem;
+
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 14px;
+
+  --elev-1: 0 1px 2px rgb(13 36 34 / 0.045);
+  --elev-2: 0 1px 2px rgb(13 36 34 / 0.05), 0 14px 30px -18px rgb(13 36 34 / 0.28);
+
+  /* --- motion ---------------------------------------------------------
+     One curve for everything that enters or settles, a second, faster one
+     for things that answer the pointer. Four durations, no more. */
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.2, 0, 0, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --d-tap: 120ms; /* hover, press, focus */
+  --d-state: 240ms; /* a control changing what it says */
+  --d-enter: 420ms; /* something arriving on the page */
+  --d-grow: 700ms; /* the hero bar taking the shape of its data */
+
+
+  --gutter: 1rem;
+  --measure: 66ch;
+  --masthead-h: 54px;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --ground: #080f0e;
+  --surface: #101c19;
+  --surface-sunk: #0c1614;
+  --ink: #e9f0ed;
+  --ink-soft: #a2b8b3;
+  --ink-faint: #7d9590;
+  --line: #1e2e2b;
+  --line-strong: #2d423e;
+
+  --booked: #3fc4ac;
+  --booked-soft: #12332c;
+  --open: #375650;
+  --open-soft: #17251f;
+  --blocked: #e3a75f;
+  --blocked-soft: #33260f;
+  --alert: #f0798d;
+  --alert-soft: #34161d;
+  --accent: #3fc4ac;
+  --on-accent: #06201c;
+
+  /* lightness-ascending, and the first step is lifted clear of the card so a
+     zero cell reads as a cell rather than as a hole in the panel */
+  --ramp-0: #1e3631;
+  --ramp-1: #235a4e;
+  --ramp-2: #237f6c;
+  --ramp-3: #2ba88f;
+  --ramp-4: #56ccae;
+  --ramp-5: #9de8d1;
+  --ramp-null: #3c4644;
+
+  --v1: #7ba4f5;
+  --v2: #bb92ec;
+  --v3: #f086b4;
+
+  --elev-1: 0 1px 2px rgb(0 0 0 / 0.45);
+  --elev-2: 0 1px 2px rgb(0 0 0 / 0.35), 0 16px 34px -20px rgb(0 0 0 / 0.8);
+}
+
+@media (min-width: 640px) {
+  :root {
+    --gutter: 1.75rem;
+    --masthead-h: 58px;
+  }
+}
+
+@media (min-width: 1100px) {
+  :root {
+    --gutter: 2.5rem;
+  }
+}
+
+/* --- reset ---------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* An author `display` rule outranks the UA sheet's `[hidden]`, so say it here
+   once rather than discovering it panel by panel. */
+[hidden] {
+  display: none !important;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: 'Archivo', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, 'Helvetica Neue', sans-serif;
+  font-size: var(--t-base);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* the fallback theme cross-fade for browsers without view transitions */
+  transition: background-color var(--d-state) var(--ease-soft),
+    color var(--d-state) var(--ease-soft);
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+figure,
+dl,
+dd {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+}
+
+svg {
+  display: block;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+::selection {
+  background: var(--booked);
+  color: var(--on-accent);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The skip link is the first thing a keyboard reaches; it has to be visible
+   the moment it is focused. */
+.skip:focus-visible {
+  position: fixed;
+  top: var(--s3);
+  left: var(--s3);
+  z-index: 90;
+  width: auto;
+  height: auto;
+  margin: 0;
+  padding: var(--s2) var(--s4);
+  clip-path: none;
+  background: var(--surface);
+  border-radius: var(--r-md);
+  box-shadow: var(--elev-2);
+  font-weight: 600;
+}
+
+/* --- layout --------------------------------------------------------------- */
+
+.shell {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.page {
+  padding-bottom: var(--s8);
+}
+
+/* --- masthead ------------------------------------------------------------- */
+
+.masthead {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--ground) 86%, transparent);
+  backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--d-state) var(--ease-soft);
+}
+
+/* The rule under the masthead earns its place only once the page has moved. */
+.masthead[data-scrolled='true'] {
+  border-bottom-color: var(--line);
+}
+
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--s3);
+  min-height: var(--masthead-h);
+}
+
+.wordmark {
+  display: flex;
+  align-items: baseline;
+  gap: 0.55em;
+  font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+  white-space: nowrap;
+}
+
+.wordmark__court {
+  flex: none;
+  align-self: center;
+  width: 22px;
+  height: 13px;
+  border: 1.5px solid var(--ink);
+  border-radius: 1px;
+  position: relative;
+}
+
+.wordmark__court::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px auto;
+  left: 50%;
+  width: 1.5px;
+  background: var(--ink);
+}
+
+.wordmark__court::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1.5px;
+  background: var(--booked);
+  transform: translateY(-50%);
+}
+
+.wordmark__city {
+  color: var(--ink-faint);
+  font-weight: 400;
+}
+
+@media (max-width: 560px) {
+  .wordmark__city {
+    display: none;
+  }
+}
+
+.masthead__spacer {
+  flex: 1 1 auto;
+}
+
+.pulse {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--t-xs);
+  font-weight: 550;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.pulse span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pulse__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ink-faint);
+  flex: none;
+  transition: background var(--d-state) var(--ease),
+    box-shadow var(--d-state) var(--ease);
+}
+
+.pulse[data-state='ok'] .pulse__dot {
+  background: var(--booked);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--booked) 18%, transparent);
+}
+
+.pulse[data-state='stale'] .pulse__dot,
+.pulse[data-state='open_circuit'] .pulse__dot {
+  background: var(--alert);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--alert) 20%, transparent);
+  animation: beat 2.4s var(--ease-soft) infinite;
+}
+
+@keyframes beat {
+  0%,
+  70%,
+  100% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--alert) 20%, transparent);
+  }
+  35% {
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--alert) 6%, transparent);
+  }
+}
+
+.pulse[data-state='no_data'] .pulse__dot {
+  background: var(--blocked);
+}
+
+.icon-btn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-md);
+  color: var(--ink-soft);
+  transition: background var(--d-tap) var(--ease),
+    color var(--d-tap) var(--ease);
+}
+
+.icon-btn:hover {
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.icon-btn:active {
+  transform: scale(0.94);
+}
+
+.icon-btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+:root[data-theme='dark'] .icon-btn .icon-sun,
+:root:not([data-theme='dark']) .icon-btn .icon-moon {
+  display: none;
+}
+
+/* --- banner --------------------------------------------------------------- */
+
+.banner {
+  display: flex;
+  gap: var(--s3);
+  align-items: flex-start;
+  margin-top: var(--s4);
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r-md);
+  background: var(--surface-sunk);
+  font-size: var(--t-sm);
+  line-height: 1.5;
+}
+
+.banner[data-tone='alert'] {
+  background: var(--alert-soft);
+  color: var(--ink);
+}
+
+.banner[data-tone='warn'] {
+  background: var(--blocked-soft);
+  color: var(--ink);
+}
+
+.banner__mark {
+  flex: none;
+  width: 3px;
+  align-self: stretch;
+  border-radius: 99px;
+  background: var(--ink-faint);
+  min-height: 1.5em;
+}
+
+.banner[data-tone='alert'] .banner__mark {
+  background: var(--alert);
+}
+
+.banner[data-tone='warn'] .banner__mark {
+  background: var(--blocked);
+}
+
+.banner b {
+  font-weight: 600;
+}
+
+/* --- hero: the denominator, drawn to scale -------------------------------- */
+
+.hero {
+  padding-top: var(--s6);
+  padding-bottom: var(--s5);
+}
+
+.hero__grid {
+  display: grid;
+  gap: var(--s4) var(--s7);
+  align-items: end;
+}
+
+@media (min-width: 900px) {
+  .hero__grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 22rem);
+  }
+}
+
+.hero__figure {
+  display: block;
+  line-height: 0.8;
+  font-size: var(--t-hero);
+  font-weight: 620;
+  font-stretch: 118%;
+  letter-spacing: -0.04em;
+  color: var(--ink);
+}
+
+.hero__figure .unit {
+  font-size: 0.3em;
+  font-stretch: 100%;
+  font-weight: 550;
+  letter-spacing: -0.01em;
+  color: var(--ink-faint);
+  margin-left: 0.24em;
+  vertical-align: 0.5em;
+}
+
+.hero__label {
+  margin-top: var(--s3);
+  font-size: var(--t-md);
+  font-weight: 550;
+  line-height: 1.35;
+  max-width: 48ch;
+  text-wrap: pretty;
+}
+
+.hero__denominator {
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+  line-height: 1.6;
+  max-width: 44ch;
+}
+
+.hero__denominator b {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* the bar is the denominator, drawn to scale */
+.invbar {
+  margin-top: var(--s5);
+  display: flex;
+  width: 100%;
+  height: 58px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--surface-sunk);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.invbar__seg {
+  position: relative;
+  min-width: 0;
+  transition: flex-grow var(--d-grow) var(--ease);
+  flex-grow: 0;
+  flex-basis: 0;
+}
+
+.invbar__seg[data-kind='booked'] {
+  background: var(--booked);
+}
+
+.invbar__seg[data-kind='open'] {
+  background: var(--open);
+}
+
+/* Withdrawn court-time is hatched as well as amber: it is a different kind of
+   thing from the two either side of it, not a third quantity on the same
+   scale, and the texture says so even in greyscale. */
+.invbar__seg[data-kind='blocked'] {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--blocked) 0 5px,
+    color-mix(in srgb, var(--blocked) 58%, var(--surface)) 5px 10px
+  );
+}
+
+.invbar__key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s6);
+  margin-top: var(--s3);
+}
+
+.invbar__item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  font-size: var(--t-sm);
+}
+
+.invbar__swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: none;
+  transform: translateY(-1px);
+}
+
+.invbar__swatch[data-kind='booked'] {
+  background: var(--booked);
+}
+.invbar__swatch[data-kind='open'] {
+  background: var(--open);
+}
+.invbar__swatch[data-kind='blocked'] {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--blocked) 0 3px,
+    color-mix(in srgb, var(--blocked) 58%, var(--surface)) 3px 6px
+  );
+}
+
+.invbar__num {
+  font-weight: 620;
+  font-stretch: 108%;
+}
+
+.invbar__cap {
+  color: var(--ink-faint);
+}
+
+/* --- filters -------------------------------------------------------------- */
+
+.filters {
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2);
+  padding-block: var(--s3);
+  background: color-mix(in srgb, var(--ground) 90%, transparent);
+  backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: var(--s5);
+}
+
+.segmented {
+  position: relative;
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: var(--surface-sunk);
+  box-shadow: inset 0 0 0 1px var(--line);
+  border-radius: var(--r-md);
+}
+
+/* The thumb is one element that slides between the pressed buttons. It moves
+   on transform only, so switching windows costs no layout. */
+.segmented__thumb {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  height: calc(100% - 6px);
+  border-radius: 6px;
+  background: var(--surface);
+  box-shadow: var(--elev-1);
+  transform: translateX(var(--thumb-x, 0px));
+  width: var(--thumb-w, 0px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--d-state) var(--ease),
+    width var(--d-state) var(--ease), opacity var(--d-tap) var(--ease);
+}
+
+.segmented[data-ready='true'] .segmented__thumb {
+  opacity: 1;
+}
+
+.segmented__btn {
+  position: relative;
+  z-index: 1;
+  padding: 0.34em 0.78em;
+  border-radius: 6px;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  transition: color var(--d-tap) var(--ease);
+}
+
+.segmented__btn:hover {
+  color: var(--ink);
+}
+
+.segmented__btn[aria-pressed='true'],
+.segmented__btn[aria-selected='true'] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Without the thumb — before it measures, or if scripting fails — the pressed
+   button still has to look pressed. */
+.segmented:not([data-ready='true']) .segmented__btn[aria-pressed='true'],
+.segmented:not([data-ready='true']) .segmented__btn[aria-selected='true'] {
+  background: var(--surface);
+  box-shadow: var(--elev-1);
+}
+
+.field {
+  display: inline-flex;
+  align-items: center;
+}
+
+.field select {
+  appearance: none;
+  font: inherit;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--ink);
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 0.42em 2em 0.42em 0.7em;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: calc(100% - 14px) 52%, calc(100% - 9px) 52%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  max-width: 15rem;
+  text-overflow: ellipsis;
+  transition: border-color var(--d-tap) var(--ease);
+}
+
+.field select:hover {
+  border-color: var(--line-strong);
+}
+
+.filters__note {
+  flex: 1 1 100%;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+@media (min-width: 940px) {
+  .filters__note {
+    flex: 1 1 auto;
+    text-align: right;
+  }
+}
+
+/* The filter row follows the page down only where it can do so without taking
+   a fifth of the screen with it. On a phone it stays where it was put. */
+@media (min-width: 700px) {
+  .filters {
+    position: sticky;
+    top: var(--masthead-h);
+  }
+}
+
+/* --- kpi row -------------------------------------------------------------- */
+
+.kpis {
+  display: grid;
+  gap: var(--s3);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: var(--s6);
+}
+
+@media (min-width: 880px) {
+  .kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.kpi {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: var(--s4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s1);
+  min-width: 0;
+  box-shadow: var(--elev-1);
+  transition: transform var(--d-state) var(--ease),
+    box-shadow var(--d-state) var(--ease);
+}
+
+.kpi:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--elev-2);
+}
+
+.kpi__name {
+  font-size: var(--t-sm);
+  font-weight: 550;
+  color: var(--ink-soft);
+}
+
+.kpi__value {
+  font-size: clamp(1.85rem, 6.4vw, var(--t-2xl));
+  font-weight: 620;
+  font-stretch: 114%;
+  letter-spacing: -0.032em;
+  line-height: 1.05;
+  margin-top: var(--s1);
+}
+
+.kpi__value .unit {
+  font-size: 0.42em;
+  font-stretch: 100%;
+  font-weight: 550;
+  color: var(--ink-faint);
+  margin-left: 0.14em;
+}
+
+/* An em dash set at display size reads as a redaction bar, so an absent figure
+   says what it is instead. */
+.kpi__none {
+  font-size: var(--t-md);
+  font-stretch: 100%;
+  font-weight: 550;
+  letter-spacing: 0;
+  color: var(--ink-faint);
+}
+
+.kpi__den {
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+  line-height: 1.45;
+}
+
+.kpi__flag {
+  margin-top: var(--s2);
+  padding-top: var(--s2);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-xs);
+  font-weight: 550;
+  color: var(--blocked);
+  line-height: 1.45;
+}
+
+/* --- panels --------------------------------------------------------------- */
+
+.panel {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  margin-bottom: var(--s4);
+  overflow: hidden;
+  box-shadow: var(--elev-1);
+}
+
+.panel__head {
+  padding: var(--s5) var(--s5) var(--s3);
+}
+
+.panel__titlerow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3);
+  flex-wrap: wrap;
+}
+
+.panel__title {
+  font-size: var(--t-md);
+  font-weight: 620;
+  letter-spacing: -0.014em;
+}
+
+/* The denominator line is structure, not decoration: every panel declares what
+   it divided by and over what window, in the same place, every time. It is set
+   one step above the other small print so it cannot be mistaken for a note. */
+.panel__den {
+  margin-top: var(--s2);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+  line-height: 1.55;
+  max-width: var(--measure);
+}
+
+.panel__den b {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+.panel__den .den-sep {
+  color: var(--line-strong);
+  margin-inline: 0.55em;
+}
+
+.panel__den .den-range {
+  color: var(--ink-faint);
+}
+
+.panel__body {
+  padding: var(--s3) var(--s5) var(--s5);
+}
+
+.panel__body--flush {
+  padding: 0;
+}
+
+.panel__foot {
+  padding: var(--s3) var(--s5);
+  border-top: 1px solid var(--line);
+}
+
+/* When the finding is the absence of a pattern, the sentence saying so is the
+   panel's figure and is set like one. */
+.panel-lede {
+  font-size: var(--t-md);
+  font-weight: 550;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  max-width: 46ch;
+  margin-bottom: var(--s3);
+  text-wrap: pretty;
+}
+
+/* A table nested inside another scroller must not bleed twice. */
+.table-wrap .table-wrap {
+  margin-inline: 0;
+}
+
+/* A note in the body of a panel: prose about the figure beside it. Distinct
+   from the denominator line above, which is a contract rather than a remark. */
+.note {
+  margin-top: var(--s4);
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+  line-height: 1.6;
+  max-width: var(--measure);
+}
+
+.note--lead {
+  margin-top: 0;
+  margin-bottom: var(--s4);
+}
+
+.note--warn {
+  color: var(--blocked);
+}
+
+/* Two notes under one chart read as a pair, not as a column of leftovers. */
+.notes {
+  display: grid;
+  gap: var(--s3) var(--s6);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+}
+
+.notes > .note {
+  margin-top: var(--s4);
+}
+
+.note--warn b {
+  color: var(--blocked);
+  font-weight: 620;
+}
+
+.caveats {
+  display: grid;
+  gap: var(--s2);
+  margin-top: var(--s3);
+}
+
+.caveat {
+  display: grid;
+  grid-template-columns: 1em 1fr;
+  gap: 0.55em;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+  line-height: 1.55;
+  max-width: var(--measure);
+}
+
+.caveat::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  border: 1.5px solid var(--ink-faint);
+  margin-top: 0.45em;
+}
+
+.disclose {
+  font-size: var(--t-xs);
+  font-weight: 550;
+  color: var(--ink-faint);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  transition: color var(--d-tap) var(--ease);
+}
+
+.disclose:hover {
+  color: var(--ink);
+}
+
+.disclose::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg) translate(-1px, -1px);
+  transition: transform var(--d-state) var(--ease);
+}
+
+.disclose[aria-expanded='true']::after {
+  transform: rotate(-135deg) translate(-2px, -2px);
+}
+
+/* Disclosed content opens rather than appearing. `interpolate-size` is not
+   universal yet, so this is a transform-and-fade, which is. */
+.reveal {
+  animation: reveal var(--d-state) var(--ease) both;
+  transform-origin: top;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+
+/* --- grid of panels ------------------------------------------------------- */
+
+.grid-2 {
+  display: grid;
+  gap: var(--s4);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+@media (min-width: 960px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .grid-2 > .panel {
+    margin-bottom: 0;
+  }
+}
+
+.section-rule {
+  display: flex;
+  align-items: center;
+  gap: var(--s4);
+  margin: var(--s7) 0 var(--s4);
+}
+
+.section-rule__text {
+  font-size: var(--t-md);
+  font-weight: 620;
+  letter-spacing: -0.014em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.section-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* --- charts --------------------------------------------------------------- */
+
+.chart {
+  width: 100%;
+  height: 320px;
+}
+
+.chart--tall {
+  height: 400px;
+}
+
+.chart--short {
+  height: 230px;
+}
+
+@media (max-width: 640px) {
+  .chart {
+    height: 260px;
+  }
+  .chart--tall {
+    height: 320px;
+  }
+  .chart--short {
+    height: 210px;
+  }
+}
+
+/* the heatmap scrolls inside itself; the page never scrolls sideways */
+.scroll-x {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  border-radius: var(--r-sm);
+}
+
+.scroll-x > .chart {
+  min-width: 720px;
+}
+
+.scroll-hint {
+  display: none;
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+  margin-bottom: var(--s2);
+}
+
+@media (max-width: 900px) {
+  .scroll-hint {
+    display: block;
+  }
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s2) var(--s5);
+  margin-bottom: var(--s4);
+  font-size: var(--t-sm);
+}
+
+.legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  color: var(--ink-soft);
+}
+
+.legend__swatch {
+  width: 14px;
+  height: 4px;
+  border-radius: 99px;
+  flex: none;
+}
+
+.legend__swatch--sq {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+}
+
+.ramp {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+}
+
+.ramp__bar {
+  display: flex;
+  height: 9px;
+  width: 132px;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.ramp__bar i {
+  flex: 1;
+}
+
+/* --- tables --------------------------------------------------------------- */
+
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-inline: calc(var(--s5) * -1);
+}
+
+.panel__body--flush .table-wrap {
+  margin-inline: 0;
+}
+
+table.data {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+  min-width: 100%;
+}
+
+table.data th,
+table.data td {
+  padding: 0.6em 0.75em;
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+
+table.data th:first-child,
+table.data td:first-child {
+  text-align: left;
+  padding-left: var(--s5);
+}
+
+table.data th:last-child,
+table.data td:last-child {
+  padding-right: var(--s5);
+}
+
+table.data thead th {
+  font-size: var(--t-xs);
+  font-weight: 600;
+  color: var(--ink-faint);
+  border-bottom-color: var(--line-strong);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+}
+
+table.data tbody tr {
+  transition: background var(--d-tap) var(--ease);
+}
+
+table.data tbody tr:hover {
+  background: var(--surface-sunk);
+}
+
+table.data tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+table.data .num {
+  font-weight: 550;
+}
+
+table.data .dim {
+  color: var(--ink-faint);
+  font-weight: 400;
+}
+
+.venue-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55em;
+  font-weight: 550;
+}
+
+.venue-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.chip {
+  display: inline-block;
+  padding: 0.14em 0.55em;
+  border-radius: 99px;
+  font-size: var(--t-xs);
+  font-weight: 600;
+  border: 1px solid currentColor;
+  line-height: 1.45;
+}
+
+.chip--blocked {
+  color: var(--blocked);
+}
+.chip--alert {
+  color: var(--alert);
+}
+.chip--flat {
+  color: var(--ink-faint);
+}
+.chip--booked {
+  color: var(--booked);
+}
+
+/* --- stat strip (lead time, sellout) -------------------------------------- */
+
+.statstrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s5) var(--s7);
+  padding-bottom: var(--s5);
+  margin-bottom: var(--s5);
+  border-bottom: 1px solid var(--line);
+}
+
+.stat {
+  min-width: 0;
+}
+
+.stat__name {
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+  font-weight: 550;
+}
+
+.stat__value {
+  font-size: var(--t-xl);
+  font-weight: 620;
+  font-stretch: 112%;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  margin-top: 0.1em;
+}
+
+.stat__value .unit {
+  font-size: 0.46em;
+  font-stretch: 100%;
+  font-weight: 550;
+  color: var(--ink-faint);
+  margin-left: 0.16em;
+}
+
+.stat__sub {
+  margin-top: 0.25em;
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+  line-height: 1.5;
+}
+
+.stat--wide {
+  flex: 1 1 18rem;
+}
+
+/* --- definition list ------------------------------------------------------ */
+
+.deflist {
+  display: grid;
+  gap: var(--s3);
+}
+
+.deflist__row {
+  display: grid;
+  gap: 0.15em;
+  padding-bottom: var(--s3);
+  border-bottom: 1px solid var(--line);
+}
+
+.deflist__row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.deflist__term {
+  font-size: var(--t-sm);
+  font-weight: 620;
+}
+
+.deflist__def {
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+  line-height: 1.55;
+  max-width: var(--measure);
+}
+
+.venue-block {
+  padding-bottom: var(--s5);
+  margin-bottom: var(--s5);
+  border-bottom: 1px solid var(--line);
+}
+
+.venue-block:last-child {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+/* --- empty / error / skeleton --------------------------------------------- */
+
+.state {
+  display: grid;
+  gap: var(--s2);
+  padding: var(--s6) 0;
+  text-align: left;
+  justify-items: start;
+}
+
+.state__mark {
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  border: 1.5px dashed var(--line-strong);
+  display: grid;
+  place-items: center;
+  color: var(--ink-faint);
+  font-size: var(--t-sm);
+  font-weight: 700;
+}
+
+.state__title {
+  font-size: var(--t-sm);
+  font-weight: 620;
+}
+
+.state__body {
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+  max-width: var(--measure);
+  line-height: 1.55;
+}
+
+.state--error .state__mark {
+  border-style: solid;
+  border-color: color-mix(in srgb, var(--alert) 45%, var(--line));
+  color: var(--alert);
+}
+
+.skel {
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunk) 0%,
+    color-mix(in srgb, var(--line) 60%, var(--surface-sunk)) 50%,
+    var(--surface-sunk) 100%
+  );
+  background-size: 220% 100%;
+  border-radius: var(--r-sm);
+  animation: shimmer 1.4s linear infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 140% 0;
+  }
+  to {
+    background-position: -40% 0;
+  }
+}
+
+.skel-stack {
+  display: grid;
+  gap: var(--s3);
+  padding: var(--s3) var(--s5) var(--s5);
+}
+
+.skel-line {
+  height: 10px;
+}
+
+/* --- first run ------------------------------------------------------------ */
+
+.firstrun {
+  padding-top: var(--s6);
+  padding-bottom: var(--s5);
+  display: grid;
+  gap: var(--s5);
+  /* The section keeps `.shell`'s width and centring so it lines up with the
+     filter row; only its contents are held to a readable measure. */
+  justify-items: start;
+}
+
+.firstrun > * {
+  max-width: 62ch;
+}
+
+.firstrun__figure {
+  font-size: clamp(2.25rem, 7vw, 3.5rem);
+  text-wrap: balance;
+  margin-bottom: var(--s2);
+  font-weight: 620;
+  font-stretch: 116%;
+  letter-spacing: -0.035em;
+  line-height: 1.05;
+}
+
+.firstrun__body {
+  font-size: var(--t-base);
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+.cmd {
+  display: block;
+  padding: var(--s3) var(--s4);
+  border-radius: var(--r-md);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--line);
+  /* A literal shell command is the one thing on the page that is not prose,
+     and Archivo's wide hyphen fuses `--loop` into a dash. */
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.8125rem;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.cmd::before {
+  content: '$ ';
+  color: var(--ink-faint);
+}
+
+.steps {
+  display: grid;
+  gap: var(--s3);
+}
+
+.steps__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s3);
+  align-items: start;
+  font-size: var(--t-sm);
+  color: var(--ink-soft);
+}
+
+.steps__n {
+  width: 1.55em;
+  height: 1.55em;
+  border-radius: 50%;
+  border: 1.5px solid var(--line-strong);
+  display: grid;
+  place-items: center;
+  font-size: var(--t-xs);
+  font-weight: 650;
+  color: var(--ink);
+}
+
+/* --- tooltip (rendered by us, themed by us) -------------------------------- */
+
+.tip {
+  min-width: 168px;
+}
+
+.tip__head {
+  font-size: var(--t-sm);
+  font-weight: 620;
+  margin-bottom: 0.45em;
+}
+
+.tip__row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75em;
+  font-size: var(--t-xs);
+  line-height: 1.7;
+}
+
+.tip__key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  color: var(--ink-soft);
+  flex: 1;
+}
+
+.tip__ind {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.tip__val {
+  font-weight: 620;
+}
+
+.tip__note {
+  margin-top: 0.5em;
+  padding-top: 0.45em;
+  border-top: 1px solid var(--line);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+  max-width: 26ch;
+  white-space: normal;
+  line-height: 1.45;
+}
+
+/* --- footer --------------------------------------------------------------- */
+
+.colophon {
+  margin-top: var(--s7);
+  padding-top: var(--s4);
+  border-top: 1px solid var(--line);
+  font-size: var(--t-xs);
+  color: var(--ink-faint);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s5);
+  line-height: 1.6;
+}
+
+/* --- motion --------------------------------------------------------------- */
+
+/* One orchestrated entrance. Everything that arrives does the same 10px rise
+   under the same curve; only the delay differs, and the delay is the order the
+   data actually landed in. */
+.enter {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: rise var(--d-enter) var(--ease) forwards;
+  animation-delay: var(--delay, 0ms);
+}
+
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* A panel replacing its own skeleton. Same rise, shorter, no delay: the wait
+   is already over by the time this runs. */
+.panel-in {
+  animation: rise-sm var(--d-enter) var(--ease) both;
+}
+
+@keyframes rise-sm {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* A filter change is new data for a page that is already drawn. The old
+   figures stay on screen, dimmed and inert, until the new ones replace them —
+   a flash of empty would be slower to read and would look like a failure. */
+.is-stale {
+  opacity: 0.42;
+  pointer-events: none;
+  transition: opacity var(--d-state) var(--ease-soft);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .enter {
+    opacity: 1;
+    transform: none;
+  }
+
+  .skel {
+    animation: none;
+  }
+
+  .kpi:hover {
+    transform: none;
+  }
+}
+
+/* theme cross-fade; the toggle swaps tokens, the view transition blends them */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 260ms;
+  animation-timing-function: var(--ease-soft);
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  animation-name: vt-out;
+}
+
+::view-transition-new(root) {
+  animation-name: vt-in;
+}
+
+@keyframes vt-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes vt-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 1ms;
+  }
+}

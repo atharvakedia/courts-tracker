@@ -1,0 +1,165 @@
+# Padel occupancy tracker — configuration
+#
+# The `venues` block is the frozen, human-reviewed source of truth. `tracker
+# discover` proposes changes to it and warns on drift; it never edits this file.
+# All values below marked "verified" were confirmed live on 2026-09-11.
+
+timezone: Asia/Kolkata # all Hudle slot times are naive local wall-clock in this zone
+
+storage:
+  url: "sqlite:///data/padel.db" # swap for postgresql://... behind the same Storage protocol
+
+poll:
+  cadence_minutes: 30 # single knob for how often we collect
+  horizon_days: 21 # how far ahead each grid request reaches
+  # Hard floor between any two outbound requests, global and enforced inside the
+  # client so no call path can skip it. Raised from 2.0 on live evidence: at 2.0
+  # the six configured courts go out inside ~35s and Hudle returns 429 on the
+  # sixth, every cycle, reproducibly. The limit is a burst window rather than a
+  # per-request rate, so the fix is to spread the cycle, not to retry it. Six
+  # requests at 15s land over ~95s, which is nothing against a 30-minute cadence.
+  # Adding courts means widening this again.
+  request_gap_seconds: 15.0
+  timeout_seconds: 30
+  max_consecutive_failures: 5 # circuit breaker: stop the scheduler, do not hammer
+  backoff:
+    # A retry has to land after the burst window has reset, not inside it. At 5s
+    # all three attempts fell inside the window and all three were refused, which
+    # is three requests spent to learn nothing. 60s then 120s gives the window
+    # time to actually clear.
+    initial_seconds: 60
+    multiplier: 2.0
+    max_seconds: 300
+    # Per facility per cycle; a cycle never retries more than this. Do not raise
+    # it: a 429 is an instruction, and the next cycle is 30 minutes away.
+    max_attempts: 3
+
+# A calendar date's slots can start before 04:00 and belong to the previous
+# evening's trading session (Play Padel sells 00:00–01:30). Slots starting
+# before this hour roll back to the previous business_date for all day-of-week
+# and daily-occupancy aggregation. Wall-clock is never mutated.
+business_day_start_hour: 4
+
+discovery:
+  city_id: 8 # Jaipur
+  sports:
+    padel: 44
+    pickleball: 56
+  per_page: 50 # verified: response.meta carries total/current_page; paginate to exhaustion
+  drift_check_days: 7 # re-run facility discovery weekly and warn, never auto-adopt
+  alert_on_venue_set_change: padel # only the padel set is small enough to alert on
+  # Substring hints used ONLY to pre-suggest `kind:` for a human to review.
+  # Never authoritative. Word-boundary matched, and any name containing "court"
+  # is suggested as a court regardless — "Pickleball Court (Outdoor)" contains
+  # the token "ball" and was mis-suggested as equipment on the first run.
+  equipment_name_hints: ["racket", "racquet", "ball", "rental", "gear"]
+  court_name_override: ["court"]
+
+http:
+  api_base: "https://api.hudle.in"
+  web_base: "https://hudle.in"
+  headers:
+    Api-Secret: "REDACTED"
+    Accept: "application/json, text/plain, */*"
+    x-app-id: "REDACTED"
+    x-device-source: "3"
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+
+dashboard:
+  default_sport: padel
+  headline_metric: occupancy_strict
+  peak_hours: [18, 19, 20, 21, 22] # peak / off-peak split for lead-time analysis
+
+venues:
+  - uuid: e606e880-0b2c-4c69-b1a8-193c8f915328
+    name: "Padel Up | Sanskar School"
+    short_name: "Padel Up"
+    slug: "padel-up" # verified
+    numeric_id: "772576" # verified
+    active: true
+    facilities:
+      - uuid: e27518b2-9cee-49a9-aa6f-8685e5c543f3
+        name: "Padel Court"
+        kind: court
+        sport: padel
+        grid_minutes: 60 # verified: 19 slots/day, 05:00–24:00
+        price_per_court_hour: 1800 # verified flat, no hour-of-day variation
+        active: true
+
+  - uuid: 9b288765-eee9-4d8a-b309-a4f09b11abcc
+    # RENAMED since the brief was written — was "Play Padel | Clarks Amer Hotel".
+    # Matching is by UUID only; this is a display label.
+    name: "Play Padel | Pickleball | Clarks Amer Hotel"
+    short_name: "Play Padel"
+    slug: "pickleball-by-play-padel-clarks-amer-hotel" # verified
+    numeric_id: "417565" # verified
+    active: true
+    facilities:
+      - uuid: f40a05d6-e336-43be-bdc6-28405176ed9c
+        name: "Padel Court (Outdoor)"
+        kind: court
+        sport: padel
+        grid_minutes: 30 # verified: 40 slots/day, 00:00–01:30 + 06:00–24:00
+        price_per_court_hour: 2000 # verified flat (₹1000 per 30-min slot)
+        active: true
+      - uuid: e425e5e7-fd5e-4aa5-98a5-8c9d2a5ddda8
+        name: "Pickleball Court (Outdoor)"
+        kind: court # NOT equipment — the name hint got this wrong
+        sport: pickleball
+        grid_minutes: null # unprobed
+        price_per_court_hour: null
+        active: true
+      - uuid: 1976c206-cbb7-4816-938b-d85fb4cd4234
+        name: "Padel Ball"
+        kind: equipment
+        sport: padel
+        active: false
+      - uuid: c62f3543-c22f-4bad-bbb8-07dbf3402df0
+        name: "Padel Racquet"
+        kind: equipment
+        sport: padel
+        active: false
+      - uuid: 4ea39b71-f65b-412e-86af-5a3357cf125d
+        name: "Pickleball Ball"
+        kind: equipment
+        sport: pickleball
+        active: false
+      - uuid: d6d7b8cb-363b-4916-83b3-7fafcaff2afa
+        name: "Pickleball Racquet"
+        kind: equipment
+        sport: pickleball
+        active: false
+
+  - uuid: e161ebf7-78c7-4a45-bad8-49841f38b18a
+    name: "Padel Fort"
+    short_name: "Padel Fort"
+    slug: "padel-fort" # verified
+    numeric_id: "155289" # verified
+    active: true
+    facilities:
+      - uuid: e03fdd0f-f8d8-4bb4-b707-d64a7244036f
+        name: "Padel Court"
+        kind: court
+        sport: padel
+        grid_minutes: 30 # verified: 36 slots/day, 06:00–24:00
+        price_per_court_hour: 1800 # verified flat (₹900 per 30-min slot)
+        active: true
+      - uuid: d8452c5f-a340-45a9-9123-995edd038bf4
+        name: "Court 1"
+        kind: court
+        sport: pickleball
+        grid_minutes: null # unprobed
+        price_per_court_hour: null
+        active: true
+      - uuid: 2c33a9b6-f9f9-4bf1-82e0-f5bc9f8f65dd
+        name: "Court 2"
+        kind: court
+        sport: pickleball
+        grid_minutes: null # unprobed
+        price_per_court_hour: null
+        active: true
+      - uuid: 1f332de3-43e9-4e44-b789-3b216c2dd46a
+        name: "Padel Racket"
+        kind: equipment
+        sport: padel
+        active: false

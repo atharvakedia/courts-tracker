@@ -1,0 +1,331 @@
+{
+  "code": 200,
+  "data": [
+    {
+      "id": "e606e880-0b2c-4c69-b1a8-193c8f915328",
+      "share_url": "https://hudle.in/venues/padel-up/772576",
+      "is_hudle_exclusive": false,
+      "offer_text": "10% OFF",
+      "name": "Padel Up | Sanskar School",
+      "rating": "3.6875",
+      "price_onwards": 1800,
+      "created_at": "2024-07-10 14:14:23",
+      "updated_at": "2026-08-30 12:32:44",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "f2312ec78b8ec6f28a4f3e8bfbce0df3967c0b0d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030715-image_cropper_06CFB929-7F1B-4A75-9DB1-0D4EAA611CC7-4807-000003B1F0173EEF.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6cdc9c5be44731a0087e78d46919aedb0b9f6d61",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030715-image_cropper_06CFB929-7F1B-4A75-9DB1-0D4EAA611CC7-4807-000003B1F0173EEF.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "3d554384c676c802ed4d1c91c21d7cdcbf1624e5",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030715-image_cropper_06CFB929-7F1B-4A75-9DB1-0D4EAA611CC7-4807-000003B1F0173EEF.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "0c0fc413e755a4aa7325251d48a31576201d9960",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030715-image_cropper_06CFB929-7F1B-4A75-9DB1-0D4EAA611CC7-4807-000003B1F0173EEF.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "d2bfedafeea305048df77aa9d0d4f6a68aeda1c0",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030715-image_cropper_06CFB929-7F1B-4A75-9DB1-0D4EAA611CC7-4807-000003B1F0173EEF.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "edd07b4b62252ad48d6b250d3413cc8050247a9a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e606e880-0b2c-4c69-b1a8-193c8f915328/original/1721030715-image_cropper_06CFB929-7F1B-4A75-9DB1-0D4EAA611CC7-4807-000003B1F0173EEF.jpg?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "44",
+          "name": "Padel",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 512,
+              "height": 512,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a"
+          }
+        }
+      ]
+    },
+    {
+      "id": "9b288765-eee9-4d8a-b309-a4f09b11abcc",
+      "share_url": "https://hudle.in/venues/pickleball-by-play-padel-clarks-amer-hotel/417565",
+      "is_hudle_exclusive": true,
+      "offer_text": "10% OFF",
+      "name": "Play Padel | Pickleball | Clarks Amer Hotel",
+      "rating": "4.9739413680782",
+      "price_onwards": 1000,
+      "created_at": "2025-03-17 11:15:10",
+      "updated_at": "2026-09-12 01:12:49",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "37e91e2671f28472aaa99591dea3014325948b5d",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "e345736e0c9445136a35feb39a45038742ce7ff1",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4e15fe2ccfb8c9f6031ebe7bcd692e5e9fd1412f",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "dcade0ad6c1f44f877dace145735f468ba7a9644",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "8b117f5c758e6f385a859f0a1963ab411d217187",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4e2fc60fcf1fc914bf98cf37bdb1c42a46c19f4a",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "4b3527282bc7543f1884aefed167a95a40930069",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "6813be077a81d74ee03ee5dc78f0df6247e5723b",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "1fba67ea174fb4e5064bf67bf32a26f5959ab2c8",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "34a194143b341fb547eb07f13e20d1a4cbbce31c",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/9b288765-eee9-4d8a-b309-a4f09b11abcc/original/1780141882-web_image?v=a5f78aedefc93c72e18880849bb06461",
+          "type": "venue",
+          "mime_type": "image/png",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        },
+        {
+          "id": "44",
+          "name": "Padel",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 512,
+              "height": 512,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a"
+          }
+        }
+      ]
+    },
+    {
+      "id": "e161ebf7-78c7-4a45-bad8-49841f38b18a",
+      "share_url": "https://hudle.in/venues/padel-fort/155289",
+      "is_hudle_exclusive": true,
+      "offer_text": "20% OFF",
+      "name": "Padel Fort",
+      "rating": null,
+      "price_onwards": 450,
+      "created_at": "2026-07-21 11:54:44",
+      "updated_at": "2026-09-11 17:34:17",
+      "city": {
+        "id": 8,
+        "name": "Jaipur",
+        "latitude": 26.9124336,
+        "longitude": 75.7872709,
+        "photo": "https://d3mt0x61rkkfy3.cloudfront.net/defaults/fallback.jpg",
+        "show_metro_station": true,
+        "cluster": {
+          "id": 8,
+          "name": "Jaipur",
+          "type": "CITY"
+        }
+      },
+      "photos": [
+        {
+          "id": "19c1f9b1946262461bb70cb28bcfecc6e5bf50a9",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e161ebf7-78c7-4a45-bad8-49841f38b18a/original/1785567084-image_cropper_4a1956cf-eead-47cb-96f8-8fdb70dc548e-35182-00000ed29fbfbde1.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "91b5b48858a9e3de27ee508cfb6ae2ecce24d752",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e161ebf7-78c7-4a45-bad8-49841f38b18a/original/1785567084-image_cropper_4a1956cf-eead-47cb-96f8-8fdb70dc548e-35182-00000ed29fbfbde1.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        },
+        {
+          "id": "20b5bf5784a37288de0569b557b9031705e6eefb",
+          "url": "https://d3mt0x61rkkfy3.cloudfront.net/venue/e161ebf7-78c7-4a45-bad8-49841f38b18a/original/1785567084-image_cropper_4a1956cf-eead-47cb-96f8-8fdb70dc548e-35182-00000ed29fbfbde1.jpg?v=d88e2f97719ad0ae424945ad60d61f9f",
+          "type": "venue",
+          "mime_type": "image/jpeg",
+          "aspect_ratio": 0.56,
+          "is_video_preview": false
+        }
+      ],
+      "sports": [
+        {
+          "id": "44",
+          "name": "Padel",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 512,
+              "height": 512,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/44/v2/original/34fb36f398c8141b0c18685607d3264ecc2b9f4a"
+          }
+        },
+        {
+          "id": "56",
+          "name": "Pickleball",
+          "photo": {
+            "small": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "normal": "https://d3mt0x61rkkfy3.cloudfront.net/sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7?v=a5f78aedefc93c72e18880849bb06461",
+            "aspect_ratio": {
+              "width": 445,
+              "height": 445,
+              "ratio": 1,
+              "inverse_ratio": 1,
+              "orientation": "square"
+            },
+            "path": "sport/56/v2/original/8fe0f93a0320e002c8b134525677dfd88091eec7"
+          }
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "pagination": {
+      "total": 3,
+      "count": 3,
+      "per_page": 50,
+      "current_page": 1,
+      "total_pages": 1,
+      "links": {}
+    }
+  }
+}

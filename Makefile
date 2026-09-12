@@ -6,6 +6,15 @@ RUFF    := $(VENV)/bin/ruff
 MYPY    := $(VENV)/bin/mypy
 UVICORN := $(VENV)/bin/uvicorn
 
+# Everything the linter and formatter cover, named once so a new top-level
+# module cannot quietly sit outside the gate. smoke_test.py is the script
+# that recorded fixtures/raw/ against the live API; it ships with the repo,
+# so it is held to the same standard.
+SOURCES := tracker tests smoke_test.py
+# mypy runs over the package only: tests and the one-off script are checked
+# for style, not for strict typing.
+TYPED   := tracker
+
 .PHONY: install check ci-check fmt lint typecheck test run collect collect-dry discover clean
 
 install:  ## create the venv and install the project with dev extras
@@ -14,31 +23,31 @@ install:  ## create the venv and install the project with dev extras
 	$(VENV)/bin/pip install -e '.[dev]'
 
 fmt:
-	$(RUFF) check --fix tracker tests
-	$(RUFF) format tracker tests
+	$(RUFF) check --fix $(SOURCES)
+	$(RUFF) format $(SOURCES)
 
 lint:
-	$(RUFF) check tracker tests
-	$(RUFF) format --check tracker tests
+	$(RUFF) check $(SOURCES)
+	$(RUFF) format --check $(SOURCES)
 
 typecheck:
-	$(MYPY) tracker
+	$(MYPY) $(TYPED)
 
 test:
 	$(PYTEST) tests
 
 # Fixing form: use before committing.
 check:
-	$(RUFF) check --fix tracker tests
-	$(RUFF) format tracker tests
-	$(MYPY) tracker
+	$(RUFF) check --fix $(SOURCES)
+	$(RUFF) format $(SOURCES)
+	$(MYPY) $(TYPED)
 	$(PYTEST) tests
 
 # Non-fixing form: what CI runs.
 ci-check:
-	$(RUFF) check tracker tests
-	$(RUFF) format --check tracker tests
-	$(MYPY) tracker
+	$(RUFF) check $(SOURCES)
+	$(RUFF) format --check $(SOURCES)
+	$(MYPY) $(TYPED)
 	$(PYTEST) tests
 
 run:

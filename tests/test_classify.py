@@ -35,14 +35,11 @@ from tracker.classify import (
     court_minutes,
     court_minutes_by_state,
     grid_minutes_from_payload,
-    is_equipment_facility,
     occupancy_gross,
     occupancy_strict,
     parse_slot,
     parse_slot_grid,
-    suggested_facility_kind,
 )
-from tracker.config import Config, FacilityKind
 from tracker.types import SlotObservation, SlotState, Sport
 
 #: 16:21 IST on 2026-09-11 -- the moment Padel Fort's already-elapsed 07:00 and
@@ -813,105 +810,3 @@ def test_price_is_parsed_from_its_string_form_and_may_be_absent() -> None:
     assert _parse_one(price="900.00").price == 900.0
     assert _parse_one(price=None).price is None
     assert _parse_one(price="").price is None
-
-
-# --------------------------------------------------------------------------
-# Advisory equipment suggestion
-# --------------------------------------------------------------------------
-
-EQUIPMENT_NAMES = (
-    "Padel Ball",
-    "Padel Racquet",
-    "Pickleball Ball",
-    "Pickleball Racquet",
-    "Padel Racket",
-)
-COURT_NAMES = (
-    "Pickleball Court (Outdoor)",
-    "Court 1",
-    "Court 2",
-    "Padel Court (Outdoor)",
-    "Padel Court",
-)
-
-
-def test_equipment_hints_match_on_word_boundaries(test_config: Config) -> None:
-    """Regression: "ball" inside "Pickleball" suggested a court was a rental ball.
-
-    This false positive really happened on the first discovery run. Substring
-    matching flags "Pickleball Court (Outdoor)" as equipment; the court
-    override alone would not save "Pickleball Racquet" from being called a
-    court. Both rules are needed, so both are exercised here against the five
-    real equipment names and the five real court names.
-    """
-    hints = test_config.discovery.equipment_name_hints
-    overrides = test_config.discovery.court_name_override
-
-    for name in EQUIPMENT_NAMES:
-        assert is_equipment_facility(name, hints, overrides) is True, name
-        assert suggested_facility_kind(name, hints, overrides) is FacilityKind.EQUIPMENT
-
-    for name in COURT_NAMES:
-        assert is_equipment_facility(name, hints, overrides) is False, name
-        assert suggested_facility_kind(name, hints, overrides) is FacilityKind.COURT
-
-    assert "ball" in hints, "the hint that caused the false positive is still configured"
-    # "ball" is a substring of "pickleball", so plain substring matching would
-    # still flag every pickleball court; the word-boundary assertions above are
-    # what proves it does not.
-
-
-def test_suggestion_agrees_with_every_configured_facility(test_config: Config) -> None:
-    """Regression: the advisory suggestion must not fight the frozen config.
-
-    Config is the sole authority on ``kind``; this only pre-fills a value for a
-    human to review. If the suggester disagreed with any of the 11 reviewed
-    facilities, ``tracker discover`` would propose reclassifying a real court
-    as a rental item on every drift check.
-    """
-    hints = test_config.discovery.equipment_name_hints
-    overrides = test_config.discovery.court_name_override
-
-    checked = 0
-    for venue in test_config.venues:
-        for facility in venue.facilities:
-            suggestion = suggested_facility_kind(facility.name, hints, overrides)
-            assert suggestion is facility.kind, f"{venue.short_name}: {facility.name}"
-            checked += 1
-    assert checked == 11
-
-
-def test_suggestion_is_advisory_only_and_ignores_unknown_names(test_config: Config) -> None:
-    """Regression: an unknown facility must default to court, never to equipment.
-
-    Defaulting an unrecognised name to equipment would mark it inactive and
-    stop collecting a real court's slots -- unrecoverable data loss on a
-    forward-only dataset. A court is the safe default; a human confirms.
-    """
-    hints = test_config.discovery.equipment_name_hints
-    overrides = test_config.discovery.court_name_override
-
-    assert is_equipment_facility("Turf A", hints, overrides) is False
-    assert is_equipment_facility("Padel", hints, overrides) is False
-    assert suggested_facility_kind("Something New", hints, overrides) is FacilityKind.COURT
-
-
-def test_court_override_beats_a_matching_hint() -> None:
-    """Regression: order matters -- the override must be applied first.
-
-    "Racquet Court" contains both an equipment hint and the court override.
-    Checking hints first would classify a court as a rental.
-    """
-    assert is_equipment_facility("Racquet Court", ["racquet"], ["court"]) is False
-    assert is_equipment_facility("Racquet Store", ["racquet"], ["court"]) is True
-    assert is_equipment_facility("Anything", [], ["court"]) is False
-
-
-def test_multi_word_hints_still_match() -> None:
-    """Regression: a multi-word hint must match across the separating space.
-
-    Config hints are single words today, but "padel ball" is the obvious thing
-    a maintainer adds next; token-set matching would never fire on it.
-    """
-    assert is_equipment_facility("Padel Ball Rental", ["padel ball"], ["court"]) is True
-    assert is_equipment_facility("Padel Court", ["padel ball"], []) is False

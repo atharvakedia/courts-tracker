@@ -142,15 +142,6 @@ def configure_logging(
     return handler
 
 
-def log_format_from_name(name: str) -> LogFormat:
-    """Parse a ``--log-format`` value, naming the valid choices on failure."""
-    try:
-        return LogFormat(name.lower())
-    except ValueError as exc:
-        choices = ", ".join(sorted(str(f) for f in LogFormat))
-        raise ValueError(f"unknown log format {name!r}; expected one of {choices}") from exc
-
-
 def describe_fields(fields: Mapping[str, Any]) -> str:
     """Render a field mapping the way :class:`ConsoleFormatter` would.
 

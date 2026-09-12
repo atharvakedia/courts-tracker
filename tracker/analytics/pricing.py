@@ -37,7 +37,7 @@ import datetime as dt
 import itertools
 import logging
 from collections import Counter, defaultdict
-from collections.abc import Callable, Hashable, Iterable, Mapping, Sequence
+from collections.abc import Callable, Hashable, Iterable, Sequence
 from dataclasses import dataclass, field
 from typing import TypeVar
 
@@ -679,8 +679,3 @@ def _group(items: Iterable[T], key: Callable[[T], Hashable]) -> list[list[T]]:
     for item in items:
         buckets.setdefault(key(item), []).append(item)
     return list(buckets.values())
-
-
-def observed_at_index(snapshots: Iterable[SnapshotRecord]) -> Mapping[int, dt.datetime]:
-    """``snapshot_id -> observed_at``, for callers stitching the two together."""
-    return {snapshot.snapshot_id: snapshot.observed_at for snapshot in snapshots}

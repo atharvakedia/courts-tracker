@@ -178,9 +178,7 @@ def check_next_data(client: httpx.Client, share_url: str, label: str) -> list[di
         print("      __NEXT_DATA__ NOT FOUND -- SSR shape changed")
         return []
     next_data = json.loads(match.group(1))
-    venue_details = (
-        next_data.get("props", {}).get("pageProps", {}).get("venueDetails", {})
-    )
+    venue_details = next_data.get("props", {}).get("pageProps", {}).get("venueDetails", {})
     save_fixture(f"next_data_venue_details_{label}", venue_details)
     rows: list[dict[str, Any]] = []
     for activity in venue_details.get("activities", []) or []:
@@ -224,9 +222,7 @@ def check_slots(
             "grid": 1,
         },
     )
-    print(
-        f"    GET slots {start}..{end} ({days}d) -> HTTP {response.status_code}"
-    )
+    print(f"    GET slots {start}..{end} ({days}d) -> HTTP {response.status_code}")
     if response.status_code != 200:
         print(f"      FAIL body: {response.text[:400]}")
         return
@@ -250,7 +246,9 @@ def check_slots(
         )
     print(f"      slot_data: {len(slot_data)} day(s) returned")
     if slot_data:
-        print(f"        first date={slot_data[0].get('date')}  last date={slot_data[-1].get('date')}")
+        first_date = slot_data[0].get("date")
+        last_date = slot_data[-1].get("date")
+        print(f"        first date={first_date}  last date={last_date}")
 
     states: Counter[str] = Counter()
     prices: Counter[str] = Counter()
@@ -301,8 +299,10 @@ def check_slots(
             f"      NOTE: {len(odd)} slot(s) with is_booked=true but "
             f"available_count >= total_count (partial-capacity courts?)"
         )
+        counts = ("total_count", "available_count", "is_available", "is_booked")
         for sample in odd[:3]:
-            print(f"        {sample[1]}  {json.dumps({k: sample[2].get(k) for k in ('total_count', 'available_count', 'is_available', 'is_booked')})}")
+            fields = json.dumps({k: sample[2].get(k) for k in counts})
+            print(f"        {sample[1]}  {fields}")
 
 
 def check_slots_meta(client: httpx.Client, venue_uuid: str, facility_uuid: str) -> None:

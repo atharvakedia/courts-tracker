@@ -196,7 +196,9 @@ permanent.
    they have been wrong: "Pickleball Court (Outdoor)" contains the token `ball` and was
    suggested as equipment on the first run. Rackets, racquets and balls are `kind:
    equipment` with `active: false` — they are rentals, they are not courts, and collecting
-   them would put non-court rows into every occupancy denominator.
+   them would put non-court rows into every occupancy denominator. Hints and overrides
+   match on whole words, so `ball` does not fire inside "Pickleball", and a multi-word
+   entry like `padel ball` is matched as a phrase across the space.
 
 4. **Probe the grid and the price before you activate the court.** Set
    `grid_minutes:` and `price_per_court_hour:` only from a real response you have looked

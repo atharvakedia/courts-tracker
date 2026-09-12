@@ -7,65 +7,32 @@ and :class:`~tracker.types.FacilityFetch` and return frozen dataclasses, so the
 web layer never sees a SQLAlchemy row and every number is reproducible from the
 inputs alone.
 
-This file is a re-export surface only. Modules added alongside these two export
-their own names; import them from their own module rather than widening this
-one into a place where import order starts to matter.
+Each module exports its own names and is imported from its own path::
+
+    from tracker.analytics.occupancy import occupancy_by_venue_day
+
+This file deliberately re-exports nothing. A package-level surface here would
+be a second, hand-maintained copy of six modules' signatures that drifts the
+moment one of them changes, and it would make import order matter between
+modules that are otherwise independent.
+
+The modules, and what each owns:
+
+``coverage``
+    Whether the collector actually ran: expected versus observed polls, and
+    the gaps nothing may interpolate across.
+``occupancy``
+    Both denominators -- ``occupancy_strict`` (booked over sellable) and
+    ``occupancy_gross`` (booked plus blocked over listed) -- per venue-day,
+    hour and weekday/weekend split.
+``pricing``
+    Price per court-hour, never per slot, plus rank and change timelines.
+``leadtime``
+    How far ahead a slot sells, measured from the first poll that saw it
+    booked, with left-censored slots excluded.
+``transitions``
+    State changes between consecutive polls: bookings, cancellations and
+    inventory pulled from sale.
+``market``
+    Cross-venue comparisons, all normalized to court-minutes first.
 """
-
-from tracker.analytics.coverage import (
-    DEFAULT_GAP_FACTOR,
-    CoverageReport,
-    FacilityDayCoverage,
-    GapInterval,
-    coverage_by_facility_day,
-    coverage_gaps,
-    coverage_report,
-    expected_snapshots_per_day,
-    facility_coverage_gaps,
-    split_on_gaps,
-)
-from tracker.analytics.occupancy import (
-    DAY_NAMES,
-    DEFAULT_SPARSE_MIN_MINUTES,
-    WEEKEND_DAYS,
-    DemandSegment,
-    Heatmap,
-    HeatmapCell,
-    OccupancyTotals,
-    VenueDayOccupancy,
-    WeekdayWeekendSplit,
-    heatmaps_by_venue,
-    occupancy_by_venue_day,
-    peak_hour_heatmap,
-    settled_observations,
-    to_court_hours,
-    weekday_vs_weekend,
-)
-
-__all__ = [
-    "DAY_NAMES",
-    "DEFAULT_GAP_FACTOR",
-    "DEFAULT_SPARSE_MIN_MINUTES",
-    "WEEKEND_DAYS",
-    "CoverageReport",
-    "DemandSegment",
-    "FacilityDayCoverage",
-    "GapInterval",
-    "Heatmap",
-    "HeatmapCell",
-    "OccupancyTotals",
-    "VenueDayOccupancy",
-    "WeekdayWeekendSplit",
-    "coverage_by_facility_day",
-    "coverage_gaps",
-    "coverage_report",
-    "expected_snapshots_per_day",
-    "facility_coverage_gaps",
-    "heatmaps_by_venue",
-    "occupancy_by_venue_day",
-    "peak_hour_heatmap",
-    "settled_observations",
-    "split_on_gaps",
-    "to_court_hours",
-    "weekday_vs_weekend",
-]

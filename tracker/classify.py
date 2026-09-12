@@ -33,15 +33,13 @@ from __future__ import annotations
 
 import datetime as dt
 import logging
-import re
 from collections import Counter
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
 from tracker.types import (
     DEFAULT_TZ,
-    FacilityKind,
     SlotObservation,
     SlotState,
     Sport,
@@ -67,8 +65,6 @@ _REQUIRED_SLOT_KEYS = (
     "total_count",
     "available_count",
 )
-
-_WORD_RE = re.compile(r"[a-z0-9]+")
 
 
 class SlotParseError(ValueError):
@@ -372,50 +368,6 @@ def occupancy_gross(observations: Iterable[SlotObservation]) -> Occupancy:
 
 
 # --------------------------------------------------------------------------
-# Advisory facility-kind suggestion
-# --------------------------------------------------------------------------
-
-
-def is_equipment_facility(
-    name: str,
-    hints: Sequence[str],
-    court_overrides: Sequence[str],
-) -> bool:
-    """Pre-suggest whether a facility name looks like a rental item.
-
-    Advisory only. ``config.yaml`` is the single authority on
-    :class:`~tracker.types.FacilityKind`; this exists so ``tracker discover``
-    can propose a ``kind:`` for a human to review, and nothing at collection or
-    analysis time may consult it.
-
-    Two rules, in order:
-
-    1. any name matching ``court_overrides`` is a court, whatever else it says;
-    2. otherwise a name is equipment if a hint matches on **word boundaries**.
-
-    The boundary rule is the fix for a real false positive: substring matching
-    found "ball" inside "Pickleball Court (Outdoor)" and suggested that a court
-    was a rental ball. Either rule alone would still get it wrong, so both are
-    applied.
-    """
-    lowered = name.lower()
-    if any(_matches_word(lowered, override) for override in court_overrides):
-        return False
-    return any(_matches_word(lowered, hint) for hint in hints)
-
-
-def suggested_facility_kind(
-    name: str,
-    hints: Sequence[str],
-    court_overrides: Sequence[str],
-) -> FacilityKind:
-    """:func:`is_equipment_facility` as a :class:`FacilityKind`. Advisory only."""
-    if is_equipment_facility(name, hints, court_overrides):
-        return FacilityKind.EQUIPMENT
-    return FacilityKind.COURT
-
-
-# --------------------------------------------------------------------------
 # Internals
 # --------------------------------------------------------------------------
 
@@ -469,12 +421,3 @@ def _occupancy(numerator: int, denominator: int) -> Occupancy:
         numerator_minutes=numerator,
         denominator_minutes=denominator,
     )
-
-
-def _matches_word(lowered_name: str, term: str) -> bool:
-    """Whether ``term`` appears in ``lowered_name`` on word boundaries."""
-    tokens = _WORD_RE.findall(term.lower())
-    if not tokens:
-        return False
-    pattern = r"\b" + r"\W+".join(re.escape(token) for token in tokens) + r"\b"
-    return re.search(pattern, lowered_name) is not None

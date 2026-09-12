@@ -24,7 +24,7 @@ from tests.conftest import (
     PLAY_PADEL_COURT,
     PLAY_PADEL_VENUE,
 )
-from tracker.config import Config, VenueConfig
+from tracker.config import Config, DiscoveryConfig, VenueConfig
 from tracker.discover import (
     DiscoveryClient,
     DriftReport,
@@ -553,6 +553,7 @@ def test_parse_facilities_raises_when_activities_is_missing(
         # Genuine rental items: the hint is a whole word.
         ("Padel Ball", FacilityKind.EQUIPMENT),
         ("Pickleball Ball", FacilityKind.EQUIPMENT),
+        ("Pickleball Racquet", FacilityKind.EQUIPMENT),
         ("Padel Racquet", FacilityKind.EQUIPMENT),
         ("Padel Racket", FacilityKind.EQUIPMENT),
         ("Shoe Rental", FacilityKind.EQUIPMENT),
@@ -576,6 +577,63 @@ def test_is_equipment_facility_court_override_beats_an_explicit_hint(
     """A name with both signals is a court: courts are what we collect."""
     assert is_equipment_facility("Padel Racquet", discovery=test_config.discovery) is True
     assert is_equipment_facility("Racquet Court", discovery=test_config.discovery) is False
+
+
+def _with_vocabulary(
+    discovery: DiscoveryConfig, *, hints: tuple[str, ...], overrides: tuple[str, ...]
+) -> DiscoveryConfig:
+    """The frozen discovery config with its name-matching vocabulary swapped."""
+    return dataclasses.replace(discovery, equipment_name_hints=hints, court_name_override=overrides)
+
+
+def test_multi_word_hints_match_across_the_separating_space(test_config: Config) -> None:
+    """Regression: a multi-word hint must match as a phrase, not as a token set.
+
+    Config hints are single words today, but "padel ball" is the obvious thing
+    a maintainer adds next. Intersecting a name's word tokens with the hint
+    list never fires on it -- the list holds "padel ball" whole while the name
+    contributes only "padel" and "ball" -- so the hint reads as configured and
+    silently matches nothing.
+    """
+    discovery = _with_vocabulary(test_config.discovery, hints=("padel ball",), overrides=("court",))
+    assert is_equipment_facility("Padel Ball Rental", discovery=discovery) is True
+    assert is_equipment_facility("padel-ball", discovery=discovery) is True
+    assert is_equipment_facility("Padel Court", discovery=discovery) is False
+
+
+def test_multi_word_court_overrides_match_across_the_separating_space(
+    test_config: Config,
+) -> None:
+    """Regression: the override is a phrase too, and it fails the same way.
+
+    Dropping a multi-word override lets the equipment hint win, so a real court
+    is suggested as equipment. Equipment is marked inactive and never polled,
+    which on a forward-only dataset loses that court's slots for good.
+    """
+    discovery = _with_vocabulary(test_config.discovery, hints=("ball",), overrides=("court side",))
+    assert is_equipment_facility("Ball Court Side", discovery=discovery) is False
+
+
+def test_an_unknown_facility_name_defaults_to_court(test_config: Config) -> None:
+    """Regression: an unrecognised name must never default to equipment.
+
+    A court is the safe default precisely because the wrong guess is expensive
+    in only one direction: a human confirms the ``kind:`` in config either way,
+    but a court guessed as equipment stops being collected in the meantime.
+    """
+    assert is_equipment_facility("Turf A", discovery=test_config.discovery) is False
+    assert is_equipment_facility("Padel", discovery=test_config.discovery) is False
+    assert (
+        suggest_facility_kind("Something New", discovery=test_config.discovery)
+        is FacilityKind.COURT
+    )
+
+
+def test_an_empty_hint_list_matches_nothing(test_config: Config) -> None:
+    """An unconfigured vocabulary must suggest nothing rather than everything."""
+    discovery = _with_vocabulary(test_config.discovery, hints=(), overrides=("court",))
+    assert is_equipment_facility("Anything", discovery=discovery) is False
+    assert is_equipment_facility("Padel Racquet", discovery=discovery) is False
 
 
 def test_every_real_facility_suggestion_agrees_with_the_frozen_config(

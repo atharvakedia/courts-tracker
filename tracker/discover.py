@@ -383,9 +383,23 @@ def extract_next_data(html: str) -> dict[str, Any]:
     return dict(venue_details)
 
 
-def _name_tokens(name: str) -> set[str]:
-    """Lowercased word tokens of a facility name, for boundary-safe matching."""
-    return set(re.findall(r"[a-z0-9]+", name.lower()))
+_WORD_RE = re.compile(r"[a-z0-9]+")
+
+
+def _matches_word(lowered_name: str, term: str) -> bool:
+    """Whether ``term`` appears in ``lowered_name`` on word boundaries.
+
+    ``term`` may be several words. Its tokens are matched as a phrase separated
+    by any run of non-word characters, so a hint of "padel ball" fires on
+    "Padel Ball Rental" and on "padel-ball" alike. Matching token sets instead
+    would silently never fire on a multi-word hint, because the set holds the
+    whole phrase as one element while the name contributes only single words.
+    """
+    tokens = _WORD_RE.findall(term.lower())
+    if not tokens:
+        return False
+    pattern = r"\b" + r"\W+".join(re.escape(token) for token in tokens) + r"\b"
+    return re.search(pattern, lowered_name) is not None
 
 
 def is_equipment_facility(name: str, *, discovery: DiscoveryConfig) -> bool:
@@ -393,15 +407,22 @@ def is_equipment_facility(name: str, *, discovery: DiscoveryConfig) -> bool:
 
     A **suggestion only**; ``config.yaml`` is authoritative for ``kind``.
 
-    Matching is on whole word tokens, and any name carrying a
-    ``court_name_override`` token is a court regardless of equipment hints.
-    Both guards exist because of one real false positive: the substring "ball"
-    appears inside "Pickleball Court (Outdoor)", which is a court.
+    Two rules, in order:
+
+    1. any name matching ``court_name_override`` is a court, whatever else it
+       says;
+    2. otherwise a name is equipment if an ``equipment_name_hints`` entry
+       matches on **word boundaries**.
+
+    The boundary rule is the fix for a real false positive: substring matching
+    found "ball" inside "Pickleball Court (Outdoor)" and suggested that a court
+    was a rental ball. Either rule alone would still get a real name wrong, so
+    both are applied.
     """
-    tokens = _name_tokens(name)
-    if tokens & {t.lower() for t in discovery.court_name_override}:
+    lowered = name.lower()
+    if any(_matches_word(lowered, override) for override in discovery.court_name_override):
         return False
-    return bool(tokens & {h.lower() for h in discovery.equipment_name_hints})
+    return any(_matches_word(lowered, hint) for hint in discovery.equipment_name_hints)
 
 
 def suggest_facility_kind(name: str, *, discovery: DiscoveryConfig) -> FacilityKind:

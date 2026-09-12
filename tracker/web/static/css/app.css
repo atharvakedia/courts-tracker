@@ -1687,3 +1687,174 @@ table.data .dim {
     animation-duration: 1ms;
   }
 }
+
+/* ==========================================================================
+   SINGLE-VIEWPORT LAYOUT
+   The page is exactly one screen and never scrolls. Height is rationed top
+   down: four fixed rows and one flexible stage that absorbs whatever is left.
+   Every ancestor of a chart needs min-height:0, or a CSS grid row refuses to
+   shrink below its content and the page grows a scrollbar again.
+   ========================================================================== */
+
+html, body.app { height: 100%; }
+
+body.app {
+  display: grid;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
+  height: 100dvh;          /* dvh, not vh: mobile browser chrome is not fixed */
+  max-height: 100dvh;
+  overflow: hidden;        /* the hard requirement, enforced in one place */
+  gap: 0;
+}
+
+/* --- rows 1 and 4: bars ------------------------------------------------- */
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--s3, 0.75rem);
+  padding: 0 clamp(0.75rem, 2vw, 1.25rem);
+  border-bottom: 1px solid var(--rule, rgba(128, 128, 128, 0.22));
+  background: var(--surface, transparent);
+}
+.bar--top { min-height: 52px; }
+.bar--foot {
+  min-height: 30px;
+  border-bottom: 0;
+  border-top: 1px solid var(--rule, rgba(128, 128, 128, 0.22));
+  font-size: 0.72rem;
+  opacity: 0.62;
+  gap: var(--s4, 1rem);
+  overflow: hidden;
+}
+.foot__note { margin: 0; white-space: nowrap; text-overflow: ellipsis; overflow: hidden; }
+.foot__note:first-child { flex: 1 1 auto; }
+
+.brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 620; letter-spacing: -0.01em; }
+.brand__mark {
+  width: 15px; height: 15px; border-radius: 4px;
+  background: var(--accent, #0d6f62);
+}
+.brand__name { white-space: nowrap; }
+
+.ctl { display: flex; align-items: center; gap: var(--s2, 0.5rem); margin: 0 auto 0 var(--s4, 1rem); }
+.ctl__field select {
+  font: inherit; font-size: 0.8rem;
+  padding: 0.28rem 1.6rem 0.28rem 0.55rem;
+  border-radius: 7px;
+  border: 1px solid var(--rule, rgba(128, 128, 128, 0.3));
+  background: var(--surface-2, transparent);
+  color: inherit;
+  transition: border-color 140ms var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
+}
+.ctl__field select:hover { border-color: var(--accent, #0d6f62); }
+
+.bar__right { display: flex; align-items: center; gap: var(--s3, 0.75rem); margin-left: auto; }
+.iconbtn {
+  width: 30px; height: 30px; display: grid; place-items: center;
+  border-radius: 8px; border: 1px solid var(--rule, rgba(128, 128, 128, 0.3));
+  background: transparent; color: inherit; cursor: pointer;
+  transition: background 140ms var(--ease, cubic-bezier(0.4, 0, 0.2, 1)), transform 140ms;
+}
+.iconbtn:hover { background: var(--surface-2, rgba(128, 128, 128, 0.1)); }
+.iconbtn:active { transform: scale(0.94); }
+.iconbtn__glyph { width: 13px; height: 13px; border-radius: 50%; background: currentColor; opacity: 0.7; }
+
+/* --- row 2: the KPI bar, horizontal so it costs one row not a grid ------- */
+.kpibar {
+  display: flex; align-items: center; gap: clamp(0.75rem, 2vw, 1.5rem);
+  padding: 0.45rem clamp(0.75rem, 2vw, 1.25rem);
+  min-height: 62px;
+  border-bottom: 1px solid var(--rule, rgba(128, 128, 128, 0.22));
+  overflow: hidden;
+}
+.kpibar__hero { flex: 0 0 auto; min-width: 0; }
+.kpibar__tiles {
+  display: flex; align-items: center; gap: clamp(0.75rem, 2.4vw, 1.75rem);
+  flex: 1 1 auto; min-width: 0; overflow: hidden;
+}
+/* The KPI renderer emits its own children; flatten whatever shape it uses. */
+.kpibar__tiles > * { flex: 0 1 auto; min-width: 0; }
+
+.bannerbar:empty { display: none; }
+.bannerbar {
+  padding: 0.3rem clamp(0.75rem, 2vw, 1.25rem);
+  font-size: 0.76rem;
+  border-bottom: 1px solid var(--rule, rgba(128, 128, 128, 0.22));
+  max-height: 4.5rem; overflow-y: auto;
+}
+
+/* --- row 3: view tabs --------------------------------------------------- */
+.viewtabs {
+  display: flex; gap: 2px;
+  padding: 0.35rem clamp(0.75rem, 2vw, 1.25rem) 0;
+  border-bottom: 1px solid var(--rule, rgba(128, 128, 128, 0.22));
+  overflow-x: auto; scrollbar-width: none;
+}
+.viewtabs::-webkit-scrollbar { display: none; }
+.viewtabs button {
+  font: inherit; font-size: 0.78rem; font-weight: 560;
+  padding: 0.4rem 0.8rem 0.5rem;
+  border: 0; background: transparent; color: inherit;
+  opacity: 0.5; cursor: pointer; white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: opacity 160ms var(--ease, cubic-bezier(0.4, 0, 0.2, 1)),
+              border-color 160ms var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
+}
+.viewtabs button:hover { opacity: 0.85; }
+.viewtabs button[aria-pressed='true'] { opacity: 1; border-bottom-color: var(--accent, #0d6f62); }
+
+/* --- row 4: the stage --------------------------------------------------- */
+.stage { position: relative; min-height: 0; overflow: hidden; }
+
+.view {
+  position: absolute; inset: 0;
+  display: grid; gap: 0.6rem;
+  padding: 0.6rem clamp(0.75rem, 2vw, 1.25rem);
+  min-height: 0;
+  animation: viewin 260ms var(--ease, cubic-bezier(0.4, 0, 0.2, 1)) both;
+}
+.view[hidden] { display: none !important; }
+.view--2 { grid-template-columns: 1fr 1fr; }
+.view--3 { grid-template-columns: 1.4fr 1fr 1fr; }
+.view--4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.panel--wide { grid-column: 1 / -1; }
+
+@keyframes viewin {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* A panel must be allowed to be shorter than its content, or the chart inside
+   sets the row height and the stage overflows. */
+.stage .panel {
+  display: flex; flex-direction: column;
+  min-height: 0; min-width: 0; overflow: hidden;
+  margin: 0;
+}
+.stage .panel__head { flex: 0 0 auto; }
+.stage .panel__title { font-size: 0.86rem; margin: 0; }
+.stage .panel__den { font-size: 0.68rem; margin: 0.1rem 0 0; opacity: 0.6; }
+.stage .panel__body { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+.stage .panel__body .chart { height: 100% !important; min-height: 0; }
+/* Tables are the one thing allowed their own scroll, inside the panel only. */
+.stage .panel__body:has(table) { overflow: auto; }
+.stage .panel__foot { flex: 0 0 auto; }
+/* Caveats collapse by default; on one screen they are a click, not a column. */
+.stage .panel__foot .disclose { font-size: 0.68rem; padding: 0.15rem 0; }
+
+/* --- narrow screens: one chart at a time, still no page scroll ---------- */
+@media (max-width: 900px) {
+  .view--2, .view--3, .view--4 { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+  /* Only the first panel of a view is shown; the rest are reachable by tab.
+     Stacking them would reintroduce the scroll this layout exists to remove. */
+  .view > .panel:not(:first-child) { display: none; }
+  .ctl { margin-left: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .bar--top { flex-wrap: wrap; padding-top: 0.35rem; padding-bottom: 0.35rem; }
+  .brand__name { display: none; }
+  .kpibar { min-height: 54px; }
+  .foot__note:not(:first-child) { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view { animation: none; }
+}

@@ -19,6 +19,7 @@ import {
   populateVenues,
   subscribe,
 } from './filters.js';
+import { refresh } from './charts.js';
 import { initTheme } from './theme.js';
 import { failPanel, markStale, skeletonPanel } from './panels.js';
 import { indexFacilities, indexVenues } from './ui.js';
@@ -331,6 +332,63 @@ async function load({ first = false } = {}) {
 
 /* -------------------------------------------------------------------------- */
 
+
+/**
+ * The stage holds one view at a time.
+ *
+ * The page is exactly one viewport, so views replace each other rather than
+ * stacking. A hidden panel has no box, so ECharts measured it as 0x0 and would
+ * stay that size forever; `refresh` re-measures on the frame after it becomes
+ * visible, which is why the resize is deferred rather than called inline.
+ */
+function initViews() {
+  const tabs = el('viewtabs');
+  const stage = el('stage');
+  if (!tabs || !stage) return;
+  const views = [...stage.querySelectorAll('.view')];
+
+  const show = (name) => {
+    for (const view of views) view.hidden = view.dataset.view !== name;
+    for (const button of tabs.querySelectorAll('button')) {
+      button.setAttribute('aria-pressed', String(button.dataset.view === name));
+    }
+    try {
+      localStorage.setItem('padel.view', name);
+    } catch (_) {
+      /* blocked storage is not a reason to fail a click */
+    }
+    requestAnimationFrame(() => {
+      for (const node of stage.querySelectorAll('.view:not([hidden]) .chart')) refresh(node);
+    });
+  };
+
+  tabs.addEventListener('click', (event) => {
+    const button = event.target.closest('button[data-view]');
+    if (button) show(button.dataset.view);
+  });
+
+  // Left/right arrows move between views, so the whole dashboard is reachable
+  // from the keyboard without a pointer.
+  tabs.addEventListener('keydown', (event) => {
+    const keys = { ArrowLeft: -1, ArrowRight: 1 };
+    if (!(event.key in keys)) return;
+    const buttons = [...tabs.querySelectorAll('button[data-view]')];
+    const at = buttons.findIndex((b) => b.getAttribute('aria-pressed') === 'true');
+    const next = buttons[(at + keys[event.key] + buttons.length) % buttons.length];
+    next.focus();
+    show(next.dataset.view);
+    event.preventDefault();
+  });
+
+  let saved = null;
+  try {
+    saved = localStorage.getItem('padel.view');
+  } catch (_) {
+    /* fall through to the default view */
+  }
+  show(views.some((v) => v.dataset.view === saved) ? saved : 'demand');
+}
+
 function boot() {
   initTheme();
   initFilters();
@@ -352,25 +410,7 @@ function boot() {
     load();
   });
 
-  // The masthead only draws its rule once the page has scrolled under it.
-  const masthead = document.querySelector('.masthead');
-  if (masthead) {
-    let ticking = false;
-    const sync = () => {
-      ticking = false;
-      masthead.dataset.scrolled = String(window.scrollY > 4);
-    };
-    window.addEventListener(
-      'scroll',
-      () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(sync);
-      },
-      { passive: true }
-    );
-    sync();
-  }
+  initViews();
 }
 
 if (document.readyState === 'loading') {

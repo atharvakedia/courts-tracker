@@ -46,159 +46,107 @@
     <script src="https://cdn.jsdelivr.net/npm/echarts@6.1.0/dist/echarts.min.js"></script>
   </head>
 
-  <body>
-    <a class="visually-hidden skip" href="#main">Skip to the dashboard</a>
+  <body class="app">
+    <a class="visually-hidden skip" href="#stage">Skip to the charts</a>
 
-    <header class="masthead">
-      <div class="shell masthead__inner">
-        <span class="wordmark">
-          <span class="wordmark__court" aria-hidden="true"></span>
-          Jaipur padel
-          <span class="wordmark__city">court occupancy</span>
-        </span>
-        <span class="masthead__spacer"></span>
+    <!-- Row 1: identity, scope controls, collector health. One line, always visible. -->
+    <header class="bar bar--top">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <span class="brand__name">Jaipur padel</span>
+      </div>
+
+      <form class="ctl" id="filters" aria-label="Scope">
+        <div class="seg" id="window-group" role="group" aria-label="Window"></div>
+        <label class="ctl__field">
+          <span class="visually-hidden">Sport</span>
+          <select id="sport-select" aria-label="Sport">
+            <option value="padel">Padel</option>
+            <option value="pickleball">Pickleball</option>
+            <option value="all">Both</option>
+          </select>
+        </label>
+        <label class="ctl__field">
+          <span class="visually-hidden">Venue</span>
+          <select id="venue-select" aria-label="Venue"></select>
+        </label>
+      </form>
+
+      <div class="bar__right">
         <span class="pulse" id="pulse" data-state="loading">
           <span class="pulse__dot" aria-hidden="true"></span>
-          <span id="pulse-text">Checking the collector…</span>
+          <span id="pulse-text">Checking…</span>
         </span>
-        <button
-          class="icon-btn"
-          id="theme-toggle"
-          type="button"
-          aria-label="Switch to dark theme"
-          title="Switch theme"
-        >
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="4.2" />
-            <path d="M12 2.4v2.2M12 19.4v2.2M2.4 12h2.2M19.4 12h2.2M5.2 5.2l1.6 1.6M17.2 17.2l1.6 1.6M18.8 5.2l-1.6 1.6M6.8 17.2l-1.6 1.6" />
-          </svg>
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M20 14.2A8.2 8.2 0 1 1 9.8 4a6.6 6.6 0 0 0 10.2 10.2z" />
-          </svg>
+        <button class="iconbtn" id="theme-toggle" type="button" aria-label="Toggle theme">
+          <span class="iconbtn__glyph" aria-hidden="true"></span>
         </button>
       </div>
     </header>
 
-    <main id="main" class="page">
-      <div class="shell">
-        <div id="banners" role="status" aria-live="polite"></div>
-      </div>
-
-      <!-- The hero is the denominator, drawn to scale: every court-hour the
-           three venues listed in the window, split into what sold, what stayed
-           open, and what was withdrawn from sale. -->
-      <section class="shell hero" id="hero" aria-labelledby="hero-label">
-        <div class="skel-stack" id="hero-skeleton" style="padding: 0; gap: var(--s4)">
-          <div class="skel skel-line" style="height: 84px; width: min(30rem, 62%)"></div>
-          <div class="skel skel-line" style="height: 16px; width: min(24rem, 44%)"></div>
-          <div class="skel" style="height: 58px"></div>
-          <div class="skel skel-line" style="height: 12px; width: min(34rem, 70%)"></div>
-        </div>
+    <!-- Row 2: the numbers that never change place, so the eye can anchor. -->
+    <section class="kpibar" aria-label="Headline figures">
+      <div class="kpibar__hero" id="hero">
+        <div class="skel skel-line" id="hero-skeleton" style="height: 38px; width: 12rem"></div>
         <div id="hero-content" hidden></div>
-      </section>
+      </div>
+      <div class="kpibar__tiles" id="kpis"></div>
+    </section>
 
-      <div class="shell">
-        <form class="filters" id="filters" aria-label="Dashboard filters">
-          <div
-            class="segmented"
-            role="group"
-            aria-label="Business-date window"
-            id="window-group"
-          >
-            <button class="segmented__btn" type="button" data-window="7" aria-pressed="false">Next 7 days</button>
-            <button class="segmented__btn" type="button" data-window="30" aria-pressed="false">Next 30 days</button>
-            <button class="segmented__btn" type="button" data-window="all" aria-pressed="true">Everything on record</button>
-          </div>
+    <div id="banners" class="bannerbar" role="status" aria-live="polite"></div>
 
-          <label class="field">
-            <span class="visually-hidden">Sport</span>
-            <select id="sport-select">
-              <option value="padel" selected>Padel</option>
-              <option value="pickleball">Pickleball</option>
-              <option value="all">Both sports</option>
-            </select>
-          </label>
+    <!-- Row 3: the stage. Exactly one view is visible; it fills what is left. -->
+    <nav class="viewtabs" id="viewtabs" aria-label="View">
+      <button type="button" data-view="demand" aria-pressed="true">Demand</button>
+      <button type="button" data-view="timing" aria-pressed="false">Timing</button>
+      <button type="button" data-view="price" aria-pressed="false">Price</button>
+      <button type="button" data-view="market" aria-pressed="false">Market</button>
+      <button type="button" data-view="record" aria-pressed="false">Record</button>
+    </nav>
 
-          <label class="field">
-            <span class="visually-hidden">Venue</span>
-            <select id="venue-select">
-              <option value="">All three venues</option>
-            </select>
-          </label>
-
-          <p class="filters__note" id="filters-note"></p>
-        </form>
-
-        <section class="kpis" id="kpis" aria-label="Headline figures"></section>
-
-        <!-- ------------------------------------------------ demand -->
-        <h2 class="section-rule"><span class="section-rule__text">What sold</span></h2>
-
+    <main class="stage" id="stage">
+      <div class="view view--2" data-view="demand">
         <section class="panel" id="panel-occupancy" aria-labelledby="t-occupancy"></section>
         <section class="panel" id="panel-heatmap" aria-labelledby="t-heatmap"></section>
+      </div>
 
-        <div class="grid-2">
-          <section class="panel" id="panel-weekday" aria-labelledby="t-weekday"></section>
-          <section class="panel" id="panel-firstslot" aria-labelledby="t-firstslot"></section>
-        </div>
-
-        <!-- ------------------------------------------------ timing -->
-        <h2 class="section-rule"><span class="section-rule__text">When it sold</span></h2>
-
+      <div class="view view--3" data-view="timing" hidden>
         <section class="panel" id="panel-leadtime" aria-labelledby="t-leadtime"></section>
         <section class="panel" id="panel-sellout" aria-labelledby="t-sellout"></section>
+        <section class="panel" id="panel-firstslot" aria-labelledby="t-firstslot"></section>
+      </div>
 
-        <!-- ------------------------------------------------ price -->
-        <h2 class="section-rule"><span class="section-rule__text">What it cost</span></h2>
-
+      <div class="view view--2" data-view="price" hidden>
         <section class="panel" id="panel-pricing" aria-labelledby="t-pricing"></section>
         <section class="panel" id="panel-byhour" aria-labelledby="t-byhour"></section>
+      </div>
 
-        <!-- ------------------------------------------------ market -->
-        <h2 class="section-rule"><span class="section-rule__text">How the three compare</span></h2>
-
+      <div class="view view--3" data-view="market" hidden>
         <section class="panel" id="panel-share" aria-labelledby="t-share"></section>
         <section class="panel" id="panel-revenue" aria-labelledby="t-revenue"></section>
+        <section class="panel" id="panel-weekday" aria-labelledby="t-weekday"></section>
+      </div>
 
-        <!-- --------------------------------------- withdrawn stock -->
-        <h2 class="section-rule"><span class="section-rule__text">What never reached a customer</span></h2>
-
+      <div class="view view--4" data-view="record" hidden>
+        <section class="panel" id="panel-coverage" aria-labelledby="t-coverage"></section>
         <section class="panel" id="panel-blocked" aria-labelledby="t-blocked"></section>
         <section class="panel" id="panel-cancellations" aria-labelledby="t-cancellations"></section>
-
-        <!-- ------------------------------------------- the record -->
-        <h2 class="section-rule"><span class="section-rule__text">The record itself</span></h2>
-
-        <section class="panel" id="panel-coverage" aria-labelledby="t-coverage"></section>
         <section class="panel" id="panel-venues" aria-labelledby="t-venues"></section>
-        <section class="panel" id="panel-catalog" aria-labelledby="t-catalog"></section>
-
-        <footer class="colophon">
-          <span
-            >Slot states come from Hudle. <b>Booked</b> beats <b>available</b>: a slot flagged both
-            is counted as sold.</span
-          >
-          <span
-            >Elapsed slots stay marked available upstream, so pastness is recorded separately and
-            never read as demand.</span
-          >
-          <span id="colophon-generated"></span>
-        </footer>
+        <section class="panel panel--wide" id="panel-catalog" aria-labelledby="t-catalog"></section>
       </div>
     </main>
 
+    <!-- Row 4: the standing caveats, compressed to one line so they cost no height. -->
+    <footer class="bar bar--foot">
+      <span class="foot__note"><b>Booked</b> beats <b>available</b>; elapsed slots stay available upstream, so pastness is tracked separately.</span>
+      <span class="foot__note" id="colophon-generated"></span>
+      <p class="foot__note" id="filters-note"></p>
+    </footer>
+
     <script type="module" src="js/main.js"></script>
     <noscript>
-      <div class="shell">
-        <div class="banner" data-tone="warn" style="margin-bottom: 2rem">
-          <span class="banner__mark" aria-hidden="true"></span>
-          <span
-            >This dashboard draws its charts in the browser, so it needs JavaScript. The same
-            numbers are available without it from the JSON API at <code>/api/</code> — start at
-            <a href="/api/metrics/catalog">/api/metrics/catalog</a>, which lists every metric with
-            its denominator.</span
-          >
-        </div>
+      <div class="banner" data-tone="warn">
+        This dashboard draws in the browser. The same numbers are at
+        <a href="/api/metrics/catalog">/api/metrics/catalog</a>.
       </div>
     </noscript>
   </body>

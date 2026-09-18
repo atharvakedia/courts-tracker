@@ -2,7 +2,7 @@
 # collector runs inside the web process and a stopped machine is a hole in a
 # dataset that cannot be backfilled.
 app = "padel-tracker-jaipur"
-primary_region = "bom"   # Mumbai: closest region to the venues and to Hudle
+primary_region = "sin"   # Singapore: nearest available region to Jaipur (Mumbai is not offered)
 
 [build]
   dockerfile = "Dockerfile"

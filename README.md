@@ -188,7 +188,7 @@ brew install flyctl
 fly auth login                                  # once, in a browser
 
 fly apps create padel-tracker-jaipur            # name must match fly.toml
-fly volumes create padel_data --region bom --size 1 --app padel-tracker-jaipur
+fly volumes create padel_data --region sin --size 3 --app padel-tracker-jaipur
 fly deploy                                      # builds the Dockerfile remotely
 
 fly logs                                        # collect_run_done every 30 min

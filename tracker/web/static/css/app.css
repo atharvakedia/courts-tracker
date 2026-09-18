@@ -1893,3 +1893,97 @@ body.app {
   border: 1px solid color-mix(in oklab, #c0392b 55%, transparent);
 }
 .bannerbar { max-height: 6rem; }
+
+
+/* --- charts fill their panel; nothing else may claim the flexible height --- */
+.stage .panel__body { display: flex; flex-direction: column; gap: 0.35rem; }
+.stage .panel__body > .chart { flex: 1 1 auto; min-height: 120px; height: auto !important; }
+.stage .panel__body > :not(.chart) { flex: 0 0 auto; }
+.stage .panel__body:has(table) { display: block; }
+.stage .panel__den {
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
+}
+
+/* --- the top band: one headline, one bar, one tile ---------------------- */
+.kpibar { max-height: 150px; padding-block: 0.4rem; }
+.kpibar .hero__figure { font-size: clamp(2rem, 4.4vw, 3.1rem); line-height: 1; margin: 0; }
+.kpibar .hero__figure .unit { font-size: 0.42em; }
+.kpibar .hero__label { font-size: 0.82rem; margin: 0.15rem 0 0; }
+.kpibar .hero__denominator { font-size: 0.72rem; opacity: 0.7; margin: 0.15rem 0 0; }
+.kpibar .hero__grid { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.2rem 1rem; }
+.kpibar .invbar { height: 14px; margin-top: 0.35rem; }
+.kpibar .invbar__key { font-size: 0.74rem; margin-top: 0.25rem; }
+.kpibar__hero { flex: 1 1 auto; }
+.kpibar__tiles { flex: 0 0 auto; }
+.kpibar .kpi { padding: 0.45rem 0.8rem; min-width: 9rem; }
+.kpibar .kpi__name { font-size: 0.7rem; margin: 0; }
+.kpibar .kpi__value { font-size: 1.55rem; line-height: 1.1; margin: 0.1rem 0 0; white-space: nowrap; }
+.kpibar .kpi__flag { display: none; }
+
+
+/* --- the chart is the point of the Now view: give it the height --------- */
+.view--now { grid-template-rows: 1.8fr 1fr; }
+.stage .panel__head { margin-bottom: 0.15rem; }
+.stage .panel__body > .legend { margin: 0 0 0.1rem; }
+.stage .panel__body > .statstrip { margin: 0; }
+
+/* --- window buttons: long labels on desktop, two-letter ones on a phone -- */
+.w-tiny { display: none; }
+@media (max-width: 900px) {
+  .w-long { display: none; }
+  .w-tiny { display: inline; }
+
+  /* Top bar as a 2-row grid: identity and health on row one, all the scope
+     controls on row two, scrolling sideways if they must. */
+  .bar--top {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+    row-gap: 0.3rem;
+    padding-block: 0.4rem;
+  }
+  .brand { grid-row: 1; grid-column: 1; }
+  .bar__right { grid-row: 1; grid-column: 3; }
+  .ctl { grid-row: 2; grid-column: 1 / -1; margin: 0; gap: 0.4rem; }
+  .brand__name { display: inline; font-size: 0.9rem; }
+
+  /* The hero stacks and shrinks rather than clipping; the lead-time tile is
+     already on the Now tab, so it does not need a second home up here. */
+  .kpibar { max-height: none; flex-direction: column; align-items: stretch; gap: 0.25rem; }
+  .kpibar .hero__figure { font-size: 2rem; }
+  .kpibar .hero__label { font-size: 0.78rem; }
+  .kpibar__tiles { display: none; }
+
+  .bannerbar .banner { white-space: normal; }
+  .bannerbar { max-height: 7rem; }
+}
+
+/* --- stage panels always fill their grid cell; captions under stat values
+   are explanatory prose the panel cannot afford on one screen ------------ */
+.stage .view > .panel { height: 100%; min-height: 0; box-sizing: border-box; }
+.stage .stat__sub { display: none; }
+.kpibar .invbar, .kpibar .invbar__key { width: 100%; max-width: 100%; box-sizing: border-box; }
+.kpibar .invbar__key { display: flex; flex-wrap: wrap; gap: 0.2rem 1rem; }
+.bannerbar { overflow-x: hidden; }
+.bannerbar .banner { box-sizing: border-box; max-width: 100%; }
+
+@media (max-width: 900px) {
+  /* On a phone the caveat disclosure costs a chart its last 40px. */
+  .stage .panel__foot { display: none; }
+  #pulse-text { display: none; }
+  .stage .panel__den { display: none; }
+}
+
+@media (max-width: 900px) {
+  /* One panel per view on a phone: flex stretches it to the stage floor,
+     which a grid track with an auto-height child was declining to do. */
+  .view:not([hidden]) { display: flex; flex-direction: column; }
+  .view > .panel:first-child { flex: 1 1 auto; height: auto; }
+}
+
+/* Nothing may widen the page past the viewport: grid and flex children default
+   to min-width:auto, so a control row wider than a phone would stretch every
+   row with it and clip the right edge of the whole dashboard. */
+body.app { width: 100%; max-width: 100vw; }
+.bar--top > *, .kpibar > *, .stage, .view, .bannerbar { min-width: 0; }
+.ctl { min-width: 0; max-width: 100%; }

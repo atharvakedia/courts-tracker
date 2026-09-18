@@ -46,10 +46,10 @@ function shift(iso, days) {
 }
 
 export const WINDOWS = {
-  7: { short: 'Last 7 days', label: 'the last 7 settled business dates', back: 7, ahead: 0 },
-  30: { short: 'Last 30 days', label: 'the last 30 settled business dates', back: 30, ahead: 0 },
-  ahead: { short: 'Forward book', label: 'today and the next 20 business dates', back: 0, ahead: 21 },
-  all: { short: 'Everything', label: 'every business date observed', back: null, ahead: null },
+  7: { short: 'Last 7 days', tiny: '7d', label: 'the last 7 settled business dates', back: 7, ahead: 0 },
+  30: { short: 'Last 30 days', tiny: '30d', label: 'the last 30 settled business dates', back: 30, ahead: 0 },
+  ahead: { short: 'Forward book', tiny: 'Ahead', label: 'today and the next 20 business dates', back: 0, ahead: 21 },
+  all: { short: 'Everything', tiny: 'All', label: 'every business date observed', back: null, ahead: null },
 };
 
 /** The query parameters the API expects, derived from the current state. */
@@ -146,7 +146,7 @@ export function initFilters() {
   group.innerHTML = Object.entries(WINDOWS)
     .map(
       ([key, w]) =>
-        `<button class="segmented__btn" type="button" data-window="${key}" aria-pressed="false" title="${w.label}">${w.short}</button>`
+        `<button class="segmented__btn" type="button" data-window="${key}" aria-pressed="false" title="${w.label}"><span class="w-long">${w.short}</span><span class="w-tiny">${w.tiny}</span></button>`
     )
     .join('');
   const syncWindow = () => {

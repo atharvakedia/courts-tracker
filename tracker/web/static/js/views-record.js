@@ -61,13 +61,13 @@ import {
 
 export function renderBlocked(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'Inventory withdrawn from sale', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Court-time withdrawn', body: errorState(payload.error) });
   const data = payload.data;
   const rows = data.rows || [];
 
   if (data.empty || !rows.length) {
     return renderPanel(el, {
-      title: 'Inventory withdrawn from sale',
+      title: 'Court-time withdrawn',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason, { title: 'No court-time has been pulled from sale' }),
       caveats: caveatsOf(data),
@@ -79,7 +79,7 @@ export function renderBlocked(el, payload) {
   const sorted = [...rows].sort((a, b) => b.court_hours - a.court_hours || a.business_date.localeCompare(b.business_date));
 
   renderPanel(el, {
-    title: 'Inventory withdrawn from sale',
+    title: 'Court-time withdrawn',
     denominator: denominatorLine(data.metric),
     body:
       statstrip([
@@ -128,13 +128,13 @@ export function renderBlocked(el, payload) {
 
 export function renderCancellations(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'Bookings that went away again', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Cancellations', body: errorState(payload.error) });
   const data = payload.data;
   const rows = data.rows || [];
 
   if (data.empty || !rows.length) {
     return renderPanel(el, {
-      title: 'Bookings that went away again',
+      title: 'Cancellations',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason),
       caveats: caveatsOf(data),
@@ -142,7 +142,7 @@ export function renderCancellations(el, payload) {
   }
 
   renderPanel(el, {
-    title: 'Bookings that went away again',
+    title: 'Cancellations',
     denominator: denominatorLine(data.metric),
     body: table(
       ['Venue', 'Week', 'Bookings seen', 'Reverted', 'Rate', 'Court-h returned', 'Not measurable'],
@@ -171,12 +171,12 @@ export function renderCancellations(el, payload) {
 
 export function renderCoverage(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'What the collector actually caught', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Collector coverage', body: errorState(payload.error) });
   const data = payload.data;
 
   if (data.empty || !(data.days || []).length) {
     return renderPanel(el, {
-      title: 'What the collector actually caught',
+      title: 'Collector coverage',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason),
       caveats: caveatsOf(data),
@@ -188,7 +188,7 @@ export function renderCoverage(el, payload) {
   const byFacility = groupBy(data.days, 'facility_uuid');
 
   renderPanel(el, {
-    title: 'What the collector actually caught',
+    title: 'Collector coverage',
     aside: data.has_gaps
       ? `<span class="chip chip--blocked">${esc(int(data.missed_polls))} missed poll${data.missed_polls === 1 ? '' : 's'}</span>`
       : '<span class="chip chip--booked">unbroken</span>',
@@ -281,12 +281,12 @@ export function renderCoverage(el, payload) {
 
 export function renderVenues(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'The venues and their courts', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Venues and courts', body: errorState(payload.error) });
   const data = payload.data;
   const venues = data.venues || [];
 
   renderPanel(el, {
-    title: 'The venues and their courts',
+    title: 'Venues and courts',
     denominator: denominatorLine(data.metric),
     body:
       (data.reason
@@ -352,12 +352,12 @@ export function renderVenues(el, payload) {
 
 export function renderCatalog(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'Every metric and what it divides by', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Metric definitions', body: errorState(payload.error) });
   const data = payload.data;
   const metrics = data.metrics || [];
 
   renderPanel(el, {
-    title: 'Every metric and what it divides by',
+    title: 'Metric definitions',
     aside: `<button class="disclose" type="button" aria-expanded="false" id="catalog-toggle">${esc(
       int(metrics.length)
     )} definitions</button>`,

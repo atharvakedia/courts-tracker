@@ -50,12 +50,12 @@ import {
 
 export function renderLeadTime(el, payload, { cadence }) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'How far ahead people book', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Booking lead time', body: errorState(payload.error) });
   const data = payload.data;
 
   if (data.empty || !data.overall || data.overall.n === 0) {
     return renderPanel(el, {
-      title: 'How far ahead people book',
+      title: 'Booking lead time',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason),
       caveats: caveatsOf(data),
@@ -79,7 +79,7 @@ export function renderLeadTime(el, payload, { cadence }) {
   const censored = (data.distribution || []).filter((s) => s.censored_left).length;
 
   renderPanel(el, {
-    title: 'How far ahead people book',
+    title: 'Booking lead time',
     denominator: denominatorLine(
       data.metric,
       `<span class="den-range">peak hours ${(data.peak_hours || []).map(hourLabel).join(', ')}</span>`
@@ -279,12 +279,12 @@ export function renderLeadTime(el, payload, { cadence }) {
 
 export function renderSellout(el, payload, { cadence }) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'How long a peak slot lasts', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Time to sell out', body: errorState(payload.error) });
   const data = payload.data;
 
   if (data.empty || !data.n) {
     return renderPanel(el, {
-      title: 'How long a peak slot lasts',
+      title: 'Time to sell out',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason),
       caveats: caveatsOf(data),
@@ -294,7 +294,7 @@ export function renderSellout(el, payload, { cadence }) {
   const values = (data.records || []).map((r) => r.hours_to_sellout);
 
   renderPanel(el, {
-    title: 'How long a peak slot lasts',
+    title: 'Time to sell out',
     denominator: denominatorLine(
       data.metric,
       `<span class="den-range">peak hours ${(data.peak_hours || []).map(hourLabel).join(', ')}</span>`

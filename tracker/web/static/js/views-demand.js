@@ -110,10 +110,8 @@ export function renderHero(payload, { windowText, scopeLabel = 'the three venues
         <p class="hero__label" id="hero-label">of every court-hour ${esc(scopeLabel)} put on sale</p>
       </div>
       <p class="hero__denominator enter" style="--delay:140ms">
-        <b>Booked ÷ booked + open</b> court-hours: the strict denominator, which leaves out the
-        court-time a venue withdrew from sale. ${esc(range.label ? `${range.label}.` : '')}
-        Counting withdrawn court-time as unavailable instead, gross occupancy is
-        <b>${esc(pct(gross, { places: 1 }))}</b>.
+        Booked ÷ booked + open court-hours${esc(range.label ? ` · ${range.label}` : '')} ·
+        gross <b>${esc(pct(gross, { places: 1 }))}</b>
       </p>
     </div>
     <div class="invbar enter" style="--delay:220ms" role="img"
@@ -251,13 +249,16 @@ export function renderKpis({ totals, venues, health }) {
     leadTimeCard(leadTimeState, uncertainty, leadTimeState === undefined),
   ];
 
-  host.innerHTML = cards
+  // The hero already carries occupancy, booked and withdrawn court-hours to
+  // scale; repeating them as tiles said the same number twice. Only the figure
+  // the hero cannot show is tiled. The denominator survives as hover text.
+  const shown = cards.filter((card) => /lead time/i.test(card.name));
+  host.innerHTML = shown
     .map(
       (card, i) => `
-      <article class="kpi enter" style="--delay:${60 + i * 70}ms">
+      <article class="kpi enter" style="--delay:${60 + i * 70}ms" title="${esc(card.den)}">
         <p class="kpi__name">${esc(card.name)}</p>
         <p class="kpi__value" data-kpi="${i}">${card.html ? card.value : esc(card.value)}</p>
-        <p class="kpi__den">${esc(card.den)}</p>
         ${
           i === 0 && flagged.length
             ? `<p class="kpi__flag">${esc(
@@ -274,7 +275,7 @@ export function renderKpis({ totals, venues, health }) {
     )
     .join('');
 
-  cards.forEach((card, i) => {
+  shown.forEach((card, i) => {
     if (card.raw === null || card.raw === undefined) return;
     countUp(host.querySelector(`[data-kpi="${i}"]`), card.raw, (v) => esc(card.render(v)));
   });
@@ -310,6 +311,14 @@ export function renderOccupancy(el, payload, ctx) {
   const blockedTotals = dates.map((d) =>
     rows.filter((r) => r.business_date === d).reduce((a, r) => a + r.blocked_court_hours, 0)
   );
+  // Withdrawn court-time as a share of everything listed that day, so it sits
+  // on the same 0-100% axis as occupancy instead of on a second scale.
+  const listedTotals = dates.map((d) =>
+    rows
+      .filter((r) => r.business_date === d)
+      .reduce((a, r) => a + r.sellable_court_hours + r.blocked_court_hours, 0)
+  );
+  const blockedShares = blockedTotals.map((b, i) => (listedTotals[i] ? b / listedTotals[i] : null));
   const lookup = new Map(rows.map((r) => [`${r.venue_uuid}|${r.business_date}`, r]));
 
   renderPanel(el, {
@@ -322,23 +331,9 @@ export function renderOccupancy(el, payload, ctx) {
           color: 'var(--ink-faint)',
           label: (byVenue.get(uuid)[0].venue_name || uuid).toString(),
         })),
-        { color: 'var(--blocked)', label: 'withdrawn from sale (right axis)', square: true },
+        { color: 'var(--blocked)', label: 'withdrawn from sale, share of listed court-time', square: true },
       ]).replace('<div class="legend">', '<div class="legend" id="occ-legend">') +
-      chart('chart chart--tall') +
-      `<div class="notes">` +
-      `<p class="note">The amber band behind the lines is court-time withdrawn from sale that day,
-        in court-hours on the right axis. It is not part of the occupancy denominator; a day can
-        read 0% occupied and still have had most of its inventory pulled.</p>` +
-      ((ctx.flaggedVenues || [])
-        .map(
-          (name) =>
-            `<p class="note note--warn"><b>${esc(name)}</b>'s line sits on zero for the whole
-              window. No booking has ever been observed there, at the highest rate of the three.
-              That is a flat line, not a broken collector — it may take no bookings through Hudle
-              at all.</p>`
-        )
-        .join('')) +
-      `</div>`,
+      chart('chart'),
     caveats: caveatsOf(data),
     mount(root) {
       // Real legend swatches, coloured from the live theme.
@@ -384,7 +379,11 @@ export function renderOccupancy(el, payload, ctx) {
                   )} gross · ${num(r.booked_court_hours)} of ${num(r.sellable_court_hours)} h`,
                 })),
                 blocked
-                  ? { color: t.blocked, key: 'withdrawn from sale', value: `${num(blocked)} court-hours` }
+                  ? {
+                      color: t.blocked,
+                      key: 'withdrawn from sale',
+                      value: `${pct(blockedShares[dates.indexOf(date)], { places: 0 })} of listed court-time (${num(blocked)} h)`,
+                    }
                   : null,
               ],
               note: rowsHere.length
@@ -404,33 +403,16 @@ export function renderOccupancy(el, payload, ctx) {
             hideOverlap: true,
           },
         },
-        yAxis: [
-          percentAxis(t, occupancyBasis === 'strict' ? 'occupancy (strict)' : 'occupancy (gross)'),
-          {
-            // Held to the bottom third of the plot on purpose: this is context
-            // behind the lines, and a blocked bar that reached the top would
-            // read as an occupancy of 100%.
-            type: 'value',
-            name: 'blocked court-hours',
-            nameTextStyle: { color: t.blocked, fontSize: 11, align: 'right' },
-            nameGap: 14,
-            max: Math.max(1, ...blockedTotals) * 3,
-            axisLabel: { color: t.blocked, fontSize: 11, showMaxLabel: false },
-            splitLine: { show: false },
-            axisLine: { show: false },
-            axisTick: { show: false },
-          },
-        ],
+        yAxis: percentAxis(t, occupancyBasis === 'strict' ? 'occupancy (strict)' : 'occupancy (gross)'),
         series: [
           {
             name: 'Withdrawn from sale',
             type: 'bar',
-            yAxisIndex: 1,
-            data: blockedTotals.map((v) => (v > 0 ? v : null)),
-            barMaxWidth: 10,
+            data: blockedShares.map((v) => (v > 0 ? v : null)),
+            barMaxWidth: 22,
             z: 1,
             silent: true,
-            itemStyle: { color: t.blocked, opacity: 0.18 },
+            itemStyle: { color: t.blocked, opacity: 0.22, borderRadius: [3, 3, 0, 0] },
             animationDelay: (i) => Math.min(i * 6, 260),
           },
           ...[...byVenue.keys()].map((uuid) => {
@@ -693,12 +675,12 @@ export function renderHeatmap(el, payload) {
 
 export function renderWeekday(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'Weekday against weekend', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Weekday vs weekend', body: errorState(payload.error) });
   const data = payload.data;
 
   if (data.empty || !data.weekday) {
     return renderPanel(el, {
-      title: 'Weekday against weekend',
+      title: 'Weekday vs weekend',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason),
       caveats: caveatsOf(data),
@@ -708,7 +690,7 @@ export function renderWeekday(el, payload) {
   const segments = [data.weekday, data.weekend];
 
   renderPanel(el, {
-    title: 'Weekday against weekend',
+    title: 'Weekday vs weekend',
     denominator: denominatorLine(data.metric),
     body:
       statstrip([
@@ -775,13 +757,13 @@ export function renderWeekday(el, payload) {
 
 export function renderFirstSlot(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'The first slot to go', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'First slot to go', body: errorState(payload.error) });
   const data = payload.data;
   const rows = data.rows || [];
 
   if (data.empty || !rows.length) {
     return renderPanel(el, {
-      title: 'The first slot to go',
+      title: 'First slot to go',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason),
       caveats: caveatsOf(data),
@@ -793,7 +775,7 @@ export function renderFirstSlot(el, payload) {
   const hoursSorted = [...counts.keys()].sort((a, b) => a - b);
 
   renderPanel(el, {
-    title: 'The first slot to go',
+    title: 'First slot to go',
     denominator: denominatorLine(data.metric),
     body:
       `<p class="note note--lead">Which hour sells first on a given business

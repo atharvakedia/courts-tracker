@@ -53,19 +53,19 @@ const CONCURRENCY = 3;
 const TITLES = {
   'panel-occupancy': 'Occupancy by day',
   'panel-heatmap': 'Peak hours',
-  'panel-weekday': 'Weekday against weekend',
-  'panel-firstslot': 'The first slot to go',
-  'panel-leadtime': 'How far ahead people book',
-  'panel-sellout': 'How long a peak slot lasts',
+  'panel-weekday': 'Weekday vs weekend',
+  'panel-firstslot': 'First slot to go',
+  'panel-leadtime': 'Booking lead time',
+  'panel-sellout': 'Time to sell out',
   'panel-pricing': 'Price per court-hour',
-  'panel-byhour': 'Does price move with the hour?',
-  'panel-share': 'Share of the three',
+  'panel-byhour': 'Price by hour of day',
+  'panel-share': 'Market share',
   'panel-revenue': 'Revenue proxy',
-  'panel-blocked': 'Inventory withdrawn from sale',
-  'panel-cancellations': 'Bookings that went away again',
-  'panel-coverage': 'What the collector actually caught',
-  'panel-venues': 'The venues and their courts',
-  'panel-catalog': 'Every metric and what it divides by',
+  'panel-blocked': 'Court-time withdrawn',
+  'panel-cancellations': 'Cancellations',
+  'panel-coverage': 'Collector coverage',
+  'panel-venues': 'Venues and courts',
+  'panel-catalog': 'Metric definitions',
 };
 
 const el = (id) => document.getElementById(id);
@@ -137,7 +137,7 @@ function renderBanners(health, coverage) {
       )}, the longest ${esc(
         fmtMinutes(Math.max(...recentGaps.map((g) => g.minutes)))
       )}. Lines are broken across gaps rather than drawn through them; the full record is under
-      <i>What the collector actually caught</i>.`,
+      <i>Collector coverage</i>.`,
     });
   }
 
@@ -195,7 +195,13 @@ function renderFirstRun(health) {
 /** What the hero's denominator is scoped to: one venue, or all three. */
 function scopeLabel(venues) {
   const chosen = currentFilters().venue;
-  if (!chosen) return 'the three venues';
+  const shown = venues.ok && venues.data ? venues.data.venues || [] : [];
+  if (!chosen) {
+    // Counted, not assumed: Padel Up is collected but hidden, so "the three
+    // venues" would name a denominator the chart is not actually using.
+    if (shown.length === 2) return 'both venues';
+    return shown.length ? `the ${shown.length} venues` : 'the venues';
+  }
   const match =
     venues.ok && venues.data
       ? (venues.data.venues || []).find((v) => v.venue_uuid === chosen)
@@ -246,6 +252,7 @@ async function load({ first = false } = {}) {
       }
       fn(el(id), payload, extra);
     } catch (err) {
+      console.error(`panel ${id} failed to render`, err);
       failPanel(el(id), TITLES[id] || 'Panel', String((err && err.message) || err));
     }
   };

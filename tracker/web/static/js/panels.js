@@ -57,6 +57,8 @@ export function renderPanel(el, spec) {
     }
   `;
   el.classList.remove('is-stale');
+  const den = el.querySelector('.panel__den');
+  if (den) den.title = den.textContent.replace(/\s+/g, ' ').trim();
   enter(el);
 
   const toggle = el.querySelector('[data-caveat-toggle]');

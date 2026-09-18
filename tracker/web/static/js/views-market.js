@@ -209,12 +209,12 @@ export function renderPricing(el, payload, { gaps, cadence }) {
 
 export function renderPriceByHour(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'Does price move with the hour?', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Price by hour of day', body: errorState(payload.error) });
   const data = payload.data;
 
   if (data.empty || !(data.courts || []).length) {
     return renderPanel(el, {
-      title: 'Does price move with the hour?',
+      title: 'Price by hour of day',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason),
       caveats: caveatsOf(data),
@@ -228,7 +228,7 @@ export function renderPriceByHour(el, payload) {
       (a, b) => (b.flat_price_per_court_hour || 0) - (a.flat_price_per_court_hour || 0)
     );
     return renderPanel(el, {
-      title: 'Does price move with the hour?',
+      title: 'Price by hour of day',
       aside: '<span class="chip chip--flat">flat everywhere</span>',
       denominator: denominatorLine(data.metric),
       body:
@@ -261,7 +261,7 @@ export function renderPriceByHour(el, payload) {
   }
 
   renderPanel(el, {
-    title: 'Does price move with the hour?',
+    title: 'Price by hour of day',
     aside: `<span class="chip chip--booked">${esc(sentence(data.summary))}</span>`,
     denominator: denominatorLine(data.metric),
     body:
@@ -333,12 +333,12 @@ let shareBasis = 'demand';
 
 export function renderShare(el, payload) {
   if (!payload.ok)
-    return renderPanel(el, { title: 'Share of the three', body: errorState(payload.error) });
+    return renderPanel(el, { title: 'Market share', body: errorState(payload.error) });
   const data = payload.data;
 
   if (data.empty || !(data.rows || []).length) {
     return renderPanel(el, {
-      title: 'Share of the three',
+      title: 'Market share',
       denominator: denominatorLine(data.metric),
       body: emptyState(data.reason),
       caveats: caveatsOf(data),
@@ -350,7 +350,7 @@ export function renderShare(el, payload) {
   const flagged = (data.venues || []).filter((v) => v.flags && v.flags.length);
 
   renderPanel(el, {
-    title: 'Share of the three',
+    title: 'Market share',
     aside: `<div class="segmented" role="group" aria-label="Share basis" id="share-basis">
       <button class="segmented__btn" type="button" data-share="demand" aria-pressed="${shareBasis === 'demand'}">Demand</button>
       <button class="segmented__btn" type="button" data-share="supply" aria-pressed="${shareBasis === 'supply'}">Supply</button>

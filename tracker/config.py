@@ -87,6 +87,11 @@ class BackoffConfig:
 class PollConfig:
     cadence_minutes: int
     horizon_days: int
+    #: Days before today the grid request starts at. Hudle keeps serving a date
+    #: after it elapses, so re-reading yesterday captures each date's settled
+    #: state after every booking for it is in -- and survives an outage that
+    #: swallowed the last polls before midnight.
+    lookback_days: int
     request_gap_seconds: float
     timeout_seconds: float
     max_consecutive_failures: int
@@ -305,6 +310,7 @@ def load_config(path: str | Path) -> Config:
         poll=PollConfig(
             cadence_minutes=int(_require(poll_raw, "cadence_minutes", "poll")),
             horizon_days=int(_require(poll_raw, "horizon_days", "poll")),
+            lookback_days=int(poll_raw.get("lookback_days", 1)),
             request_gap_seconds=float(_require(poll_raw, "request_gap_seconds", "poll")),
             timeout_seconds=float(_require(poll_raw, "timeout_seconds", "poll")),
             max_consecutive_failures=int(_require(poll_raw, "max_consecutive_failures", "poll")),

@@ -193,6 +193,16 @@ class SlotObservation:
     days_ahead: int
     business_date: dt.date
     is_past: bool
+    #: Hudle's own ``created_at`` / ``updated_at`` on the slot row, converted to
+    #: UTC. ``updated_at`` moves when a slot is sold: booked slots sit ~30 days
+    #: after their creation while open ones sit hours after it, consecutive
+    #: slots bought together share it to the second, and every booking's
+    #: value precedes its slot start. It is a last-modified stamp, not a
+    #: booking field -- a cancel-and-rebook or an admin edit moves it too --
+    #: so it is stored raw and interpreted by analytics next to the observed
+    #: state, never treated as truth on its own.
+    upstream_created_at: dt.datetime | None = None
+    upstream_updated_at: dt.datetime | None = None
 
 
 def slot_start_hour(observation: SlotObservation) -> int:

@@ -1306,3 +1306,28 @@ def test_court_minutes_view_exposes_price_per_court_hour(storage: SQLiteStorage)
     # The trap the column exists to close: per-slot ranking says the opposite.
     per_slot = {uuid: row["slot_price_total"] / row["slots"] for uuid, row in rows.items()}
     assert per_slot["play-padel-court"] < per_slot["padel-up-court"]
+
+
+def test_initialize_adds_columns_missing_from_an_older_database() -> None:
+    """Regression: a column added to the schema never reaching a database that
+    already exists, so every deployed collector silently stores NULL forever.
+
+    create_all only creates absent tables. The live database predates the
+    upstream timestamp columns; initialize() must add them in place and leave
+    the rows that predate them reading None.
+    """
+    storage = SQLiteStorage("sqlite://")
+    storage.initialize()
+    with storage._engine.begin() as conn:
+        conn.exec_driver_sql("ALTER TABLE slot_observations DROP COLUMN upstream_updated_at")
+        conn.exec_driver_sql("ALTER TABLE slot_observations DROP COLUMN upstream_created_at")
+        before = {r[1] for r in conn.exec_driver_sql("PRAGMA table_info(slot_observations)")}
+    assert "upstream_updated_at" not in before
+
+    storage.initialize()
+    storage.initialize()  # and again: the migration must be idempotent
+
+    with storage._engine.connect() as conn:
+        after = {r[1] for r in conn.exec_driver_sql("PRAGMA table_info(slot_observations)")}
+    assert {"upstream_updated_at", "upstream_created_at"} <= after
+    storage.close()

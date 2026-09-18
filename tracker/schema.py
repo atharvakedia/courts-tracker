@@ -166,6 +166,10 @@ slot_observations = sa.Table(
     # Computed by us. Hudle never marks elapsed slots unavailable, so pastness
     # is orthogonal to state and must never be inferred from is_available.
     sa.Column("is_past", sa.Boolean, nullable=False),
+    # Hudle's own row timestamps, UTC. Nullable: older observations predate the
+    # columns, and the upstream payload is not contractually obliged to carry them.
+    sa.Column("upstream_created_at", sa.Text, nullable=True),
+    sa.Column("upstream_updated_at", sa.Text, nullable=True),
     sa.PrimaryKeyConstraint("snapshot_id", "slot_uuid", name="pk_slot_observations"),
     sa.CheckConstraint(f"state IN ({_STATE_VALUES})", name="ck_slot_observations_state"),
     sa.CheckConstraint(f"sport IN ({_SPORT_VALUES})", name="ck_slot_observations_sport"),

@@ -205,7 +205,24 @@ def parse_slot(
         days_ahead=days_ahead_for(slot_start_local, observed_at, tz),
         business_date=business_date_for(slot_start_local, business_day_start_hour),
         is_past=slot_start_utc < observed_at,
+        upstream_created_at=_upstream_stamp(raw.get("created_at"), tz),
+        upstream_updated_at=_upstream_stamp(raw.get("updated_at"), tz),
     )
+
+
+def _upstream_stamp(value: object, tz: str) -> dt.datetime | None:
+    """Hudle's naive local row timestamp as an aware UTC datetime, or None.
+
+    The payload documents nothing about these fields, so a missing or
+    malformed value is treated as absent rather than as an error: losing one
+    timestamp is not a reason to drop the observation that carries it.
+    """
+    if not value:
+        return None
+    try:
+        return slot_start_utc_for(from_local_text(str(value)), tz)
+    except ValueError:
+        return None
 
 
 def parse_slot_grid(

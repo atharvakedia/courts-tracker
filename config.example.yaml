@@ -12,6 +12,11 @@ storage:
 poll:
   cadence_minutes: 30 # single knob for how often we collect
   horizon_days: 21 # how far ahead each grid request reaches
+  # The request also reaches this many days *behind* today. Hudle keeps serving
+  # a date after it elapses, so re-reading yesterday captures its settled state
+  # after every booking for it landed, and survives an outage that swallowed the
+  # last polls before midnight. Costs nothing: the range is one call per court.
+  lookback_days: 1
   # Hard floor between any two outbound requests, global and enforced inside the
   # client so no call path can skip it. Raised from 2.0 on live evidence: at 2.0
   # the six configured courts go out inside ~35s and Hudle returns 429 on the

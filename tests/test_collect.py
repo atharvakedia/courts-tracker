@@ -312,12 +312,16 @@ def test_a_cycle_requests_one_range_per_facility_not_one_per_day(
     test_config: Config, memory_storage: Storage, grids: dict[str, Any]
 ) -> None:
     """Regression: the range parameter is the whole point. One request per day
-    would be 126 requests a cycle instead of 6."""
+    would be 132 requests a cycle instead of 6.
+
+    The range starts one day behind today: a date's settled state is only
+    knowable after it elapses, and Hudle keeps serving it, so the lookback is
+    what turns "the last poll before midnight" into "the final answer"."""
     client = FakeSlotsClient(grids)
 
     run_collect(test_config, memory_storage, client, now=NOW)
 
-    start, end = dt.date(2026, 9, 11), dt.date(2026, 10, 1)  # 21 days inclusive
+    start, end = dt.date(2026, 9, 10), dt.date(2026, 10, 1)  # 1 day back + 21 ahead
     assert [(r[2], r[3]) for r in client.requests] == [(start, end)] * ACTIVE_COURT_COUNT
 
 
@@ -1292,3 +1296,13 @@ def test_a_cycle_records_the_venue_and_facility_dimensions(
         facility.uuid for venue in test_config.venues for facility in venue.facilities
     }, "equipment facilities belong here too: the table records what we decided, not what we polled"
     assert all(dim.first_seen == NOW for dim in venues.values())
+
+
+def test_the_window_reaches_lookback_days_behind_today() -> None:
+    """Regression: lookback silently ignored, so an outage over midnight loses
+    every date's final state for good."""
+    at = dt.datetime(2026, 9, 12, 3, 0, tzinfo=dt.UTC)  # 08:30 IST on the 12th
+    assert horizon_dates(at, "Asia/Kolkata", 21) == (dt.date(2026, 9, 12), dt.date(2026, 10, 2))
+    assert horizon_dates(at, "Asia/Kolkata", 21, 1) == (dt.date(2026, 9, 11), dt.date(2026, 10, 2))
+    with pytest.raises(ValueError):
+        horizon_dates(at, "Asia/Kolkata", 21, -1)

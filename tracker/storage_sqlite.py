@@ -163,7 +163,13 @@ def _observation_values(observation: SlotObservation) -> dict[str, Any]:
         "days_ahead": observation.days_ahead,
         "business_date": to_date_text(observation.business_date),
         "is_past": observation.is_past,
+        "upstream_created_at": _optional_utc_text(observation.upstream_created_at),
+        "upstream_updated_at": _optional_utc_text(observation.upstream_updated_at),
     }
+
+
+def _optional_utc(value: object) -> dt.datetime | None:
+    return None if value is None else from_utc_text(str(value))
 
 
 def _observation_from_row(row: Mapping[Any, Any]) -> SlotObservation:
@@ -188,6 +194,8 @@ def _observation_from_row(row: Mapping[Any, Any]) -> SlotObservation:
         days_ahead=int(row["days_ahead"]),
         business_date=from_date_text(row["business_date"]),
         is_past=bool(row["is_past"]),
+        upstream_created_at=_optional_utc(row["upstream_created_at"]),
+        upstream_updated_at=_optional_utc(row["upstream_updated_at"]),
     )
 
 
@@ -395,6 +403,7 @@ class SQLiteStorage:
         cadence change must be able to rewrite ``v_coverage_daily``.
         """
         schema.metadata.create_all(self._engine)
+        self._add_missing_columns()
         with self._engine.begin() as conn:
             for statement in schema.DROP_VIEW_SQL:
                 conn.exec_driver_sql(statement)
@@ -404,6 +413,38 @@ class SQLiteStorage:
             "storage_initialized",
             extra={"url": self._url, "tables": len(schema.metadata.tables)},
         )
+
+    def _add_missing_columns(self) -> None:
+        """Bring an existing database up to the current table definitions.
+
+        ``create_all`` never alters a table that already exists, so a column
+        added to the schema would silently be absent from every database
+        created before it. Each table is compared against the live PRAGMA and
+        any missing nullable column is added in place; observations already
+        stored keep NULL there, which is the honest value for a fact that was
+        not recorded at the time.
+        """
+        with self._engine.begin() as conn:
+            for table in schema.metadata.tables.values():
+                present = {
+                    row[1] for row in conn.exec_driver_sql(f'PRAGMA table_info("{table.name}")')
+                }
+                for column in table.columns:
+                    if column.name in present:
+                        continue
+                    if not column.nullable:
+                        raise RuntimeError(
+                            f"{table.name}.{column.name} is NOT NULL and cannot be added to an "
+                            "existing table without a default; give it one or make it nullable"
+                        )
+                    column_type = column.type.compile(dialect=self._engine.dialect)
+                    conn.exec_driver_sql(
+                        f'ALTER TABLE "{table.name}" ADD COLUMN "{column.name}" {column_type}'
+                    )
+                    logger.info(
+                        "storage_column_added",
+                        extra={"table": table.name, "column": column.name},
+                    )
 
     def close(self) -> None:
         """Dispose of the connection pool."""

@@ -319,16 +319,23 @@ def poll_key_for(moment: dt.datetime, cadence_minutes: int) -> str:
     return to_utc_text(floor_to_cadence(moment, cadence_minutes))
 
 
-def horizon_dates(moment: dt.datetime, tz: str, horizon_days: int) -> tuple[dt.date, dt.date]:
+def horizon_dates(
+    moment: dt.datetime, tz: str, horizon_days: int, lookback_days: int = 0
+) -> tuple[dt.date, dt.date]:
     """The inclusive local date range one cycle requests.
 
     Local, not UTC: Hudle's ``start_date``/``end_date`` are local calendar days,
-    and at 23:00 UTC it is already tomorrow in Jaipur.
+    and at 23:00 UTC it is already tomorrow in Jaipur. The range reaches
+    ``lookback_days`` behind today, because a date's final state is only
+    knowable after it has fully elapsed and Hudle keeps serving it afterwards.
     """
     if horizon_days <= 0:
         raise ValueError("horizon_days must be positive")
-    start = local_wall_clock(moment, tz).date()
-    return start, start + dt.timedelta(days=horizon_days - 1)
+    if lookback_days < 0:
+        raise ValueError("lookback_days cannot be negative")
+    today = local_wall_clock(moment, tz).date()
+    start = today - dt.timedelta(days=lookback_days)
+    return start, today + dt.timedelta(days=horizon_days - 1)
 
 
 # --------------------------------------------------------------------------
@@ -359,7 +366,9 @@ def run_collect(
     started = time.monotonic()
     poll = config.poll
     poll_key = poll_key_for(now, poll.cadence_minutes)
-    start_date, end_date = horizon_dates(now, config.timezone, poll.horizon_days)
+    start_date, end_date = horizon_dates(
+        now, config.timezone, poll.horizon_days, poll.lookback_days
+    )
     courts = config.active_courts()
 
     snapshot_id = (

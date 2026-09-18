@@ -810,3 +810,59 @@ def test_price_is_parsed_from_its_string_form_and_may_be_absent() -> None:
     assert _parse_one(price="900.00").price == 900.0
     assert _parse_one(price=None).price is None
     assert _parse_one(price="").price is None
+
+
+def test_upstream_timestamps_are_captured_as_aware_utc(raw_slots_play_padel: Any) -> None:
+    """Regression: Hudle's updated_at dropped on the floor.
+
+    It is the strongest booking-time signal in the payload: every booked slot's
+    value precedes its start, slots bought together share it to the second, and
+    it lets a booking made before the collector existed be dated at all. Six
+    days of observations were stored without it before this test existed.
+    """
+    observed_at = dt.datetime(2026, 9, 11, 23, 21, tzinfo=dt.UTC)
+    day = raw_slots_play_padel["data"]["slot_data"][0]
+    rows = [
+        parse_slot(
+            raw,
+            snapshot_id=1,
+            observed_at=observed_at,
+            venue_uuid=PLAY_PADEL_VENUE,
+            facility_uuid=PLAY_PADEL_COURT,
+            sport=Sport.PADEL,
+            tz="Asia/Kolkata",
+            business_day_start_hour=4,
+        )
+        for raw in day["slots"]
+    ]
+    booked = [r for r in rows if r.state is SlotState.BOOKED]
+    assert booked, "the recorded day has bookings"
+    for row in rows:
+        assert row.upstream_updated_at is not None and row.upstream_updated_at.tzinfo is dt.UTC
+        assert row.upstream_created_at is not None and row.upstream_created_at.tzinfo is dt.UTC
+    for row in booked:
+        assert row.upstream_updated_at is not None
+        assert row.upstream_updated_at < row.slot_start_utc, "a sale precedes the slot it sold"
+    # 07:30, 08:00 and 08:30 were one transaction: identical to the second.
+    stamps = {r.slot_start_local[11:16]: r.upstream_updated_at for r in booked}
+    assert stamps["07:30"] == stamps["08:00"] == stamps["08:30"]
+
+
+def test_a_missing_or_malformed_upstream_timestamp_does_not_drop_the_observation(
+    raw_slots_padel_fort: Any,
+) -> None:
+    """Regression: an undocumented field taking the whole row down with it."""
+    raw = dict(raw_slots_padel_fort["data"]["slot_data"][0]["slots"][0])
+    raw["updated_at"] = "not a timestamp"
+    raw.pop("created_at")
+    row = parse_slot(
+        raw,
+        snapshot_id=1,
+        observed_at=dt.datetime(2026, 9, 11, 23, 21, tzinfo=dt.UTC),
+        venue_uuid=PADEL_FORT_VENUE,
+        facility_uuid=PADEL_FORT_COURT,
+        sport=Sport.PADEL,
+        tz="Asia/Kolkata",
+        business_day_start_hour=4,
+    )
+    assert row.upstream_updated_at is None and row.upstream_created_at is None

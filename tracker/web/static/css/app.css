@@ -1987,3 +1987,9 @@ body.app {
 body.app { width: 100%; max-width: 100vw; }
 .bar--top > *, .kpibar > *, .stage, .view, .bannerbar { min-width: 0; }
 .ctl { min-width: 0; max-width: 100%; }
+
+/* The body is a one-column grid. An implicit auto column grows to the
+   widest row's min-content, which on a phone is the control row, and every
+   other row is dragged past the viewport with it. Pin the column instead. */
+body.app { grid-template-columns: minmax(0, 1fr); }
+body.app > * { min-width: 0; max-width: 100%; }

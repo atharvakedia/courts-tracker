@@ -73,7 +73,13 @@ from tracker.analytics.transitions import (
 from tracker.config import Config, load_config
 from tracker.storage import Storage
 from tracker.storage_sqlite import SQLiteStorage
-from tracker.types import FacilityFetch, SlotObservation, SnapshotRecord, StateTransition
+from tracker.types import (
+    FacilityFetch,
+    SlotObservation,
+    SnapshotRecord,
+    StateTransition,
+    local_wall_clock,
+)
 from tracker.web.deps import Clock, ConfigDep, Filters, FiltersDep, NowDep, StorageDep
 from tracker.web.schemas import (
     METRIC_DEFINITIONS,
@@ -98,6 +104,7 @@ from tracker.web.schemas import (
     OccupancyHeatmapResponse,
     PricingByHourResponse,
     PricingTimelineResponse,
+    Readiness,
     RevenueProxyResponse,
     SelloutResponse,
     SnapshotOut,
@@ -108,6 +115,7 @@ from tracker.web.schemas import (
     WeekdayWeekendResponse,
     envelope,
     facility_names,
+    readiness_for,
     venue_names,
 )
 
@@ -379,6 +387,7 @@ def venues(
     return VenuesResponse(
         **envelope(
             "venues",
+            readiness=_readiness("venues", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -415,6 +424,7 @@ def occupancy_daily(
     return OccupancyDailyResponse(
         **envelope(
             "occupancy_daily",
+            readiness=_readiness("occupancy_daily", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -450,6 +460,7 @@ def occupancy_heatmap(
     return OccupancyHeatmapResponse(
         **envelope(
             "occupancy_heatmap",
+            readiness=_readiness("occupancy_heatmap", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -466,7 +477,7 @@ def occupancy_heatmap(
 
 @router.get("/metrics/weekday-weekend", summary="Weekday versus weekend demand")
 def weekday_weekend(
-    storage: StorageDep, filters: FiltersDep, now: NowDep
+    config: ConfigDep, storage: StorageDep, filters: FiltersDep, now: NowDep
 ) -> WeekdayWeekendResponse:
     observations = _observations(storage, filters)
     snapshots = _all_snapshots(storage)
@@ -481,6 +492,7 @@ def weekday_weekend(
         split,
         **envelope(
             "weekday_weekend",
+            readiness=_readiness("weekday_weekend", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -516,6 +528,7 @@ def leadtime(
         venue_names(config),
         **envelope(
             "leadtime",
+            readiness=_readiness("leadtime", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -545,6 +558,7 @@ def sellout(
         venue_names(config),
         **envelope(
             "sellout",
+            readiness=_readiness("sellout", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -572,6 +586,7 @@ def first_slot(
     return FirstSlotResponse(
         **envelope(
             "first_slot",
+            readiness=_readiness("first_slot", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -606,6 +621,7 @@ def cancellations(
     return CancellationsResponse(
         **envelope(
             "cancellations",
+            readiness=_readiness("cancellations", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -631,6 +647,7 @@ def blocked_events(
     return BlockedEventsResponse(
         **envelope(
             "blocked_events",
+            readiness=_readiness("blocked_events", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -666,6 +683,7 @@ def pricing_timeline(
         CURRENCY,
         **envelope(
             "pricing_timeline",
+            readiness=_readiness("pricing_timeline", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -692,6 +710,7 @@ def pricing_by_hour(
         facility_names(config),
         **envelope(
             "pricing_by_hour",
+            readiness=_readiness("pricing_by_hour", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -722,6 +741,7 @@ def market_share_endpoint(
         venue_names(config),
         **envelope(
             "market_share",
+            readiness=_readiness("market_share", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -747,6 +767,7 @@ def market_revenue_proxy(
         venue_names(config),
         **envelope(
             "revenue_proxy",
+            readiness=_readiness("revenue_proxy", storage, config, now),
             date_range=date_range_of(observations),
             filters=filters,
             now=now,
@@ -788,6 +809,7 @@ def coverage(
         facility_names(config, storage.list_facility_dims()),
         **envelope(
             "coverage",
+            readiness=_readiness("coverage", storage, config, now),
             date_range=_observed_date_range(snapshots),
             filters=filters,
             now=now,
@@ -946,6 +968,26 @@ def _status(
             "This dataset cannot be backfilled, so the wait is unavoidable."
         )
     return True, _no_rows(filters, observations=observations, snapshots=snapshots)
+
+
+def _readiness(name: str, storage: Storage, config: Config, now: dt.datetime) -> Readiness:
+    """How much of the dataset exists, judged against what this metric needs.
+
+    Measured on the whole database, never on the filtered window: a request
+    for the next seven days has zero elapsed days in it, and that says nothing
+    about whether the metric itself is trustworthy yet.
+    """
+    today = local_wall_clock(now, config.timezone).date()
+    elapsed = storage.query_rows(
+        "SELECT count(DISTINCT business_date) AS n FROM slot_observations "
+        "WHERE business_date < :today",
+        {"today": today.isoformat()},
+    )
+    return readiness_for(
+        name,
+        snapshots=len(_all_snapshots(storage)),
+        elapsed_days=int(elapsed[0]["n"]) if elapsed else 0,
+    )
 
 
 def _no_rows(

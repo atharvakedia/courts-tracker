@@ -1,0 +1,14 @@
+.venv
+.git
+.mypy_cache
+.ruff_cache
+.pytest_cache
+__pycache__
+*.pyc
+data/
+fixtures/
+tests/
+docs/
+deploy/
+smoke_test.py
+*.egg-info

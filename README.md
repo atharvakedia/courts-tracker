@@ -169,6 +169,59 @@ include the venv, and its working directory is not the repo.
 
 ---
 
+## Running it online (Fly.io) — the recommended path
+
+A laptop that sleeps drops polls, and the polls it drops are the ones that
+matter: Jaipur's evening prime time, 18:00–23:30 IST, is 05:30–11:00 in San
+Francisco. Six days of local collection lost two twelve-hour stretches that
+way. An always-on machine is the fix, and the whole deployment is one small
+machine with one volume.
+
+`serve --with-collector` runs the poll loop on a daemon thread inside the web
+process, so there is no scheduler to install and nothing to keep in step. The
+thread owns its own storage handle and HTTP client; SQLite in WAL mode lets it
+share the file with the dashboard. `PADEL_TRACKER_STORAGE_URL` overrides
+`storage.url` so the checked-in config need not know where the volume is.
+
+```bash
+brew install flyctl
+fly auth login                                  # once, in a browser
+
+fly apps create padel-tracker-jaipur            # name must match fly.toml
+fly volumes create padel_data --region bom --size 1 --app padel-tracker-jaipur
+fly deploy                                      # builds the Dockerfile remotely
+
+fly logs                                        # collect_run_done every 30 min
+fly ssh console -C "sqlite3 /data/padel.db 'select count(*) from snapshots'"
+```
+
+`fly.toml` pins `auto_stop_machines = false` and `min_machines_running = 1`:
+a machine that scales to zero is a hole in a dataset that cannot be
+backfilled. The health check hits `/api/health`, which reports staleness, so
+a collector that has silently stopped shows up as an unhealthy machine rather
+than as a dashboard that quietly ages.
+
+**Moving the data up.** The volume starts empty. To carry the local history
+along, copy the file once before the first deploy finishes its first cycle:
+
+```bash
+fly ssh sftp shell --app padel-tracker-jaipur
+> put data/padel.db /data/padel.db
+```
+
+Then restart the machine (`fly machine restart`). `initialize()` adds any
+columns the local file predates, so an older database is safe to upload.
+
+**Cost.** One `shared-cpu-1x` machine with 512 MB and a 1 GB volume sits
+inside Fly's free allowance for a personal account at the time of writing;
+check `fly dashboard` after the first month.
+
+**Datacenter IPs.** Hudle rate-limits by IP, and a cloud address may be
+treated more harshly than a home connection. Watch the first cycle in
+`fly logs`: six `collect_facility_done` lines with `"http_status": 200` means
+it is fine; a 429 on the first request means the address is blocked and the
+region should be changed (`primary_region` in `fly.toml`).
+
 ## Adding a fourth venue
 
 The venue tree in `config.yaml` is frozen, human-reviewed source of truth. `discover`
@@ -264,6 +317,25 @@ Re-running a cycle is safe: `snapshots.poll_key` is the idempotency key, so a se
 them. Retry the command freely.
 
 ---
+
+### The poll window reaches one day back
+
+Each cycle requests `lookback_days` (default 1) behind today as well as
+`horizon_days` ahead. Hudle keeps serving a date after it elapses, so
+re-reading yesterday captures each date's settled state after every booking
+for it has landed -- and survives an outage that swallowed the last polls
+before midnight. The range is one request per court regardless of length, so
+the lookback is free.
+
+### Hudle's own timestamps are kept
+
+Every observation stores the slot row's `created_at` and `updated_at` as
+`upstream_created_at` / `upstream_updated_at`, in UTC. `updated_at` is the
+booking time in practice: every booked slot's value precedes its start, slots
+bought together share it to the second, and booked slots sit ~30 days after
+creation where open ones sit hours after it. It is a last-modified stamp, not
+a booking field, so analytics reads it beside the observed state and never
+alone. Observations recorded before the columns existed hold NULL.
 
 ## The two occupancy denominators
 
@@ -364,6 +436,21 @@ One finding to know before reading any chart:
 > market.
 
 ---
+
+### Readiness
+
+Every metric response carries a `readiness` block: how many snapshots and
+settled days exist, how many the metric needs, and how many more days close
+the gap. The dashboard draws nothing for a metric that has not met its own
+threshold; it shows the gap instead. A chart over one day of data is
+indistinguishable from a broken one, and a ratio over three bookings is
+indistinguishable from one over three hundred. Thresholds live in
+`tracker/web/schemas.py` and are deliberately conservative.
+
+The dashboard's windows look *back* at settled days by default. The forward
+book is mostly unbooked at any moment, so an occupancy figure over "the next
+30 days" reads as near-zero demand when it is really a measure of how far
+ahead people book; "Forward book" is offered separately for that question.
 
 ## Troubleshooting
 

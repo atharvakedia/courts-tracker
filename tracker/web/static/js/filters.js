@@ -1,12 +1,16 @@
 /**
  * Filter state: the business-date window, the sport and the venue.
  *
- * Two things worth knowing about the windows offered here. The dataset is
- * forward-looking — a slot can only ever be observed before it is played — so
- * the useful windows run forwards from today, not backwards. And the dates
- * are *business* dates: Play Padel's 00:30 Saturday slot is Friday night's
- * session and the API has already rolled it back, so a "next 7 days" window
- * catches it under Friday.
+ * The windows look *back* by default. A slot can only be observed before it
+ * is played, so the forward book is mostly unbooked at any moment and an
+ * occupancy figure over "the next 30 days" reads as near-zero demand when it
+ * is really a measure of how far ahead people book. Settled days -- business
+ * dates that have fully elapsed -- are the ones whose occupancy is final.
+ * "Forward book" is offered separately for exactly that question: how much
+ * of the coming weeks is already sold.
+ *
+ * Dates are *business* dates: Play Padel's 00:30 Saturday slot is Friday
+ * night's session and the API has already rolled it back.
  */
 
 import { dayLabelFull } from './format.js';
@@ -17,7 +21,7 @@ const TZ = 'Asia/Kolkata';
 const listeners = new Set();
 
 const state = {
-  window: 'all',
+  window: '7',
   sport: 'padel',
   venue: '',
 };
@@ -41,25 +45,22 @@ function shift(iso, days) {
   return date.toISOString().slice(0, 10);
 }
 
-const WINDOWS = {
-  7: { label: 'the next 7 business dates', span: 7 },
-  30: { label: 'the next 30 business dates', span: 30 },
-  all: { label: 'every business date observed', span: null },
+export const WINDOWS = {
+  7: { short: 'Last 7 days', label: 'the last 7 settled business dates', back: 7, ahead: 0 },
+  30: { short: 'Last 30 days', label: 'the last 30 settled business dates', back: 30, ahead: 0 },
+  ahead: { short: 'Forward book', label: 'today and the next 20 business dates', back: 0, ahead: 21 },
+  all: { short: 'Everything', label: 'every business date observed', back: null, ahead: null },
 };
 
 /** The query parameters the API expects, derived from the current state. */
 export function currentFilters() {
-  const span = WINDOWS[state.window] ? WINDOWS[state.window].span : null;
-  if (span === null) {
-    return { start: null, end: null, sport: state.sport, venue: state.venue || null };
-  }
+  const w = WINDOWS[state.window] || WINDOWS.all;
+  const base = { sport: state.sport, venue: state.venue || null };
+  if (w.back === null) return { start: null, end: null, ...base };
   const today = todayInCourtTime();
-  return {
-    start: today,
-    end: shift(today, span - 1),
-    sport: state.sport,
-    venue: state.venue || null,
-  };
+  if (w.ahead > 0) return { start: today, end: shift(today, w.ahead - 1), ...base };
+  // Settled days only: yesterday back, never today, whose evening is still open.
+  return { start: shift(today, -w.back), end: shift(today, -1), ...base };
 }
 
 export function describeWindow() {
@@ -142,6 +143,12 @@ export function initFilters() {
   readUrl();
 
   const group = document.getElementById('window-group');
+  group.innerHTML = Object.entries(WINDOWS)
+    .map(
+      ([key, w]) =>
+        `<button class="segmented__btn" type="button" data-window="${key}" aria-pressed="false" title="${w.label}">${w.short}</button>`
+    )
+    .join('');
   const syncWindow = () => {
     for (const btn of group.querySelectorAll('[data-window]')) {
       btn.setAttribute('aria-pressed', String(btn.dataset.window === state.window));

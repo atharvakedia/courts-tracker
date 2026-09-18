@@ -21,7 +21,7 @@ import {
 } from './filters.js';
 import { refresh } from './charts.js';
 import { initTheme } from './theme.js';
-import { failPanel, markStale, skeletonPanel } from './panels.js';
+import { denominatorLine, failPanel, markStale, readinessState, renderPanel, skeletonPanel } from './panels.js';
 import { indexFacilities, indexVenues } from './ui.js';
 import {
   setLeadTime,
@@ -224,6 +224,19 @@ async function load({ first = false } = {}) {
   const draw = (id, fn, payload, extra) => {
     if (!isCurrent(gen)) return;
     try {
+      // The readiness gate lives here, not in fifteen renderers: a metric that
+      // has not met its own threshold never reaches its chart code at all.
+      const readiness = payload && payload.ok && payload.data && payload.data.readiness;
+      if (readiness && !readiness.ready) {
+        const title = TITLES[id] || 'Panel';
+        renderPanel(el(id), {
+          title,
+          denominator: denominatorLine(payload.data.metric),
+          body: readinessState(readiness, title),
+          caveats: [],
+        });
+        return;
+      }
       fn(el(id), payload, extra);
     } catch (err) {
       failPanel(el(id), TITLES[id] || 'Panel', String((err && err.message) || err));
@@ -386,7 +399,7 @@ function initViews() {
   } catch (_) {
     /* fall through to the default view */
   }
-  show(views.some((v) => v.dataset.view === saved) ? saved : 'demand');
+  show(views.some((v) => v.dataset.view === saved) ? saved : 'now');
 }
 
 function boot() {

@@ -877,3 +877,53 @@ def test_naming_a_hidden_venue_explicitly_still_returns_it(client: TestClient) -
     body = _get(client, "/api/occupancy/daily", venue=PADEL_UP_VENUE)
     assert PADEL_UP_VENUE in str(body)
     assert PLAY_PADEL_VENUE not in str(body)
+
+
+# --------------------------------------------------------------------------
+# Contract: every metric says whether it can be trusted yet
+# --------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("path", sorted(METRIC_ENDPOINTS))
+def test_every_metric_response_declares_its_readiness(client: TestClient, path: str) -> None:
+    """Regression: a chart drawn over one day of data looking identical to a
+    broken one. The response must say what it has and what it needs."""
+    readiness = _get(client, path)["readiness"]
+    assert set(readiness) >= {
+        "ready",
+        "snapshots",
+        "min_snapshots",
+        "elapsed_days",
+        "min_elapsed_days",
+        "eta_days",
+        "note",
+    }
+    assert readiness["eta_days"] == max(
+        0, readiness["min_elapsed_days"] - readiness["elapsed_days"]
+    )
+    assert readiness["ready"] == (
+        readiness["snapshots"] >= readiness["min_snapshots"]
+        and readiness["elapsed_days"] >= readiness["min_elapsed_days"]
+    )
+
+
+def test_history_metrics_are_not_ready_on_day_one(one_snapshot_client: TestClient) -> None:
+    """Regression: weekday-vs-weekend and the heatmap unlocking on a single
+    poll, drawn from one weekday and read as a pattern."""
+    for path in ("/api/leadtime", "/api/occupancy/heatmap", "/api/metrics/weekday-weekend"):
+        readiness = _get(one_snapshot_client, path)["readiness"]
+        assert readiness["ready"] is False, path
+        assert readiness["eta_days"] > 0, path
+        assert readiness["note"], path
+    # ...while what one poll can honestly show is available at once.
+    assert _get(one_snapshot_client, "/api/coverage")["readiness"]["ready"] is True
+    assert _get(one_snapshot_client, "/api/venues")["readiness"]["ready"] is True
+
+
+def test_readiness_is_judged_on_the_whole_dataset_not_the_window(client: TestClient) -> None:
+    """Regression: a request for the next seven days has no elapsed days in
+    it, and must not make a metric look less ready than the database is."""
+    whole = _get(client, "/api/occupancy/daily")["readiness"]
+    future = _get(client, "/api/occupancy/daily", start="2030-01-01", end="2030-01-07")["readiness"]
+    assert future["elapsed_days"] == whole["elapsed_days"]
+    assert future["snapshots"] == whole["snapshots"]

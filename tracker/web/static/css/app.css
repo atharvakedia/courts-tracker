@@ -1858,3 +1858,38 @@ body.app {
 @media (prefers-reduced-motion: reduce) {
   .view { animation: none; }
 }
+
+
+/* --- Now: one wide panel over two narrow ones --------------------------- */
+.view--now {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1.35fr 1fr;
+}
+.view--now > .panel:first-child { grid-column: 1 / -1; }
+@media (max-width: 900px) {
+  .view--now { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+  .view--now > .panel:first-child { grid-column: auto; }
+}
+
+/* --- the not-ready state ------------------------------------------------ */
+.state--ready .state__title { opacity: 0.85; }
+.ready__bar {
+  width: min(22rem, 80%); height: 6px; margin: 0.6rem auto 0.35rem;
+  border-radius: 999px; background: var(--rule, rgba(128,128,128,0.25)); overflow: hidden;
+}
+.ready__bar > span {
+  display: block; height: 100%; border-radius: inherit;
+  background: var(--accent, #0d6f62);
+  transition: width 600ms var(--ease, cubic-bezier(0.4, 0, 0.2, 1));
+}
+.ready__count { margin: 0; font-size: 0.78rem; opacity: 0.75; }
+
+/* --- staleness is the loudest thing on the page when it applies --------- */
+.bannerbar .banner[data-tone='alert'] {
+  font-size: 0.92rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 8px;
+  background: color-mix(in oklab, #c0392b 16%, var(--surface, transparent));
+  border: 1px solid color-mix(in oklab, #c0392b 55%, transparent);
+}
+.bannerbar { max-height: 6rem; }

@@ -7,6 +7,7 @@ dataclasses built here.
 
 from __future__ import annotations
 
+import os
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -35,6 +36,11 @@ __all__ = [
 ]
 
 T = TypeVar("T")
+
+
+#: Overrides ``storage.url`` when set. The only config value read from the
+#: environment: everything else is the frozen, reviewed file.
+STORAGE_URL_ENV_VAR = "PADEL_TRACKER_STORAGE_URL"
 
 
 class ConfigError(ValueError):
@@ -306,7 +312,11 @@ def load_config(path: str | Path) -> Config:
 
     config = Config(
         timezone=str(_require(root, "timezone", "<root>")),
-        storage=StorageConfig(url=str(_require(storage_raw, "url", "storage"))),
+        # A container mounts its volume somewhere the checked-in config cannot
+        # know about, so the storage URL alone may come from the environment.
+        storage=StorageConfig(
+            url=os.environ.get(STORAGE_URL_ENV_VAR) or str(_require(storage_raw, "url", "storage"))
+        ),
         poll=PollConfig(
             cadence_minutes=int(_require(poll_raw, "cadence_minutes", "poll")),
             horizon_days=int(_require(poll_raw, "horizon_days", "poll")),

@@ -29,6 +29,7 @@ import datetime as dt
 import logging
 import os
 import sys
+import threading
 from collections.abc import Sequence
 from pathlib import Path
 from typing import Any
@@ -311,8 +312,31 @@ def print_drift(report: DriftReport) -> None:
 
 
 def cmd_serve(args: argparse.Namespace) -> int:
-    """Run the dashboard. ``tracker.web`` is imported by uvicorn, not by us."""
+    """Run the dashboard. ``tracker.web`` is imported by uvicorn, not by us.
+
+    ``--with-collector`` runs the poll loop on a daemon thread in this same
+    process, which is what a single always-on container needs: one machine,
+    one volume, no scheduler to install. The thread owns its own storage
+    handle and HTTP client; the web app opens its own storage in its lifespan,
+    and SQLite in WAL mode lets the two share the file. The thread is a daemon
+    so the process exits when uvicorn does, and the loop's own stop conditions
+    -- an open breaker, too many failed cycles -- still hold.
+    """
     import uvicorn
+
+    if args.with_collector:
+        config = load_config(args.config)
+
+        def collect_forever() -> None:
+            storage = build_storage(config)
+            try:
+                with build_client(config) as client:
+                    code = run_loop(config, storage, client)
+            finally:
+                storage.close()
+            logger.warning("collector_thread_exited", extra={"exit_code": code})
+
+        threading.Thread(target=collect_forever, name="collector", daemon=True).start()
 
     load_config(args.config)  # fail fast on bad config before binding a port
     logger.info("serve_starting", extra={"host": args.host, "port": args.port})
@@ -391,6 +415,11 @@ def build_parser() -> argparse.ArgumentParser:
     serve.add_argument("--host", default=DEFAULT_HOST)
     serve.add_argument("--port", type=int, default=DEFAULT_PORT)
     serve.add_argument("--reload", action="store_true", help="uvicorn auto-reload")
+    serve.add_argument(
+        "--with-collector",
+        action="store_true",
+        help="also run the poll loop in this process (single-container deployments)",
+    )
     serve.set_defaults(func=cmd_serve)
 
     backfill = commands.add_parser(

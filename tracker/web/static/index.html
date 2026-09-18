@@ -57,7 +57,7 @@
       </div>
 
       <form class="ctl" id="filters" aria-label="Scope">
-        <div class="seg" id="window-group" role="group" aria-label="Window"></div>
+        <div class="segmented" id="window-group" role="group" aria-label="Window"></div>
         <label class="ctl__field">
           <span class="visually-hidden">Sport</span>
           <select id="sport-select" aria-label="Sport">
@@ -96,42 +96,44 @@
 
     <!-- Row 3: the stage. Exactly one view is visible; it fills what is left. -->
     <nav class="viewtabs" id="viewtabs" aria-label="View">
-      <button type="button" data-view="demand" aria-pressed="true">Demand</button>
+      <button type="button" data-view="now" aria-pressed="true">Now</button>
+      <button type="button" data-view="demand" aria-pressed="false">Demand</button>
       <button type="button" data-view="timing" aria-pressed="false">Timing</button>
-      <button type="button" data-view="price" aria-pressed="false">Price</button>
       <button type="button" data-view="market" aria-pressed="false">Market</button>
       <button type="button" data-view="record" aria-pressed="false">Record</button>
     </nav>
 
     <main class="stage" id="stage">
-      <div class="view view--2" data-view="demand">
+      <!-- Now: the three things that are true today -- what sold, what was
+           withdrawn, and whether the collector is actually watching. -->
+      <div class="view view--now" data-view="now">
         <section class="panel" id="panel-occupancy" aria-labelledby="t-occupancy"></section>
-        <section class="panel" id="panel-heatmap" aria-labelledby="t-heatmap"></section>
+        <section class="panel" id="panel-blocked" aria-labelledby="t-blocked"></section>
+        <section class="panel" id="panel-coverage" aria-labelledby="t-coverage"></section>
       </div>
 
-      <div class="view view--3" data-view="timing" hidden>
-        <section class="panel" id="panel-leadtime" aria-labelledby="t-leadtime"></section>
-        <section class="panel" id="panel-sellout" aria-labelledby="t-sellout"></section>
+      <div class="view view--3" data-view="demand" hidden>
+        <section class="panel" id="panel-heatmap" aria-labelledby="t-heatmap"></section>
+        <section class="panel" id="panel-weekday" aria-labelledby="t-weekday"></section>
         <section class="panel" id="panel-firstslot" aria-labelledby="t-firstslot"></section>
       </div>
 
-      <div class="view view--2" data-view="price" hidden>
+      <div class="view view--2" data-view="timing" hidden>
+        <section class="panel" id="panel-leadtime" aria-labelledby="t-leadtime"></section>
+        <section class="panel" id="panel-sellout" aria-labelledby="t-sellout"></section>
+      </div>
+
+      <div class="view view--4" data-view="market" hidden>
+        <section class="panel" id="panel-share" aria-labelledby="t-share"></section>
+        <section class="panel" id="panel-revenue" aria-labelledby="t-revenue"></section>
         <section class="panel" id="panel-pricing" aria-labelledby="t-pricing"></section>
         <section class="panel" id="panel-byhour" aria-labelledby="t-byhour"></section>
       </div>
 
-      <div class="view view--3" data-view="market" hidden>
-        <section class="panel" id="panel-share" aria-labelledby="t-share"></section>
-        <section class="panel" id="panel-revenue" aria-labelledby="t-revenue"></section>
-        <section class="panel" id="panel-weekday" aria-labelledby="t-weekday"></section>
-      </div>
-
-      <div class="view view--4" data-view="record" hidden>
-        <section class="panel" id="panel-coverage" aria-labelledby="t-coverage"></section>
-        <section class="panel" id="panel-blocked" aria-labelledby="t-blocked"></section>
+      <div class="view view--3" data-view="record" hidden>
         <section class="panel" id="panel-cancellations" aria-labelledby="t-cancellations"></section>
         <section class="panel" id="panel-venues" aria-labelledby="t-venues"></section>
-        <section class="panel panel--wide" id="panel-catalog" aria-labelledby="t-catalog"></section>
+        <section class="panel" id="panel-catalog" aria-labelledby="t-catalog"></section>
       </div>
     </main>
 

@@ -414,6 +414,81 @@ class FiltersOut(BaseModel):
         )
 
 
+class Readiness(BaseModel):
+    """Whether a metric has enough history behind it to be worth reading.
+
+    A chart drawn from one day of data looks identical to a broken one, and a
+    ratio over three bookings looks identical to a ratio over three hundred.
+    Every response therefore states what it has, what it needs, and how many
+    more days of collection close the gap, so the dashboard can decline to
+    draw rather than draw something that cannot be trusted.
+    """
+
+    ready: bool
+    snapshots: int
+    min_snapshots: int
+    elapsed_days: int
+    min_elapsed_days: int
+    #: Whole days of collection still needed; 0 when ready.
+    eta_days: int
+    note: str
+
+
+#: Per metric: (min_snapshots, min_elapsed_days, why). Elapsed days are business
+#: dates that have fully passed, because a date's occupancy is only settled once
+#: its last slot has. Thresholds are deliberately conservative: a metric that
+#: unlocks a day late costs nothing, one that unlocks a week early misleads.
+_READINESS: Mapping[str, tuple[int, int, str]] = {
+    "venues": (0, 0, "Static configuration; always available."),
+    "coverage": (1, 0, "One poll is enough to show what the collector caught."),
+    "blocked_events": (2, 0, "A withdrawal is a change between two polls."),
+    "pricing_timeline": (2, 0, "A price change is a change between two polls."),
+    "pricing_by_hour": (1, 0, "The current price grid is visible from one poll."),
+    "occupancy_daily": (
+        2,
+        1,
+        "A day's occupancy is settled only after its last slot has elapsed; "
+        "the forward window is mostly unbooked and would read as near-zero demand.",
+    ),
+    "first_slot": (2, 3, "Which hour books first needs several settled days to mean anything."),
+    "leadtime": (
+        2,
+        3,
+        "Lead time is inferred from bookings seen to happen between polls, and needs "
+        "a few days of evening traffic before a median is more than two points.",
+    ),
+    "cancellations": (2, 3, "A cancellation rate over a day or two is noise."),
+    "occupancy_heatmap": (
+        2,
+        7,
+        "Hour-by-weekday needs at least one settled instance of every weekday, or "
+        "six of the seven columns are empty.",
+    ),
+    "sellout": (2, 7, "Time-to-sellout for evening slots needs a week of evenings."),
+    "market_share": (2, 7, "A share of a few days' bookings swings with one group booking."),
+    "revenue_proxy": (2, 7, "Weekly revenue needs a settled week."),
+    "weekday_weekend": (
+        2,
+        14,
+        "Weekday against weekend needs two of each, or one busy Saturday decides it.",
+    ),
+}
+
+
+def readiness_for(name: str, *, snapshots: int, elapsed_days: int) -> Readiness:
+    """Readiness of one metric given how much has been collected so far."""
+    min_snapshots, min_days, note = _READINESS[name]
+    return Readiness(
+        ready=snapshots >= min_snapshots and elapsed_days >= min_days,
+        snapshots=snapshots,
+        min_snapshots=min_snapshots,
+        elapsed_days=elapsed_days,
+        min_elapsed_days=min_days,
+        eta_days=max(0, min_days - elapsed_days),
+        note=note,
+    )
+
+
 class MetricEnvelope(BaseModel):
     """Fields every metric response carries, whether or not it has rows."""
 
@@ -422,6 +497,7 @@ class MetricEnvelope(BaseModel):
     filters: FiltersOut
     empty: bool
     reason: str | None
+    readiness: Readiness
     generated_at: dt.datetime
 
 
@@ -433,10 +509,12 @@ def envelope(
     now: dt.datetime,
     empty: bool,
     reason: str | None,
+    readiness: Readiness,
     specs: Sequence[MetricSpec] = (),
 ) -> dict[str, Any]:
     """The envelope fields, ready to splat into a response model."""
     return {
+        "readiness": readiness,
         "metric": MetricMeta.build(name, date_range, specs=specs),
         "analytics_specs": [MetricSpecOut.from_spec(spec) for spec in specs],
         "filters": FiltersOut.from_filters(filters),

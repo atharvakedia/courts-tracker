@@ -109,6 +109,37 @@ export function emptyState(reason, { title = 'Nothing to plot yet' } = {}) {
     </div>`;
 }
 
+/**
+ * The not-ready state. A chart over one day of data is indistinguishable from
+ * a broken one, so a metric that has not met its own threshold does not draw:
+ * it says what it has, what it needs, and when the gap closes.
+ */
+export function readinessState(readiness, title) {
+  const { elapsed_days: has, min_elapsed_days: needs, eta_days: eta, snapshots, min_snapshots } =
+    readiness;
+  const daysGate = needs > 0;
+  const pct = daysGate ? Math.min(100, Math.round((100 * has) / needs)) : 0;
+  const when =
+    eta === 0
+      ? `Needs ${min_snapshots} polls, has ${snapshots}.`
+      : eta === 1
+        ? 'Unlocks after one more settled day.'
+        : `Unlocks in ${eta} days.`;
+  return `
+    <div class="state state--ready">
+      <p class="state__title">Not enough history yet</p>
+      ${
+        daysGate
+          ? `<div class="ready__bar" role="progressbar" aria-valuemin="0" aria-valuemax="${needs}"
+               aria-valuenow="${has}" aria-label="${esc(title)} readiness">
+               <span style="width:${pct}%"></span></div>
+             <p class="ready__count"><b>${has}</b> of <b>${needs}</b> settled days</p>`
+          : ''
+      }
+      <p class="state__body">${esc(when)} ${esc(sentence(readiness.note))}</p>
+    </div>`;
+}
+
 export function errorState(message) {
   return `
     <div class="state state--error">

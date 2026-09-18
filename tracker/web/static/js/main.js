@@ -119,18 +119,25 @@ function renderBanners(health, coverage) {
     });
   }
 
-  if (coverage && coverage.has_gaps && (coverage.poll_gaps || []).length) {
-    const gaps = coverage.poll_gaps;
+  // The gap banner is about the collector *now*, not its history. Gaps older
+  // than a day are a fact of the record -- listed in full under the coverage
+  // panel -- but a banner that recites them forever reads as a live fault, and
+  // a reader who sees the same alert every day stops reading alerts.
+  const recentGaps = ((coverage && coverage.poll_gaps) || []).filter((g) => {
+    const asOf = health && health.generated_at ? new Date(health.generated_at) : new Date();
+    return new Date(g.end).getTime() > asOf.getTime() - 24 * 60 * 60 * 1000;
+  });
+  if (recentGaps.length) {
+    const missed = recentGaps.reduce((n, g) => n + (g.missed_polls || 0), 0);
     banners.push({
       tone: 'warn',
-      html: `<b>${esc(int(coverage.missed_polls))} poll${
-        coverage.missed_polls === 1 ? ' is' : 's are'
-      } missing from the record.</b> ${esc(
-        gaps.length === 1 ? 'One gap' : `${int(gaps.length)} gaps`
+      html: `<b>The collector missed ${esc(int(missed))} poll${missed === 1 ? '' : 's'} in the
+      last 24 hours.</b> ${esc(
+        recentGaps.length === 1 ? 'One gap' : `${int(recentGaps.length)} gaps`
       )}, the longest ${esc(
-        fmtMinutes(Math.max(...gaps.map((g) => g.minutes)))
-      )} long. Every line on this page is broken across them rather than drawn through them, and
-      they are listed in full under <i>What the collector actually caught</i>.`,
+        fmtMinutes(Math.max(...recentGaps.map((g) => g.minutes)))
+      )}. Lines are broken across gaps rather than drawn through them; the full record is under
+      <i>What the collector actually caught</i>.`,
     });
   }
 

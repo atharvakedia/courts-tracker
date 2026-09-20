@@ -24,9 +24,12 @@ from __future__ import annotations
 import datetime as dt
 import logging
 import os
-from collections.abc import AsyncIterator, Iterable, Sequence
+from collections import OrderedDict
+from collections.abc import AsyncIterator, Iterable, MutableMapping, Sequence
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Any
+from weakref import WeakKeyDictionary
 
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -874,6 +877,62 @@ def _catalog_reason(
     return _no_rows(filters, snapshots=snapshots)
 
 
+#: Observation reads, per storage backend, keyed by the snapshot they were
+#: taken at. Every panel on a view asks for the same window, and the reduced
+#: read still has to scan the range to find the rows it keeps, so six panels
+#: meant six identical scans of a table that only changes every half hour.
+#:
+#: Keying on the latest snapshot id rather than on a clock means a new poll
+#: invalidates the entry outright -- there is no interval in which this can
+#: serve a stale number. Keying per backend matters just as much: snapshot ids
+#: start at 1 in every database, so one global map would let one database's
+#: rows answer another's question. The weak keys let a closed backend's cache
+#: go with it.
+_OBSERVATION_CACHE: MutableMapping[Storage, OrderedDict[tuple[Any, ...], list[SlotObservation]]] = (
+    WeakKeyDictionary()
+)
+
+#: Distinct (snapshot, window, scope) reads held at once. Small on purpose:
+#: the entries a dashboard revisits are few, and each holds a live list.
+_OBSERVATION_CACHE_ENTRIES = 8
+
+
+def _cached_observations(
+    storage: Storage, filters: Filters, *, reduced: bool
+) -> list[SlotObservation]:
+    """One read per (snapshot, window, scope), however many panels ask."""
+    latest = storage.latest_snapshot()
+    key = (
+        latest.snapshot_id if latest else None,
+        reduced,
+        filters.venue_uuid,
+        filters.sport,
+        filters.start,
+        filters.end,
+        tuple(sorted(filters.visible_venue_uuids)),
+    )
+    cache = _OBSERVATION_CACHE.setdefault(storage, OrderedDict())
+    hit = cache.get(key)
+    if hit is not None:
+        cache.move_to_end(key)
+        return hit
+
+    read = storage.iter_key_observations if reduced else storage.iter_observations
+    rows = read(
+        venue_uuid=filters.venue_uuid,
+        sport=filters.sport,
+        business_date_from=filters.start,
+        business_date_to=filters.end,
+    )
+    visible = filters.visible_venue_uuids
+    observations = [row for row in rows if row.venue_uuid in visible]
+
+    cache[key] = observations
+    while len(cache) > _OBSERVATION_CACHE_ENTRIES:
+        cache.popitem(last=False)
+    return observations
+
+
 def _all_observations(storage: Storage, filters: Filters) -> list[SlotObservation]:
     """Every observation the filters ask for, unreduced.
 
@@ -882,31 +941,23 @@ def _all_observations(storage: Storage, filters: Filters) -> list[SlotObservatio
     it is precisely the row-counting consumer ``iter_key_observations`` is
     lossy for. It reads the full stream; every other endpoint does not.
     """
-    rows = storage.iter_observations(
-        venue_uuid=filters.venue_uuid,
-        sport=filters.sport,
-        business_date_from=filters.start,
-        business_date_to=filters.end,
-    )
-    visible = filters.visible_venue_uuids
-    return [row for row in rows if row.venue_uuid in visible]
+    return _cached_observations(storage, filters, reduced=False)
 
 
 def _observations(storage: Storage, filters: Filters) -> list[SlotObservation]:
-    """Every observation the filters ask for, materialized for repeated passes.
+    """The observations the filters ask for, materialized for repeated passes.
 
-    Dashboard-hidden venues are dropped here, in the one place every endpoint
-    loads observations through, rather than in each metric. A venue withheld in
-    some charts and counted in others would be worse than either choice.
+    Reduced, not complete: a slot is re-observed on every poll that still
+    covers it, so the unreduced read is about a thousand identical rows per
+    slot and a page load would materialize millions of them to compute the
+    same numbers. ``iter_key_observations`` keeps only the rows the analytics
+    rules can distinguish -- see its docstring for exactly which.
+
+    Dashboard-hidden venues are dropped here too, in the one place every
+    endpoint loads observations through, rather than in each metric. A venue
+    withheld in some charts and counted in others would be worse than either.
     """
-    rows = storage.iter_observations(
-        venue_uuid=filters.venue_uuid,
-        sport=filters.sport,
-        business_date_from=filters.start,
-        business_date_to=filters.end,
-    )
-    visible = filters.visible_venue_uuids
-    return [row for row in rows if row.venue_uuid in visible]
+    return _cached_observations(storage, filters, reduced=True)
 
 
 def _all_snapshots(storage: Storage) -> list[SnapshotRecord]:

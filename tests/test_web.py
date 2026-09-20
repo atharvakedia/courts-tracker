@@ -927,3 +927,41 @@ def test_readiness_is_judged_on_the_whole_dataset_not_the_window(client: TestCli
     future = _get(client, "/api/occupancy/daily", start="2030-01-01", end="2030-01-07")["readiness"]
     assert future["elapsed_days"] == whole["elapsed_days"]
     assert future["snapshots"] == whole["snapshots"]
+
+
+def test_panels_sharing_a_window_read_the_database_once(
+    test_config: Config, synthetic_history_storage: SyntheticHistory, last_observed_at: dt.datetime
+) -> None:
+    """Regression: every panel rescanning the same window.
+
+    Six panels on a view ask for the identical window, and the reduced read
+    still has to scan the range to find the rows it keeps. Without the cache
+    that was six identical scans of a table that only changes every half hour.
+    """
+    storage = synthetic_history_storage.storage
+    assert storage is not None
+    reads = 0
+    original = storage.iter_key_observations
+
+    def counting(**kwargs: Any) -> Any:
+        nonlocal reads
+        reads += 1
+        return original(**kwargs)
+
+    storage.iter_key_observations = counting  # type: ignore[method-assign]
+    try:
+        for client in _client(
+            test_config, storage, last_observed_at + dt.timedelta(minutes=FRESH_OFFSET_MINUTES)
+        ):
+            for path in (
+                "/api/occupancy/daily",
+                "/api/occupancy/heatmap",
+                "/api/metrics/weekday-weekend",
+                "/api/metrics/blocked-events",
+            ):
+                _get(client, path)
+            break
+    finally:
+        storage.iter_key_observations = original  # type: ignore[method-assign]
+
+    assert reads == 1, f"four panels on one window caused {reads} scans"

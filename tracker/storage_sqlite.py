@@ -404,6 +404,7 @@ class SQLiteStorage:
         """
         schema.metadata.create_all(self._engine)
         self._add_missing_columns()
+        self._add_missing_indexes()
         with self._engine.begin() as conn:
             for statement in schema.DROP_VIEW_SQL:
                 conn.exec_driver_sql(statement)
@@ -445,6 +446,19 @@ class SQLiteStorage:
                         "storage_column_added",
                         extra={"table": table.name, "column": column.name},
                     )
+
+    def _add_missing_indexes(self) -> None:
+        """Create indexes the schema declares but an existing database lacks.
+
+        ``create_all`` builds indexes only alongside a table it is creating, so
+        an index added to the schema never reaches a database that already
+        exists -- the same blind spot as a new column, and quieter, because the
+        only symptom is a query that scans instead of seeks.
+        """
+        with self._engine.begin() as conn:
+            for table in schema.metadata.tables.values():
+                for index in table.indexes:
+                    index.create(bind=conn, checkfirst=True)
 
     def close(self) -> None:
         """Dispose of the connection pool."""
@@ -605,6 +619,101 @@ class SQLiteStorage:
         )
         with self._engine.connect() as conn:
             for row in conn.execute(stmt).mappings():
+                yield _observation_from_row(row)
+
+    def iter_key_observations(
+        self,
+        *,
+        venue_uuid: str | None = None,
+        facility_uuid: str | None = None,
+        sport: Sport | None = None,
+        business_date_from: dt.date | None = None,
+        business_date_to: dt.date | None = None,
+    ) -> Iterator[SlotObservation]:
+        """Stream only the observations that can change an answer.
+
+        A slot is re-observed on every poll whose horizon still covers it --
+        about a thousand times over the 22 days it stays in the window -- and
+        all but a handful of those rows are byte-identical to their
+        predecessor. Reading them all costs a million Python objects per
+        request to compute the same numbers.
+
+        This keeps, per slot, exactly the rows every consumer in
+        ``tracker.analytics`` can distinguish:
+
+        * its **first** and **last** observation -- left-censoring is "already
+          booked when first seen", and coverage needs the bounds;
+        * both sides of every **state** change, so a transition keeps its real
+          predecessor and ``uncertainty_minutes`` stays the true poll gap
+          rather than widening to the previous *change*;
+        * both sides of every **price** change, which ``price_timeline``
+          detects independently of state;
+        * the last row with ``is_past`` false -- the **settled** row, which is
+          what :func:`tracker.analytics.occupancy.settled_observations`
+          selects. The all-elapsed fallback is the first row, already kept.
+
+        Dropping anything else is lossless for those rules: a run of identical
+        observations is indistinguishable from its endpoints. It is *not*
+        general-purpose -- a consumer that counted rows, or averaged over
+        polls, would read a different number. ``iter_observations`` remains
+        the unreduced read for that case.
+        """
+        where: list[str] = []
+        params: dict[str, Any] = {}
+        if venue_uuid is not None:
+            where.append("venue_uuid = :venue_uuid")
+            params["venue_uuid"] = venue_uuid
+        if facility_uuid is not None:
+            where.append("facility_uuid = :facility_uuid")
+            params["facility_uuid"] = facility_uuid
+        if sport is not None:
+            where.append("sport = :sport")
+            params["sport"] = sport.value
+        if business_date_from is not None:
+            where.append("business_date >= :business_date_from")
+            params["business_date_from"] = to_date_text(business_date_from)
+        if business_date_to is not None:
+            where.append("business_date <= :business_date_to")
+            params["business_date_to"] = to_date_text(business_date_to)
+        predicate = f"WHERE {' AND '.join(where)}" if where else ""
+
+        columns = ", ".join(c.name for c in schema.slot_observations.columns)
+        # One window specification, not three: every condition below is phrased
+        # against the same (slot_uuid ORDER BY snapshot_id) frame, so SQLite
+        # sorts the filtered rows once. Asking for a DESC row_number or a
+        # second partition costs an extra temp b-tree over the whole window.
+        #
+        # `is_past` only ever goes false -> true for a slot (its start is fixed
+        # and polls move forward), so the last unelapsed row is the one whose
+        # successor is elapsed or absent. If that ever stopped holding, this
+        # keeps a few extra rows rather than dropping a needed one.
+        sql = f"""
+            WITH windowed AS (
+                SELECT {columns},
+                    LAG(state)       OVER w AS _prev_state,
+                    LEAD(state)      OVER w AS _next_state,
+                    LAG(price)       OVER w AS _prev_price,
+                    LEAD(price)      OVER w AS _next_price,
+                    LAG(snapshot_id) OVER w AS _prev_id,
+                    LEAD(snapshot_id) OVER w AS _next_id,
+                    LEAD(is_past)    OVER w AS _next_is_past
+                FROM slot_observations
+                {predicate}
+                WINDOW w AS (PARTITION BY slot_uuid ORDER BY snapshot_id)
+            )
+            SELECT {columns} FROM windowed
+            WHERE _prev_id IS NULL
+               OR _next_id IS NULL
+               OR state IS NOT _prev_state
+               OR state IS NOT _next_state
+               OR price IS NOT _prev_price
+               OR price IS NOT _next_price
+               OR (is_past = 0 AND (_next_is_past IS NULL OR _next_is_past = 1))
+            ORDER BY snapshot_id, slot_uuid
+        """
+        statement = sa.text(sql).execution_options(yield_per=STREAM_CHUNK_SIZE)
+        with self._engine.connect() as conn:
+            for row in conn.execute(statement, params).mappings():
                 yield _observation_from_row(row)
 
     # -- dimensions --------------------------------------------------------

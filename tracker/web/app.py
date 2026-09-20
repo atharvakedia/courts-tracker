@@ -667,7 +667,7 @@ def blocked_events(
 def pricing_timeline(
     config: ConfigDep, storage: StorageDep, filters: FiltersDep, now: NowDep
 ) -> PricingTimelineResponse:
-    observations = _observations(storage, filters)
+    observations = _all_observations(storage, filters)
     snapshots = _all_snapshots(storage)
     report = price_timeline(observations, snapshots)
     empty, reason = _status(
@@ -872,6 +872,24 @@ def _catalog_reason(
     if not snapshots:
         return _NO_SNAPSHOTS
     return _no_rows(filters, snapshots=snapshots)
+
+
+def _all_observations(storage: Storage, filters: Filters) -> list[SlotObservation]:
+    """Every observation the filters ask for, unreduced.
+
+    ``price_timeline`` builds one point per (facility, snapshot) from the set
+    of rates published in that poll and reports how many slots carried one, so
+    it is precisely the row-counting consumer ``iter_key_observations`` is
+    lossy for. It reads the full stream; every other endpoint does not.
+    """
+    rows = storage.iter_observations(
+        venue_uuid=filters.venue_uuid,
+        sport=filters.sport,
+        business_date_from=filters.start,
+        business_date_to=filters.end,
+    )
+    visible = filters.visible_venue_uuids
+    return [row for row in rows if row.venue_uuid in visible]
 
 
 def _observations(storage: Storage, filters: Filters) -> list[SlotObservation]:

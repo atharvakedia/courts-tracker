@@ -334,23 +334,40 @@ async function load({ first = false } = {}) {
     if (!noData) setLeadTime(payload.ok ? payload.data : false, cadence);
   };
 
-  await pool(
-    [
-      totalsTask,
-      step('occupancy/daily', renderOccupancy, 'panel-occupancy'),
-      step('occupancy/heatmap', renderHeatmap, 'panel-heatmap'),
-      leadTimeTask,
-      step('pricing/timeline', renderPricing, 'panel-pricing', { gaps, cadence }),
-      step('pricing/by-hour', renderPriceByHour, 'panel-byhour'),
-      step('market/share', renderShare, 'panel-share'),
-      step('market/revenue-proxy', renderRevenue, 'panel-revenue'),
-      step('metrics/sellout', renderSellout, 'panel-sellout', { cadence }),
-      step('metrics/first-slot', renderFirstSlot, 'panel-firstslot'),
-      step('metrics/blocked-events', renderBlocked, 'panel-blocked'),
-      step('metrics/cancellations', renderCancellations, 'panel-cancellations'),
-    ],
-    CONCURRENCY
-  );
+  // Each panel's fetch, keyed by the panel it fills. Only the visible view's
+  // panels are fetched now; the rest run the first time their tab is shown.
+  // Fetching all twelve on load meant a reader waiting on eleven answers they
+  // had not asked to see, and the page is one viewport -- eleven of them are
+  // off screen by construction.
+  const tasksByPanel = {
+    'panel-weekday': totalsTask,
+    'panel-occupancy': step('occupancy/daily', renderOccupancy, 'panel-occupancy'),
+    'panel-heatmap': step('occupancy/heatmap', renderHeatmap, 'panel-heatmap'),
+    'panel-leadtime': leadTimeTask,
+    'panel-pricing': step('pricing/timeline', renderPricing, 'panel-pricing', { gaps, cadence }),
+    'panel-byhour': step('pricing/by-hour', renderPriceByHour, 'panel-byhour'),
+    'panel-share': step('market/share', renderShare, 'panel-share'),
+    'panel-revenue': step('market/revenue-proxy', renderRevenue, 'panel-revenue'),
+    'panel-sellout': step('metrics/sellout', renderSellout, 'panel-sellout', { cadence }),
+    'panel-firstslot': step('metrics/first-slot', renderFirstSlot, 'panel-firstslot'),
+    'panel-blocked': step('metrics/blocked-events', renderBlocked, 'panel-blocked'),
+    'panel-cancellations': step('metrics/cancellations', renderCancellations, 'panel-cancellations'),
+  };
+
+  // The hero and KPI row read the weekday/weekend response, so that one runs
+  // whatever is on screen.
+  const pending = new Map(Object.entries(tasksByPanel));
+  const runFor = async (panelIds) => {
+    const due = panelIds.filter((id) => pending.has(id));
+    if (!due.length) return;
+    const tasks = due.map((id) => pending.get(id));
+    due.forEach((id) => pending.delete(id));
+    await pool(tasks, CONCURRENCY);
+  };
+  window.__padelRunPanels = runFor;
+
+  const visible = [...document.querySelectorAll('.view:not([hidden]) .panel')].map((p) => p.id);
+  await runFor([...new Set(['panel-weekday', ...visible])]);
 
   if (!isCurrent(gen)) return;
   const generated = healthData && healthData.generated_at;
@@ -383,6 +400,12 @@ function initViews() {
       localStorage.setItem('padel.view', name);
     } catch (_) {
       /* blocked storage is not a reason to fail a click */
+    }
+    // Panels outside the landing view are not fetched until their tab is first
+    // opened, so showing a view is also what asks for its data.
+    const runPanels = window.__padelRunPanels;
+    if (runPanels) {
+      runPanels([...stage.querySelectorAll('.view:not([hidden]) .panel')].map((p) => p.id));
     }
     requestAnimationFrame(() => {
       for (const node of stage.querySelectorAll('.view:not([hidden]) .chart')) refresh(node);

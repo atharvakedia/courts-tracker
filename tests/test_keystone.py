@@ -231,9 +231,16 @@ def test_every_expected_table_is_defined() -> None:
 
 def test_slot_observations_is_indexed_for_the_real_query_patterns() -> None:
     """Regression: analytics scans tens of millions of rows; a missing index
-    here turns a dashboard load into a full table scan."""
+    here turns a dashboard load into a full table scan.
+
+    The business_date-leading index is the one the reduced read needs: every
+    other index here leads with a different column, so a query filtering on
+    business_date alone -- which is what the dashboard does -- scanned the
+    whole table and then sorted it.
+    """
     names = {ix.name for ix in schema.slot_observations.indexes}
     assert names == {
+        "ix_slot_obs_business_date_slot_snapshot",
         "ix_slot_obs_facility_business_date",
         "ix_slot_obs_slot_snapshot",
         "ix_slot_obs_state_business_date",

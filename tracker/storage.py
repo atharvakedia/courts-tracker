@@ -114,6 +114,29 @@ class Storage(Protocol):
         """
         raise NotImplementedError
 
+    def iter_key_observations(
+        self,
+        *,
+        venue_uuid: str | None = None,
+        facility_uuid: str | None = None,
+        sport: Sport | None = None,
+        business_date_from: dt.date | None = None,
+        business_date_to: dt.date | None = None,
+    ) -> Iterator[SlotObservation]:
+        """Only the observations that can change an answer.
+
+        A slot is re-observed on every poll whose horizon still covers it --
+        about a thousand times -- and all but a handful of those rows are
+        identical to their predecessor. This keeps each slot's first and last
+        row, both sides of every state and price change, and its settled row:
+        everything the rules in ``tracker.analytics`` can tell apart. Ordered
+        like :meth:`iter_observations`.
+
+        Lossless for those rules, wrong for anything that counts rows or
+        averages over polls -- use :meth:`iter_observations` for that.
+        """
+        ...
+
     def iter_observations(
         self,
         *,

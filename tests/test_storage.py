@@ -18,6 +18,7 @@ import dataclasses
 import datetime as dt
 import inspect
 from collections.abc import Iterator
+from typing import Any
 
 import pytest
 
@@ -1330,4 +1331,93 @@ def test_initialize_adds_columns_missing_from_an_older_database() -> None:
     with storage._engine.connect() as conn:
         after = {r[1] for r in conn.exec_driver_sql("PRAGMA table_info(slot_observations)")}
     assert {"upstream_updated_at", "upstream_created_at"} <= after
+    storage.close()
+
+
+def test_key_observations_preserve_every_rule_the_analytics_use(
+    synthetic_history_storage: Any,
+) -> None:
+    """Regression: the reduced read dropping a row an analytics rule can see.
+
+    A slot is re-observed on every poll that still covers it, so the unreduced
+    stream is ~1000 identical rows per slot and a page load materialised
+    millions of them. iter_key_observations keeps only what the rules can tell
+    apart -- this pins that claim to the rules themselves, not to a row count.
+    """
+    from tracker.analytics.occupancy import occupancy_by_venue_day, settled_observations
+    from tracker.analytics.transitions import derive_transitions
+
+    storage = synthetic_history_storage.storage
+    assert storage is not None
+    full = list(storage.iter_observations())
+    key = list(storage.iter_key_observations())
+
+    assert len(key) < len(full), "the reduction must actually drop rows"
+
+    def occupancy(rows: Any) -> Any:
+        return {
+            (r.venue_uuid, r.business_date): (
+                r.occupancy_strict,
+                r.booked_court_hours,
+                r.blocked_court_hours,
+            )
+            for r in occupancy_by_venue_day(rows)
+        }
+
+    assert occupancy(full) == occupancy(key)
+
+    snapshots = storage.snapshots_between(
+        dt.datetime(1970, 1, 1, tzinfo=dt.UTC), dt.datetime(2100, 1, 1, tzinfo=dt.UTC)
+    )
+
+    def transitions(rows: Any) -> Any:
+        return sorted(
+            (
+                t.slot_uuid,
+                str(t.from_state),
+                str(t.to_state),
+                t.first_seen_at,
+                t.uncertainty_minutes,
+            )
+            for t in derive_transitions(rows, snapshots)
+        )
+
+    # uncertainty_minutes is the point: keeping only change rows would widen it
+    # to the gap between *changes* rather than the true poll gap.
+    assert transitions(full) == transitions(key)
+    assert [o.slot_uuid for o in settled_observations(full)] == [
+        o.slot_uuid for o in settled_observations(key)
+    ]
+
+
+def test_initialize_adds_indexes_missing_from_an_older_database() -> None:
+    """Regression: an index added to the schema never reaching a live database.
+
+    create_all builds indexes only beside a table it is creating, so the only
+    symptom is a query that scans instead of seeks -- silent until the table is
+    large enough to make a page unusable, which is how it was found.
+    """
+    storage = SQLiteStorage("sqlite://")
+    storage.initialize()
+    with storage._engine.begin() as conn:
+        conn.exec_driver_sql("DROP INDEX ix_slot_obs_business_date_slot_snapshot")
+        gone = {
+            r[0]
+            for r in conn.exec_driver_sql(
+                "SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='slot_observations'"
+            )
+        }
+    assert "ix_slot_obs_business_date_slot_snapshot" not in gone
+
+    storage.initialize()
+    storage.initialize()  # and again: creating an index must be idempotent
+
+    with storage._engine.connect() as conn:
+        back = {
+            r[0]
+            for r in conn.exec_driver_sql(
+                "SELECT name FROM sqlite_master WHERE type='index' AND tbl_name='slot_observations'"
+            )
+        }
+    assert "ix_slot_obs_business_date_slot_snapshot" in back
     storage.close()

@@ -179,6 +179,16 @@ slot_observations = sa.Table(
     # the single-sport read every cross-venue chart starts from.
     sa.Index("ix_slot_obs_facility_business_date", "facility_uuid", "business_date"),
     sa.Index("ix_slot_obs_slot_snapshot", "slot_uuid", "snapshot_id"),
+    # A window read filters on business_date alone, then partitions by slot and
+    # orders by snapshot. Every other index here leads with a different column,
+    # so that query was a full table scan plus a sort; this one serves the range
+    # seek and the partition order together.
+    sa.Index(
+        "ix_slot_obs_business_date_slot_snapshot",
+        "business_date",
+        "slot_uuid",
+        "snapshot_id",
+    ),
     sa.Index("ix_slot_obs_state_business_date", "state", "business_date"),
     sa.Index("ix_slot_obs_sport_business_date", "sport", "business_date"),
 )

@@ -97,7 +97,12 @@ def _apply_pragmas(dbapi_connection: Any, _connection_record: Any) -> None:
         cursor.execute("PRAGMA foreign_keys=ON")
         cursor.execute("PRAGMA journal_mode=WAL")
         cursor.execute("PRAGMA synchronous=NORMAL")
-        cursor.execute("PRAGMA busy_timeout=5000")
+        # Long enough to outlast a schema migration on a large table. Five
+        # seconds was not: creating an index over a million rows took longer
+        # than that, and a second opener -- the collector thread starting
+        # beside the web process -- failed with "database is locked" and took
+        # the whole machine down with it.
+        cursor.execute("PRAGMA busy_timeout=60000")
     finally:
         cursor.close()
 

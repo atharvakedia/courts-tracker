@@ -327,6 +327,16 @@ def cmd_serve(args: argparse.Namespace) -> int:
     if args.with_collector:
         config = load_config(args.config)
 
+        # Migrate once, here, with nothing else touching the file. initialize()
+        # is idempotent but not free: adding a column or an index to a large
+        # table takes an exclusive lock for as long as the rewrite takes. Two
+        # openers racing it -- the collector thread and the web lifespan --
+        # meant whichever lost waited out its busy_timeout, failed startup, and
+        # restarted into the same race until the machine gave up. Doing it
+        # before either exists makes both of their initialize() calls no-ops.
+        migrator = build_storage(config)
+        migrator.close()
+
         def collect_forever() -> None:
             storage = build_storage(config)
             try:

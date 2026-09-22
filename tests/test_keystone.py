@@ -7,6 +7,7 @@ reserved for another agent, so the config-loader tests live here.
 from __future__ import annotations
 
 import datetime as dt
+import os
 from itertools import pairwise
 from pathlib import Path
 
@@ -102,7 +103,7 @@ def test_facility_by_uuid_finds_the_owning_venue(test_config: Config) -> None:
 def test_request_headers_carry_the_api_secret_and_user_agent(test_config: Config) -> None:
     """Regression: the API rejects requests without Api-Secret."""
     headers = test_config.http.request_headers()
-    assert headers["Api-Secret"] == "REDACTED"
+    assert headers["Api-Secret"] == os.environ["HUDLE_API_SECRET"]
     assert headers["User-Agent"].startswith("Mozilla/5.0")
 
 

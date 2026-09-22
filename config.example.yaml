@@ -64,9 +64,12 @@ http:
   api_base: "https://api.hudle.in"
   web_base: "https://hudle.in"
   headers:
-    Api-Secret: "REDACTED"
+    # Hudle's web-client key and app id. Public -- Hudle echoes the key in its own
+    # pagination URLs -- but kept out of the repo: set HUDLE_API_SECRET and
+    # HUDLE_APP_ID in the environment (.env locally, Secrets in CI and Vercel).
+    Api-Secret: "${HUDLE_API_SECRET}"
     Accept: "application/json, text/plain, */*"
-    x-app-id: "REDACTED"
+    x-app-id: "${HUDLE_APP_ID}"
     x-device-source: "3"
   user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 

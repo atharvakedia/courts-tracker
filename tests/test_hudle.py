@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime as dt
+import os
 import time
 from collections.abc import Callable
 from typing import Any
@@ -470,8 +471,8 @@ def test_the_required_api_headers_are_sent(test_config: Config, clock: FakeClock
         client.fetch_slots(PADEL_FORT_VENUE, PADEL_FORT_COURT, START_DATE, END_DATE)
 
     headers = captured[0].headers
-    assert headers["Api-Secret"] == "REDACTED"
-    assert headers["x-app-id"] == "REDACTED"
+    assert headers["Api-Secret"] == os.environ["HUDLE_API_SECRET"]
+    assert headers["x-app-id"] == os.environ["HUDLE_APP_ID"]
     assert headers["x-device-source"] == "3"
     assert headers["Accept"] == "application/json, text/plain, */*"
     user_agent = headers["User-Agent"]

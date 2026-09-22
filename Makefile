@@ -1,3 +1,7 @@
+# Local credentials (HUDLE_API_SECRET, HUDLE_APP_ID) live in an untracked .env.
+-include .env
+export
+
 # All targets run out of the project venv. No global interpreter is used.
 VENV    := $(CURDIR)/.venv
 PY      := $(VENV)/bin/python

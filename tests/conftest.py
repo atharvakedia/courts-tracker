@@ -13,6 +13,7 @@ from __future__ import annotations
 import dataclasses
 import datetime as dt
 import json
+import os
 from collections.abc import Callable, Iterator
 from pathlib import Path
 from typing import Any
@@ -34,6 +35,14 @@ from tracker.types import (
     slot_start_utc_for,
     to_utc_text,
 )
+
+#: Stand-ins for the Hudle client credentials, which config.yaml reads from the
+#: environment. Set at import so every config load in the suite resolves; the
+#: real values never reach a test, and no test calls Hudle.
+TEST_HUDLE_API_SECRET = "test-api-secret"
+TEST_HUDLE_APP_ID = "test-app-id"
+os.environ.setdefault("HUDLE_API_SECRET", TEST_HUDLE_API_SECRET)
+os.environ.setdefault("HUDLE_APP_ID", TEST_HUDLE_APP_ID)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 FIXTURE_DIR = PROJECT_ROOT / "fixtures" / "raw"

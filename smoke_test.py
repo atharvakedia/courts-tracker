@@ -9,6 +9,7 @@ Run:  python3 smoke_test.py
 from __future__ import annotations
 
 import json
+import os
 import re
 import sys
 import time
@@ -23,9 +24,9 @@ API_BASE = "https://api.hudle.in"
 WEB_BASE = "https://hudle.in"
 
 HEADERS = {
-    "Api-Secret": "REDACTED",
+    "Api-Secret": os.environ["HUDLE_API_SECRET"],
     "Accept": "application/json, text/plain, */*",
-    "x-app-id": "REDACTED",
+    "x-app-id": os.environ["HUDLE_APP_ID"],
     "x-device-source": "3",
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "

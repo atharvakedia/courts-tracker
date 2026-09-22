@@ -131,7 +131,7 @@ To fire one cycle immediately rather than waiting for the interval:
 
 ```bash
 launchctl start com.atharva.padel-tracker
-tail -f /Users/atharvakedia/Dev/padel-tracker/data/collect.log
+tail -f /Users/atharvakedia/Dev/hudle-tracker/data/collect.log
 ```
 
 **To reverse the installation**, in full:
@@ -161,7 +161,7 @@ Same idea, fewer guarantees (cron will not catch up a run missed while the machi
 and gives you no exit-status history):
 
 ```cron
-*/30 * * * * cd /Users/atharvakedia/Dev/padel-tracker && /Users/atharvakedia/Dev/padel-tracker/.venv/bin/python -m tracker collect >> /Users/atharvakedia/Dev/padel-tracker/data/collect.log 2>&1
+*/30 * * * * cd /Users/atharvakedia/Dev/hudle-tracker && /Users/atharvakedia/Dev/hudle-tracker/.venv/bin/python -m tracker collect >> /Users/atharvakedia/Dev/hudle-tracker/data/collect.log 2>&1
 ```
 
 Absolute paths on both the interpreter and the log are not optional: cron's `PATH` does not

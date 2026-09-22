@@ -25,14 +25,14 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/atharvakedia/Dev/padel-tracker/.venv/bin/python</string>
+        <string>/Users/atharvakedia/Dev/hudle-tracker/.venv/bin/python</string>
         <string>-m</string>
         <string>tracker</string>
         <string>collect</string>
     </array>
 
     <key>WorkingDirectory</key>
-    <string>/Users/atharvakedia/Dev/padel-tracker</string>
+    <string>/Users/atharvakedia/Dev/hudle-tracker</string>
 
     <key>StartInterval</key>
     <integer>1800</integer>
@@ -41,10 +41,10 @@
     <false/>
 
     <key>StandardOutPath</key>
-    <string>/Users/atharvakedia/Dev/padel-tracker/data/collect.log</string>
+    <string>/Users/atharvakedia/Dev/hudle-tracker/data/collect.log</string>
 
     <key>StandardErrorPath</key>
-    <string>/Users/atharvakedia/Dev/padel-tracker/data/collect.log</string>
+    <string>/Users/atharvakedia/Dev/hudle-tracker/data/collect.log</string>
 
     <key>EnvironmentVariables</key>
     <dict>
@@ -55,7 +55,7 @@
         <!-- Explicit rather than relying on WorkingDirectory, so the agent keeps
              working if it is ever launched from somewhere else. -->
         <key>PADEL_TRACKER_CONFIG</key>
-        <string>/Users/atharvakedia/Dev/padel-tracker/config.yaml</string>
+        <string>/Users/atharvakedia/Dev/hudle-tracker/config.yaml</string>
     </dict>
 
     <key>ProcessType</key>

@@ -16,3 +16,5 @@ data/*.log
 *.egg-info/
 .DS_Store
 .env
+.neon
+data/

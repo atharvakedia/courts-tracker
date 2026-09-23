@@ -96,7 +96,14 @@ def parse_grid(
     tz: str,
     business_day_start_hour: int,
 ) -> list[SlotReading]:
-    """Every slot in a ``/slots`` response, in published order."""
+    """Every slot in a ``/slots`` response that Hudle has created, in published order.
+
+    A slot with no ``id`` is one Hudle shows but has not created yet (its
+    ``created_at`` is blank too); seen only on days not yet played. It is left
+    out: without Hudle's id it has no stable identity, and a made-up one would
+    count the slot twice once Hudle creates it. A day is only counted after it
+    is played, and every played day seen so far has its ids.
+    """
     days: Iterable[Mapping[str, Any]] = (payload.get("data") or {}).get("slot_data") or []
     return [
         parse_slot(
@@ -109,6 +116,7 @@ def parse_grid(
         )
         for day in days
         for raw in day.get("slots") or []
+        if raw.get("id")
     ]
 
 

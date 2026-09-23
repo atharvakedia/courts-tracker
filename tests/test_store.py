@@ -203,3 +203,28 @@ def test_a_database_from_before_venue_locations_gains_the_columns(tmp_path: Any)
     assert store.unlocated_venues() == []
     assert (store.venues()[VENUE]["latitude"], store.venues()[VENUE]["longitude"]) == (26.9, 75.8)
     store.close()
+
+
+def test_a_slot_hudle_has_not_created_yet_is_left_out(store: Store) -> None:
+    """Regression: PlayAll Orbit Mall publishes the next few days with
+    ``"id": null``; each became slot "None", so one grid held the same key
+    hundreds of times -- Postgres refused the whole batch and SQLite quietly
+    merged them into one row."""
+    ghost = {**raw(slot_id="x"), "id": None, "created_at": "", "updated_at": ""}
+    payload = {
+        "data": {
+            "slot_data": [
+                {"date": "2026-09-25", "slots": [raw(slot_id="real"), ghost, dict(ghost)]}
+            ]
+        }
+    }
+    readings = parse_grid(
+        payload,
+        venue_uuid=VENUE,
+        facility_uuid=COURT,
+        sport=Sport.PICKLEBALL,
+        tz="Asia/Kolkata",
+        business_day_start_hour=4,
+    )
+    assert [r.slot_uuid for r in readings] == ["real"]
+    assert store.apply(readings, seen_at=T0) == 1

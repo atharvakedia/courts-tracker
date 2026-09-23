@@ -196,6 +196,18 @@ class Store:
                 for r in conn.execute(stmt)
             ]
 
+    def venues(self) -> dict[str, dict[str, Any]]:
+        """Every known venue by uuid, with when it first appeared on Hudle."""
+        with self._engine.connect() as conn:
+            return {
+                r["venue_uuid"]: {
+                    **dict(r),
+                    "first_seen_at": _utc(r["first_seen_at"]),
+                    "last_seen_at": _utc(r["last_seen_at"]),
+                }
+                for r in conn.execute(sa.select(venues)).mappings()
+            }
+
     # -- slots -------------------------------------------------------------
 
     def apply(self, readings: Sequence[SlotReading], *, seen_at: dt.datetime) -> int:

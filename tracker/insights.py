@@ -51,6 +51,7 @@ class Occupancy:
             "total_hours": round(self.total_minutes / 60, 1),
             "hudle_booked_hours": round(self.hudle_booked_minutes / 60, 1),
             "blocked_hours": round(self.blocked_minutes / 60, 1),
+            "vacant_hours": round((self.total_minutes - self.booked_minutes) / 60, 1),
         }
 
 
@@ -98,6 +99,90 @@ def heatmap(rows: Iterable[Row]) -> list[dict[str, Any]]:
     return [
         {"weekday": wd, "hour": hr, **occupancy(group).as_dict()}
         for (wd, hr), group in sorted(cells.items())
+    ]
+
+
+def by_date(rows: Iterable[Row]) -> list[dict[str, Any]]:
+    """Occupancy per business date across every row given (one venue or all)."""
+    return [
+        {"business_date": day.isoformat(), **occupancy(group).as_dict()}
+        for day, group in sorted(by(rows, "business_date").items())
+    ]
+
+
+def _hour_order(hour: int) -> int:
+    """Position of a clock hour in the business day, which starts at 04:00."""
+    return (hour - 4) % 24
+
+
+def by_hour(rows: Iterable[Row]) -> list[dict[str, Any]]:
+    """Occupancy per hour of the slot's local start, in business-day order.
+
+    ``days`` is how many business dates the hour was on sale, so a reader can
+    turn window totals into court-hours on an average day.
+    """
+    cells: dict[int, list[Row]] = collections.defaultdict(list)
+    for r in rows:
+        cells[r["start_local"].hour].append(r)
+    return [
+        {
+            "hour": hr,
+            "days": len({r["business_date"] for r in cells[hr]}),
+            **occupancy(cells[hr]).as_dict(),
+        }
+        for hr in sorted(cells, key=_hour_order)
+    ]
+
+
+def by_weekday(rows: Iterable[Row]) -> list[dict[str, Any]]:
+    """Occupancy per weekday (Monday = 0) of the business date."""
+    cells: dict[int, list[Row]] = collections.defaultdict(list)
+    for r in rows:
+        cells[r["business_date"].weekday()].append(r)
+    return [
+        {
+            "weekday": wd,
+            "days": len({r["business_date"] for r in cells[wd]}),
+            **occupancy(cells[wd]).as_dict(),
+        }
+        for wd in sorted(cells)
+    ]
+
+
+def peak(entries: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
+    """The best-booked entry among those with a real amount of court time.
+
+    An hour one court sells at dawn can read 100% on two slots; entries with
+    under a quarter of the largest entry's court-hours are not eligible.
+    """
+    floor = 0.25 * max((e["total_hours"] for e in entries), default=0)
+    eligible = [e for e in entries if e["occupancy"] is not None and e["total_hours"] >= floor]
+    return max(eligible, key=lambda e: e["occupancy"], default=None)
+
+
+#: Upper edges (inclusive) of the court-day buckets after the "nothing booked" one.
+SPREAD_EDGES = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+
+
+def court_day_spread(rows: Iterable[Row]) -> list[dict[str, Any]]:
+    """How many court-days sold how much: the distribution behind the average.
+
+    A court-day is one court on one business date. The first bucket is court-days
+    with nothing booked; then (0, 10%], (10%, 20%] ... (90%, 100%].
+    """
+    counts = [0] * (len(SPREAD_EDGES) + 1)
+    groups = by([{**r, "_k": (r["facility_uuid"], r["business_date"])} for r in rows], "_k")
+    for group in groups.values():
+        rate = occupancy(group).rate
+        if rate is None:
+            continue
+        idx = 0 if rate == 0 else 1 + next(i for i, e in enumerate(SPREAD_EDGES) if rate <= e)
+        counts[idx] += 1
+    lows = (0.0, 0.0, *SPREAD_EDGES[:-1])
+    highs = (0.0, *SPREAD_EDGES)
+    return [
+        {"low": lo, "high": hi, "court_days": n}
+        for lo, hi, n in zip(lows, highs, counts, strict=True)
     ]
 
 

@@ -44,7 +44,7 @@ from tracker.collect import (
     run_collect,
 )
 from tracker.config import Config, ConfigError, load_config
-from tracker.daily import discover_pickleball, run_daily, seed_configured_courts
+from tracker.daily import discover_pickleball, locate_venues, run_daily, seed_configured_courts
 from tracker.discover import (
     DiscoveryError,
     DriftReport,
@@ -410,6 +410,7 @@ def cmd_daily(args: argparse.Namespace) -> int:
             if args.discover:
                 venues, courts = discover_pickleball(config, store, client, now=now)
                 print(f"discovered {venues} pickleball venues, {courts} courts")
+                print(f"located {locate_venues(store, client)} more venues")
             result = run_daily(config, store, client, now=now)
     finally:
         store.close()

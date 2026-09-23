@@ -11,7 +11,7 @@ from __future__ import annotations
 import dataclasses
 import datetime as dt
 import json
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from typing import Any
 
 import pytest
@@ -47,6 +47,7 @@ from tracker.discover import (
     short_name_for,
     suggest_facility_kind,
     unknown_facilities,
+    venue_location,
 )
 from tracker.types import FacilityKind, Sport, VenueDim
 
@@ -1093,3 +1094,16 @@ def test_drift_report_render_names_the_appeared_padel_venue(
 def test_fake_client_satisfies_the_discovery_protocol(fake_client: FakeHudleClient) -> None:
     """The injected client contract is structural: any shape-match works."""
     assert isinstance(fake_client, DiscoveryClient)
+
+
+def test_venue_location_reads_the_venue_not_the_city_centre(
+    load_fixture: Callable[[str], Any],
+) -> None:
+    """Regression: taking ``city.latitude`` would stack every venue on one
+    point in the middle of Jaipur; a blank pair must read as unknown, not as
+    the Gulf of Guinea."""
+    details = load_fixture("next_data_venue_details_play_padel")
+    assert venue_location(details) == (26.8463907, 75.8009269)
+    assert venue_location({"latitude": 0, "longitude": 0}) is None
+    assert venue_location({"latitude": None, "longitude": "75.8"}) is None
+    assert venue_location({"city": {"latitude": 26.9, "longitude": 75.8}}) is None

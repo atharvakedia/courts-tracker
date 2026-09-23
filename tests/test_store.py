@@ -175,3 +175,31 @@ def test_runs_are_recorded(store: Store) -> None:
     )
     latest = store.latest_runs(1)[0]
     assert latest["courts_failed"] == 1 and latest["finished_at"] == T0 + dt.timedelta(minutes=35)
+
+
+def test_a_database_from_before_venue_locations_gains_the_columns(tmp_path: Any) -> None:
+    """Regression: Neon's venues table predates latitude/longitude; create_all
+    leaves an existing table alone, so without the column step every read of
+    venues fails once the code expects them."""
+    import sqlalchemy as sa
+
+    url = f"sqlite:///{tmp_path / 'old.sqlite'}"
+    engine = sa.create_engine(url)
+    with engine.begin() as conn:
+        conn.execute(
+            sa.text(
+                "CREATE TABLE venues (venue_uuid TEXT PRIMARY KEY, name TEXT NOT NULL, "
+                "slug TEXT NOT NULL, numeric_id TEXT NOT NULL, first_seen_at TEXT NOT NULL, "
+                "last_seen_at TEXT NOT NULL)"
+            )
+        )
+    engine.dispose()
+    store = Store(url)
+    store.initialize()
+    store.initialize()  # a second start must not try to add them again
+    store.upsert_venue(venue_uuid=VENUE, name="Club", slug="club", numeric_id="1", seen_at=T0)
+    assert [v["venue_uuid"] for v in store.unlocated_venues()] == [VENUE]
+    store.set_venue_location(VENUE, latitude=26.9, longitude=75.8)
+    assert store.unlocated_venues() == []
+    assert (store.venues()[VENUE]["latitude"], store.venues()[VENUE]["longitude"]) == (26.9, 75.8)
+    store.close()

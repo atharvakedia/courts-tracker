@@ -7,12 +7,19 @@ test touches the network. Each test names the regression it guards.
 from __future__ import annotations
 
 import datetime as dt
+import json
 from typing import Any
 
 import pytest
 
 from tracker.config import Config
-from tracker.daily import daily_window, fetch_range, run_daily, seed_configured_courts
+from tracker.daily import (
+    daily_window,
+    fetch_range,
+    locate_venues,
+    run_daily,
+    seed_configured_courts,
+)
 from tracker.hudle import CircuitOpenError, HudleHttpError
 from tracker.store import Court, Store
 from tracker.types import Sport
@@ -182,3 +189,41 @@ def test_a_venue_that_refuses_past_dates_still_yields_today_onwards(
     ]
     with pytest.raises(HudleHttpError):
         fetch_range(client, FORT, "f1", dt.date(2026, 9, 11), dt.date(2026, 9, 17))  # type: ignore[arg-type]
+
+
+class FakePages:
+    """Serves venue pages by slug; a slug mapped to an exception raises it."""
+
+    def __init__(self, pages: dict[str, Any]) -> None:
+        self.pages = pages
+        self.fetched: list[str] = []
+
+    def fetch_venue_page_html(self, slug: str, numeric_id: str) -> str:
+        self.fetched.append(slug)
+        page = self.pages[slug]
+        if isinstance(page, Exception):
+            raise page
+        return (
+            '<script id="__NEXT_DATA__" type="application/json">'
+            + json.dumps({"props": {"pageProps": {"venueDetails": page}}})
+            + "</script>"
+        )
+
+
+def test_locating_venues_reads_each_page_once_and_survives_a_bad_one(store: Store) -> None:
+    """Regression: a venue already on the map refetched every week, or one
+    broken page leaving the venues after it unplaced."""
+    for slug in ("fort", "broken", "play"):
+        store.upsert_venue(venue_uuid=slug, name=slug, slug=slug, numeric_id="1", seen_at=NOW)
+    pages = FakePages(
+        {
+            "fort": {"latitude": 26.91, "longitude": 75.74},
+            "broken": HudleHttpError(500, "boom"),
+            "play": {"latitude": 26.85, "longitude": 75.80},
+        }
+    )
+    assert locate_venues(store, pages) == 2  # type: ignore[arg-type]
+    assert [v["venue_uuid"] for v in store.unlocated_venues()] == ["broken"]
+    pages.fetched.clear()
+    locate_venues(store, pages)  # type: ignore[arg-type]
+    assert pages.fetched == ["broken"]

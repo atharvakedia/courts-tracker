@@ -383,6 +383,21 @@ def extract_next_data(html: str) -> dict[str, Any]:
     return dict(venue_details)
 
 
+def venue_location(details: Mapping[str, Any]) -> tuple[float, float] | None:
+    """A venue's (latitude, longitude) from its ``venueDetails``, if Hudle gives one.
+
+    The page also carries the city centre under ``city``; only the venue's own
+    top-level pair is used, and a zero or non-numeric pair counts as absent.
+    """
+    try:
+        lat, lng = float(details["latitude"]), float(details["longitude"])
+    except (KeyError, TypeError, ValueError):
+        return None
+    if not (-90 <= lat <= 90 and -180 <= lng <= 180) or (lat == 0 and lng == 0):
+        return None
+    return lat, lng
+
+
 _WORD_RE = re.compile(r"[a-z0-9]+")
 
 

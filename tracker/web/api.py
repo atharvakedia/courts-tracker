@@ -147,6 +147,8 @@ def overview(
                 "venue_uuid": venue_uuid,
                 "name": v.get("name", venue_uuid),
                 "new": is_new(v),
+                "latitude": v.get("latitude"),
+                "longitude": v.get("longitude"),
                 "courts": [
                     {
                         "facility_uuid": f,

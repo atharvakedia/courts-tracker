@@ -20,7 +20,12 @@ from dataclasses import dataclass
 from typing import Any
 
 from tracker.config import Config
-from tracker.discover import extract_next_data, parse_facilities, search_pickleball_venues
+from tracker.discover import (
+    extract_next_data,
+    parse_facilities,
+    search_pickleball_venues,
+    venue_location,
+)
 from tracker.hudle import CircuitOpenError, HudleClient, HudleError, HudleHttpError
 from tracker.slots import parse_grid
 from tracker.store import Court, Store
@@ -256,6 +261,8 @@ def discover_pickleball(
             numeric_id=venue.numeric_id,
             seen_at=now,
         )
+        if location := venue_location(details):
+            store.set_venue_location(venue.venue_uuid, latitude=location[0], longitude=location[1])
         venues_seen += 1
         for f in picked:
             store.upsert_court(
@@ -271,3 +278,32 @@ def discover_pickleball(
         extra={"venues": venues_seen, "courts": courts_seen, "search_complete": result.complete},
     )
     return venues_seen, courts_seen
+
+
+def locate_venues(store: Store, client: HudleClient) -> int:
+    """Read the coordinates of every venue that has none yet. Returns how many were found.
+
+    Discovery records them for pickleball as it goes; this covers the padel
+    venues, which come from config, and any page that failed on its day. A
+    venue already located is never fetched again.
+    """
+    found = 0
+    for venue in store.unlocated_venues():
+        try:
+            details = extract_next_data(
+                client.fetch_venue_page_html(venue["slug"], venue["numeric_id"])
+            )
+        except CircuitOpenError:
+            logger.error("locate_stopped", extra={"reason": "circuit_open"})
+            break
+        except Exception as exc:  # one unreadable page must not stop the rest
+            logger.warning(
+                "locate_venue_failed", extra={"venue": venue["name"], "error": repr(exc)}
+            )
+            continue
+        if location := venue_location(details):
+            store.set_venue_location(
+                venue["venue_uuid"], latitude=location[0], longitude=location[1]
+            )
+            found += 1
+    return found

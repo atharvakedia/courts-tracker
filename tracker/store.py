@@ -38,6 +38,9 @@ venues = sa.Table(
     sa.Column("numeric_id", sa.Text, nullable=False),
     sa.Column("first_seen_at", UTC_DT, nullable=False),
     sa.Column("last_seen_at", UTC_DT, nullable=False),
+    # Where the venue is, from its Hudle page; null until the page is read.
+    sa.Column("latitude", sa.Float),
+    sa.Column("longitude", sa.Float),
 )
 
 courts = sa.Table(
@@ -133,6 +136,23 @@ class Store:
 
     def initialize(self) -> None:
         metadata.create_all(self._engine)
+        self._add_missing_columns()
+
+    def _add_missing_columns(self) -> None:
+        """Bring a table created before a nullable column existed up to date.
+
+        ``create_all`` only creates missing tables, so a column added to an
+        existing table is added here, once, by name.
+        """
+        with self._engine.begin() as conn:
+            for table in metadata.sorted_tables:
+                present = {c["name"] for c in sa.inspect(conn).get_columns(table.name)}
+                for column in table.columns:
+                    if column.name not in present and column.nullable:
+                        kind = column.type.compile(dialect=conn.dialect)
+                        conn.execute(
+                            sa.text(f"ALTER TABLE {table.name} ADD COLUMN {column.name} {kind}")
+                        )
 
     def close(self) -> None:
         self._engine.dispose()
@@ -161,6 +181,24 @@ class Store:
         )
         with self._engine.begin() as conn:
             conn.execute(stmt)
+
+    def set_venue_location(self, venue_uuid: str, *, latitude: float, longitude: float) -> None:
+        with self._engine.begin() as conn:
+            conn.execute(
+                sa.update(venues)
+                .where(venues.c.venue_uuid == venue_uuid)
+                .values(latitude=latitude, longitude=longitude)
+            )
+
+    def unlocated_venues(self) -> list[dict[str, Any]]:
+        """Venues whose coordinates have not been read yet."""
+        with self._engine.connect() as conn:
+            rows = conn.execute(
+                sa.select(venues.c.venue_uuid, venues.c.name, venues.c.slug, venues.c.numeric_id)
+                .where(venues.c.latitude.is_(None))
+                .order_by(venues.c.name)
+            )
+            return [dict(r) for r in rows.mappings()]
 
     def upsert_court(
         self, *, facility_uuid: str, venue_uuid: str, name: str, sport: Sport, seen_at: dt.datetime

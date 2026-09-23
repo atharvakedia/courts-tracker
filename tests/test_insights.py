@@ -278,6 +278,7 @@ def _seed(url: str) -> None:
                         business_day_start_hour=4,
                     )
                 )
+    store.set_venue_location("v1", latitude=26.85, longitude=75.80)
     store.apply(readings, seen_at=seen)
     store.close()
 
@@ -309,6 +310,8 @@ def test_a_venue_narrows_every_chart_and_carries_the_previous_window(
     assert good["totals"]["occupancy"] == pytest.approx(4 / 16, abs=1e-3)
     assert good["totals"]["courts_counted"] == 1
     assert len(good["venues"]) == 2, "the list stays whole so the reader can switch venue"
+    where = {v["venue_uuid"]: (v["latitude"], v["longitude"]) for v in good["venues"]}
+    assert where == {"v1": (26.85, 75.80), "v2": (None, None)}, "the map places only located venues"
     by_hr = {h["hour"]: h for h in good["hours"]}
     assert by_hr[18]["occupancy"] == 1.0 and by_hr[6]["occupancy"] == 0.0
     assert by_hr[18]["days"] == 7

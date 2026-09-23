@@ -1,0 +1,20 @@
+name: keepalive
+
+# GitHub disables scheduled workflows in a repository with no activity for 60
+# days. Re-enabling the daily workflow through the API each month resets that
+# clock without adding commits (which would also redeploy the site).
+on:
+  schedule:
+    - cron: "0 6 1 * *"
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  keepalive:
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh api -X PUT "repos/${{ github.repository }}/actions/workflows/daily.yml/enable"
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -68,6 +68,24 @@ FORT_PICKLEBALL_COURT_1 = "d8452c5f-a340-45a9-9123-995edd038bf4"
 FORT_PICKLEBALL_COURT_2 = "2c33a9b6-f9f9-4bf1-82e0-f5bc9f8f65dd"
 PICKLEBALL_COURTS = (PLAY_PICKLEBALL_COURT, FORT_PICKLEBALL_COURT_1, FORT_PICKLEBALL_COURT_2)
 
+
+@pytest.fixture()
+def test_config(test_config: Config) -> Config:
+    """Padel Up re-activated for this module.
+
+    These tests exercise the snapshot collector's mechanics against the three
+    recorded padel grids, one of which is Padel Up's 60-minute court. The live
+    config no longer polls Padel Up; the mechanics under test do not change.
+    """
+    return dataclasses.replace(
+        test_config,
+        venues=tuple(
+            dataclasses.replace(v, active=True) if v.short_name == "Padel Up" else v
+            for v in test_config.venues
+        ),
+    )
+
+
 ACTIVE_COURT_COUNT = 6
 TOTAL_SLOTS = 589 + 1240 + 1116
 TOTAL_BOOKED = 0 + 21 + 6

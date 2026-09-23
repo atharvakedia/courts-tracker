@@ -84,7 +84,9 @@ venues:
     short_name: "Padel Up"
     slug: "padel-up" # verified
     numeric_id: "772576" # verified
-    active: true
+    # Not tracked: zero bookings ever observed on Hudle. Kept here so the venue
+    # is recognised rather than rediscovered as new.
+    active: false
     # Collected but hidden from the dashboard. Zero bookings observed in 31 days
     # at 1800/court-hour, while both competitors book daily, so a flat 0% line
     # reads as a broken collector rather than as a finding. Polling continues:

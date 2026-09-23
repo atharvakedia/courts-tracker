@@ -50,6 +50,24 @@ from tracker.discover import (
 )
 from tracker.types import FacilityKind, Sport, VenueDim
 
+
+@pytest.fixture()
+def test_config(test_config: Config) -> Config:
+    """Padel Up re-activated for this module.
+
+    These tests exercise the snapshot collector's mechanics against the three
+    recorded padel grids, one of which is Padel Up's 60-minute court. The live
+    config no longer polls Padel Up; the mechanics under test do not change.
+    """
+    return dataclasses.replace(
+        test_config,
+        venues=tuple(
+            dataclasses.replace(v, active=True) if v.short_name == "Padel Up" else v
+            for v in test_config.venues
+        ),
+    )
+
+
 OBSERVED_AT = dt.datetime(2026, 9, 11, 10, 0, tzinfo=dt.UTC)
 
 #: Play Padel's display name before it renamed itself. Matching is by UUID, so

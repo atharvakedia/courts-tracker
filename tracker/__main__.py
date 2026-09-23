@@ -44,6 +44,7 @@ from tracker.collect import (
     run_collect,
 )
 from tracker.config import Config, ConfigError, load_config
+from tracker.daily import discover_pickleball, run_daily, seed_configured_courts
 from tracker.discover import (
     DiscoveryError,
     DriftReport,
@@ -54,6 +55,7 @@ from tracker.discover import (
 from tracker.hudle import MAX_SEARCH_PAGES, HudleClient, HudleError
 from tracker.logging_setup import LogFormat, configure_logging, describe_fields
 from tracker.storage_sqlite import SQLiteStorage
+from tracker.store import Store
 from tracker.types import SlotState
 
 logger = logging.getLogger("tracker.cli")
@@ -380,6 +382,47 @@ def cmd_backfill_derived(args: argparse.Namespace) -> int:
 # --------------------------------------------------------------------------
 
 
+# --------------------------------------------------------------------------
+# daily pass (the one scheduled job)
+# --------------------------------------------------------------------------
+
+
+def _open_store() -> Store:
+    """The store named by DATABASE_URL (Neon in production, a file locally)."""
+    url = os.environ.get("DATABASE_URL")
+    if not url:
+        raise ConfigError(
+            "DATABASE_URL is not set: point it at the Neon database, or sqlite:///path"
+        )
+    store = Store(url)
+    store.initialize()
+    return store
+
+
+def cmd_daily(args: argparse.Namespace) -> int:
+    """Seed the configured courts, discover pickleball if due, then poll everything once."""
+    config = load_config(args.config)
+    store = _open_store()
+    now = utc_now()
+    try:
+        seed_configured_courts(config, store, now=now)
+        with build_client(config) as client:
+            if args.discover:
+                venues, courts = discover_pickleball(config, store, client, now=now)
+                print(f"discovered {venues} pickleball venues, {courts} courts")
+            result = run_daily(config, store, client, now=now)
+    finally:
+        store.close()
+    print(
+        f"daily pass: {result.courts_ok} courts ok, {result.courts_failed} failed, "
+        f"{result.slots_seen} slots seen, {result.slots_written} written"
+        + (" -- STOPPED EARLY (circuit open)" if result.stopped_early else "")
+    )
+    if result.stopped_early:
+        return int(ExitCode.STOPPED)
+    return int(ExitCode.OK if result.ok else ExitCode.PARTIAL)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="python -m tracker",
@@ -438,6 +481,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="recompute slot_state_transitions and slot_first_booked",
     )
     backfill.set_defaults(func=cmd_backfill_derived)
+
+    daily = commands.add_parser(
+        "daily", parents=[common], help="poll every tracked court once (the scheduled job)"
+    )
+    daily.add_argument(
+        "--discover", action="store_true", help="first refresh the pickleball court list"
+    )
+    daily.set_defaults(func=cmd_daily)
 
     return parser
 

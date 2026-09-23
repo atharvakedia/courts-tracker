@@ -53,7 +53,8 @@ def test_active_courts_excludes_equipment(test_config: Config) -> None:
     """Regression: rackets and balls are facilities too. Polling them would
     burn requests and pollute occupancy with non-court inventory."""
     pairs = test_config.active_courts()
-    assert len(pairs) == 6
+    # Padel Up is configured but inactive: 2 padel + 3 pickleball courts polled.
+    assert len(pairs) == 5
     assert all(f.kind is FacilityKind.COURT for _, f in pairs)
     equipment = [
         f for v in test_config.venues for f in v.facilities if f.kind is FacilityKind.EQUIPMENT
@@ -62,11 +63,11 @@ def test_active_courts_excludes_equipment(test_config: Config) -> None:
     assert all(not f.active for f in equipment)
 
 
-def test_courts_for_sport_returns_the_three_padel_courts(test_config: Config) -> None:
+def test_courts_for_sport_returns_the_two_tracked_padel_courts(test_config: Config) -> None:
     """Regression: the padel set is exactly three courts, one per venue."""
     padel = test_config.courts_for_sport(Sport.PADEL)
-    assert len(padel) == 3
-    assert {v.short_name for v, _ in padel} == {"Padel Up", "Play Padel", "Padel Fort"}
+    assert len(padel) == 2
+    assert {v.short_name for v, _ in padel} == {"Play Padel", "Padel Fort"}
 
 
 def test_price_per_slot_is_derived_from_the_per_hour_price(test_config: Config) -> None:
@@ -74,8 +75,6 @@ def test_price_per_slot_is_derived_from_the_per_hour_price(test_config: Config) 
     hour (2000) even though it is the smallest per-slot number. Config stores
     only the per-hour figure so nothing compares per-slot prices by accident."""
     by_venue = {v.short_name: f for v, f in test_config.courts_for_sport(Sport.PADEL)}
-    assert by_venue["Padel Up"].price_per_court_hour == 1800
-    assert by_venue["Padel Up"].price_per_slot == 1800.0
     assert by_venue["Play Padel"].price_per_court_hour == 2000
     assert by_venue["Play Padel"].price_per_slot == 1000.0
     assert by_venue["Padel Fort"].price_per_court_hour == 1800

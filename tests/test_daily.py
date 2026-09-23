@@ -30,9 +30,11 @@ class FakeHudle:
         *,
         fail: dict[str, Exception] | None = None,
         fail_long_ranges: bool = False,
+        no_history_from: dt.date | None = None,
     ) -> None:
         self.payloads, self.fail = payloads, fail or {}
         self.fail_long_ranges = fail_long_ranges
+        self.no_history_from = no_history_from
         self.calls: list[tuple[str, dt.date, dt.date]] = []
 
     def fetch_slots(
@@ -41,6 +43,12 @@ class FakeHudle:
         self.calls.append((facility, start, end))
         if facility in self.fail:
             raise self.fail[facility]
+        if self.no_history_from and start < self.no_history_from:
+            raise HudleHttpError(
+                403,
+                '{"success":false,"code":403,'
+                '"message":"Start date cannot be earlier than the current date."}',
+            )
         if self.fail_long_ranges and (end - start).days > 7:
             raise HudleHttpError(502, "<html>502 Bad Gateway</html>")
         days = [
@@ -150,3 +158,27 @@ def test_config_seeds_the_padel_courts_and_not_padel_up(test_config: Config, sto
     venues = {c.venue_uuid for c in store.tracked_courts(Sport.PADEL)}
     assert padel == {"Padel Court (Outdoor)", "Padel Court"}
     assert "e606e880-0b2c-4c69-b1a8-193c8f915328" not in venues
+
+
+def test_a_venue_that_refuses_past_dates_still_yields_today_onwards(
+    raw_slots_padel_fort: Any,
+) -> None:
+    """Regression: a venue that keeps no public history (PlayAll Orbit Mall
+    answers 403 to any past start date) failing every day -- and, across its
+    seven courts, tripping the breaker and stopping the whole pass."""
+    client = FakeHudle({"f1": raw_slots_padel_fort}, no_history_from=dt.date(2026, 9, 15))
+    payload = fetch_range(
+        client,
+        FORT,
+        "f1",
+        dt.date(2026, 9, 11),
+        dt.date(2026, 9, 17),  # type: ignore[arg-type]
+        today=dt.date(2026, 9, 15),
+    )
+    assert [d["date"] for d in payload["data"]["slot_data"]] == [
+        "2026-09-15",
+        "2026-09-16",
+        "2026-09-17",
+    ]
+    with pytest.raises(HudleHttpError):
+        fetch_range(client, FORT, "f1", dt.date(2026, 9, 11), dt.date(2026, 9, 17))  # type: ignore[arg-type]

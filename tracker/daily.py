@@ -54,17 +54,34 @@ def daily_window(now: dt.datetime, tz: str) -> tuple[dt.date, dt.date]:
     return today - dt.timedelta(days=LOOKBACK_DAYS), today + dt.timedelta(days=AHEAD_DAYS)
 
 
+#: Hudle's refusal when a venue keeps no public history (seen: PlayAll Orbit Mall).
+NO_HISTORY_MESSAGE = "earlier than the current date"
+
+
 def fetch_range(
-    client: HudleClient, venue_uuid: str, facility_uuid: str, start: dt.date, end: dt.date
+    client: HudleClient,
+    venue_uuid: str,
+    facility_uuid: str,
+    start: dt.date,
+    end: dt.date,
+    *,
+    today: dt.date | None = None,
 ) -> dict[str, Any]:
     """One court's grid for a date range; on a Hudle 5xx, the range in pieces.
 
-    The pieces' day lists are concatenated, so the result has the shape of a
-    single response either way.
+    Some venues refuse any past date (HTTP 403, "Start date cannot be earlier
+    than the current date"); for those the range is re-requested from
+    ``today``, so the court still yields today and the days ahead rather than
+    failing -- and, since each refusal is followed by a success, a venue with
+    several such courts cannot trip the circuit breaker. The pieces' day lists
+    are concatenated, so the result has the shape of a single response.
     """
     try:
         return client.fetch_slots(venue_uuid, facility_uuid, start, end)
     except HudleHttpError as exc:
+        if exc.status == 403 and NO_HISTORY_MESSAGE in exc.body and today and start < today:
+            logger.info("daily_no_history", extra={"facility_uuid": facility_uuid})
+            return fetch_range(client, venue_uuid, facility_uuid, today, end)
         if exc.status < 500:
             raise
         logger.warning(
@@ -109,7 +126,13 @@ def run_daily(
     errors: list[str] = []
     for court in courts:
         try:
-            payload = fetch_range(client, court.venue_uuid, court.facility_uuid, *window)
+            payload = fetch_range(
+                client,
+                court.venue_uuid,
+                court.facility_uuid,
+                *window,
+                today=local_wall_clock(now, config.timezone).date(),
+            )
         except CircuitOpenError as exc:
             stopped = True
             errors.append(f"circuit open before {court.name}: {exc}")

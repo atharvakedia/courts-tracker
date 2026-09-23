@@ -46,7 +46,7 @@ NEW_VENUE_DAYS = 14
 #: The daily pass runs once a day; older than this and the dashboard says so.
 STALE_AFTER = dt.timedelta(hours=36)
 
-app = FastAPI(title="Hudle tracker", docs_url="/api/docs", openapi_url="/api/openapi.json")
+app = FastAPI(title="Courts tracker", docs_url="/api/docs", openapi_url="/api/openapi.json")
 
 
 @contextmanager

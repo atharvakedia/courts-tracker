@@ -1,4 +1,4 @@
-/* Hudle tracker dashboard: one fetch per view (/api/overview), drawn in place.
+/* Courts tracker dashboard: one fetch per view (/api/overview), drawn in place.
    A view is sport x window x (optionally) one venue; every chart and headline
    figure answers for the same view, and the URL carries it. */
 (function () {

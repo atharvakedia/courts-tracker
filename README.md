@@ -1,4 +1,4 @@
-# padel-tracker
+# Courts tracker
 
 A local-first court-occupancy tracker for the three padel venues in Jaipur that list on
 [Hudle](https://hudle.in). It polls Hudle's public slot-grid endpoint every 30 minutes,

@@ -5,7 +5,7 @@
   'use strict';
   const state = {
     sport: 'padel', window: '7', venue: null, panel: 'venues', data: null, filter: '',
-    views: { day: 'pct', hour: 'pct', week: 'grid', spread: 'days' },
+    views: { day: 'pct', hour: 'pct', week: 'grid', spread: 'days', venues: 'list', metric: 'booked' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem('ht.state') || '{}');
@@ -241,6 +241,7 @@
     $('nodata').hidden = !empty;
     kpis(d);
     venues(d);
+    venueView(d);
     if (empty) { nodata(d, name); return; }
     ['day', 'hour', 'week', 'spread'].forEach((k) => drawPanel(k, d));
   }
@@ -328,7 +329,6 @@
     const host = $('venue-list');
     const counted = d.venues.filter((v) => v.verdict !== 'unreliable');
     const listing = d.venues.filter((v) => v.verdict === 'unreliable');
-    $('den-venues').textContent = `% of listed court-hours booked · ${counted.length} counted, ${listing.length} listing-only · ${range(d)}`;
     if (!d.venues.length) { host.innerHTML = '<p class="empty">No venues with settled days in this window.</p>'; return; }
     const f = state.filter.trim().toLowerCase();
     const T = theme();
@@ -353,7 +353,98 @@
     if (sel) sel.scrollIntoView({ block: 'nearest' });
   }
 
+  // ---------- venue map ----------
+  // The venues panel's second view: every located venue on Jaipur's streets,
+  // a heat layer for where court-hours (or booked court-hours) concentrate,
+  // and a dot per venue sized by the same figure that filters on click.
+  // Esri's gray canvas needs no key; its labels come as a separate layer on top.
+  const TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_{tone}_Gray_{part}/MapServer/tile/{z}/{y}/{x}';
+  const ATTRIBUTION = 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors';
+  const JAIPUR = [26.9124, 75.7873];
+  const mapState = { map: null, tiles: null, tileStyle: null, layers: null, fittedFor: null };
+
+  function venueView(d) {
+    $('venues-panel').dataset.view = state.views.venues;
+    if (state.views.venues === 'map') drawMap(d);
+    else venueDen(d);
+  }
+
+  function venueDen(d) {
+    const counted = d.venues.filter((v) => v.verdict !== 'unreliable');
+    const listing = d.venues.length - counted.length;
+    if (state.views.venues !== 'map') {
+      $('den-venues').textContent = `% of listed court-hours booked · ${counted.length} counted, ${listing} listing-only · ${range(d)}`;
+      return;
+    }
+    const placed = d.venues.filter((v) => v.latitude != null).length;
+    const what = state.views.metric === 'booked' ? 'Court-hours booked' : 'Court-hours listed';
+    const missing = d.venues.length - placed;
+    $('den-venues').textContent = `${what} per venue · bigger dot, more hours · ${range(d)}${missing ? ` · ${missing} not placed yet` : ''}`;
+  }
+
+  function drawMap(d) {
+    venueDen(d);
+    if (typeof L === 'undefined') { $('map').innerHTML = '<p class="empty">The map library did not load.</p>'; return; }
+    const t = theme();
+    if (!mapState.map) {
+      mapState.map = L.map('map', { zoomControl: true, attributionControl: true, preferCanvas: true }).setView(JAIPUR, 12);
+      mapState.map.attributionControl.setPrefix(false);
+      new ResizeObserver(() => mapState.map.invalidateSize()).observe($('map'));
+    }
+    const map = mapState.map;
+    const tone = document.documentElement.dataset.theme === 'dark' ? 'Dark' : 'Light';
+    if (mapState.tileStyle !== tone) {
+      if (mapState.tiles) mapState.tiles.remove();
+      mapState.tiles = L.layerGroup([
+        L.tileLayer(TILES, { tone, part: 'Base', maxZoom: 16, attribution: ATTRIBUTION }),
+        L.tileLayer(TILES, { tone, part: 'Reference', maxZoom: 16, pane: 'shadowPane' }),
+      ]).addTo(map);
+      mapState.tileStyle = tone;
+    }
+    if (mapState.layers) mapState.layers.remove();
+
+    const key = state.views.metric === 'booked' ? 'booked_hours' : 'total_hours';
+    const placed = d.venues.filter((v) => v.latitude != null && v.longitude != null);
+    const max = Math.max(1e-9, ...placed.map((v) => v[key] || 0));
+    const layers = L.layerGroup();
+    if (typeof L.heatLayer === 'function' && placed.length) {
+      L.heatLayer(placed.map((v) => [v.latitude, v.longitude, (v[key] || 0) / max]), {
+        radius: 42, blur: 30, max: 0.6, minOpacity: 0.3,
+        gradient: { 0.1: t.seq[1], 0.35: t.seq[2], 0.65: t.seq[3], 1: t.seq[4] },
+      }).addTo(layers);
+    }
+    // Largest first, so a small venue beside a big one stays clickable on top.
+    [...placed].sort((a, b) => (b[key] || 0) - (a[key] || 0)).forEach((v) => {
+      const share = (v[key] || 0) / max;
+      const selected = v.venue_uuid === d.venue;
+      const dead = v.verdict === 'unreliable';
+      const dot = L.circleMarker([v.latitude, v.longitude], {
+        radius: 4 + 12 * Math.sqrt(share), className: 'dot',
+        color: selected ? t.ink : t.panel, weight: selected ? 3 : 1.5,
+        fillColor: dead ? t.ink3 : t.accent, fillOpacity: dead ? 0.45 : 0.85,
+      });
+      dot.bindTooltip(
+        `<b>${esc(v.name)}</b><br><span>${num(v.booked_hours)} of ${num(v.total_hours)} court-h booked · ${pct(v.occupancy)}</span>`
+        + (dead ? '<br><span>listing only · not counted</span>' : ''),
+        { direction: 'top', offset: [0, -6] },
+      );
+      dot.on('click', () => selectVenue(v.venue_uuid));
+      dot.addTo(layers);
+    });
+    mapState.layers = layers.addTo(map);
+
+    // Frame the venues when the sport changes, not on every redraw: a reader
+    // who zoomed into a neighbourhood keeps it while switching windows.
+    if (placed.length && mapState.fittedFor !== d.sport) {
+      map.invalidateSize();
+      map.fitBounds(L.latLngBounds(placed.map((v) => [v.latitude, v.longitude])), { padding: [36, 36], maxZoom: 14 });
+      mapState.fittedFor = d.sport;
+    }
+    $('map').setAttribute('aria-label', `Map of ${placed.length} ${d.sport} venues in Jaipur, sized by ${key === 'booked_hours' ? 'court-hours booked' : 'court-hours listed'}.`);
+  }
+
   function drawPanel(k, d) {
+    if (k === 'venues' || k === 'metric') { venueView(d); return; }
     if (!d.totals.total_hours) return;
     ({ day: byDay, hour: byHour, week: byWeek, spread })[k](d, theme());
   }

@@ -13,7 +13,10 @@
     })();
   </script>
   <link rel="stylesheet" href="/app.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 </head>
 <body>
   <header class="bar">
@@ -45,13 +48,25 @@
   </nav>
 
   <main class="grid" id="grid">
-    <section class="panel venues" data-p="venues">
+    <section class="panel venues" data-p="venues" id="venues-panel">
       <header>
-        <div class="ttl"><h2>Venues</h2><span class="hint">tap one to filter every chart</span></div>
+        <div class="ttl"><h2>Venues</h2><span class="hint">tap one to filter every chart</span>
+          <div class="mini" data-k="venues" role="group" aria-label="View">
+            <button data-v="list" aria-pressed="true">List</button>
+            <button data-v="map" aria-pressed="false">Map</button>
+          </div>
+        </div>
         <p class="den" id="den-venues"></p>
       </header>
       <input class="search" id="search" type="search" placeholder="Find a venue" aria-label="Find a venue" autocomplete="off" />
       <div class="list" id="venue-list" role="listbox" aria-label="Venues"></div>
+      <div class="mapwrap">
+        <div id="map" role="img" aria-label="Map of Jaipur venues"></div>
+        <div class="mini float" data-k="metric" role="group" aria-label="Measure">
+          <button data-v="total" aria-pressed="false">Court-hours</button>
+          <button data-v="booked" aria-pressed="true">Booked</button>
+        </div>
+      </div>
     </section>
 
     <section class="panel chartp" data-p="day">
@@ -116,7 +131,10 @@
     </section>
   </main>
 
-  <footer class="foot" id="foot">Booked = sold on Hudle or blocked by the venue. Only fully elapsed days count. Court-hours, so 30- and 60-minute slots compare. Jaipur time.</footer>
+  <footer class="foot" id="foot">
+    <span class="note">Booked = sold on Hudle or blocked by the venue. Only fully elapsed days count. Court-hours, so 30- and 60-minute slots compare. Jaipur time.</span>
+    <span class="powered">Powered by <i class="logo" role="img" aria-label="Kedia Group"></i></span>
+  </footer>
   <script src="/app.js"></script>
 </body>
 </html>

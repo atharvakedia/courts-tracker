@@ -71,6 +71,8 @@ slots = sa.Table(
     sa.Column("start_utc", UTC_DT, nullable=False),
     sa.Column("duration_minutes", sa.Integer, nullable=False),
     sa.Column("price", sa.Numeric(10, 2)),
+    # Bought by a customer on Hudle. A venue block is not a booking: it shows
+    # as hudle_booked and hudle_available both false.
     sa.Column("booked", sa.Boolean, nullable=False),
     sa.Column("hudle_booked", sa.Boolean, nullable=False),
     sa.Column("hudle_available", sa.Boolean, nullable=False),
@@ -148,6 +150,22 @@ class Store:
     def initialize(self) -> None:
         metadata.create_all(self._engine)
         self._add_missing_columns()
+        self._clear_block_bookings()
+
+    def _clear_block_bookings(self) -> None:
+        """Hold ``booked`` to its meaning: a customer bought the slot.
+
+        A venue block is not a booking. Any row whose ``booked`` disagrees with
+        Hudle's own ``hudle_booked`` flag -- a block stored as booked -- is set
+        back, with its booking stamps cleared. Consistent rows are untouched, so
+        on a healthy table this is a single scan that changes nothing.
+        """
+        with self._engine.begin() as conn:
+            conn.execute(
+                sa.update(slots)
+                .where(slots.c.booked != slots.c.hudle_booked)
+                .values(booked=slots.c.hudle_booked, booked_at=None, booked_seen_at=None)
+            )
 
     def _add_missing_columns(self) -> None:
         """Bring a table created before a nullable column existed up to date.

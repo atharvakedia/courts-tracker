@@ -47,31 +47,17 @@
     <button data-p="day" aria-pressed="false">By day</button>
     <button data-p="hour" aria-pressed="false">By hour</button>
     <button data-p="week" aria-pressed="false">Weekday</button>
-    <button data-p="spread" aria-pressed="false">Spread</button>
+    <button data-p="map" aria-pressed="false">Map</button>
   </nav>
 
   <main class="grid" id="grid">
-    <section class="panel venues" data-p="venues" id="venues-panel">
+    <section class="panel venues" data-p="venues">
       <header>
-        <div class="ttl"><h2>Venues</h2><span class="hint">tap one to filter every chart</span>
-          <div class="mini" data-k="venues" role="group" aria-label="View">
-            <button data-v="list" aria-pressed="true">List</button>
-            <button data-v="map" aria-pressed="false">Map</button>
-          </div>
-        </div>
+        <div class="ttl"><h2>Venues</h2><span class="hint">tap one to filter every chart</span></div>
         <p class="den" id="den-venues"></p>
       </header>
       <input class="search" id="search" type="search" placeholder="Find a venue" aria-label="Find a venue" autocomplete="off" />
       <div class="list" id="venue-list" role="listbox" aria-label="Venues"></div>
-      <div class="mapwrap">
-        <div id="map" role="img" aria-label="Map of Jaipur venues"></div>
-        <div class="mini float" data-k="metric" role="group" aria-label="Measure">
-          <button data-v="supply" aria-pressed="false">Courts</button>
-          <button data-v="demand" aria-pressed="true">Hours booked</button>
-        </div>
-        <div class="mapkey" id="mapkey" aria-hidden="true"></div>
-        <button class="icon mapbig" id="mapbig" aria-pressed="false" aria-label="Enlarge map" title="Enlarge map">⤢</button>
-      </div>
     </section>
 
     <section class="panel chartp" data-p="day">
@@ -113,17 +99,21 @@
       <div class="chart" id="c-week" role="img"></div>
     </section>
 
-    <section class="panel chartp" data-p="spread">
+    <section class="panel chartp" data-p="map">
       <header>
-        <div class="ttl"><h2>Spread</h2>
-          <div class="mini" data-k="spread" role="group" aria-label="View">
-            <button data-v="days" aria-pressed="true">Court-days</button>
-            <button data-v="lead" aria-pressed="false">Booked ahead</button>
+        <div class="ttl"><h2>Jaipur map</h2>
+          <div class="mini" data-k="metric" role="group" aria-label="Measure">
+            <button data-v="supply" aria-pressed="false">Courts</button>
+            <button data-v="demand" aria-pressed="true">Hours booked</button>
           </div>
         </div>
-        <p class="den" id="den-spread"></p>
+        <p class="den" id="den-map"></p>
       </header>
-      <div class="chart" id="c-spread" role="img"></div>
+      <div class="mapwrap">
+        <div id="map" role="img" aria-label="Map of Jaipur venues"></div>
+        <div class="mapkey" id="mapkey" aria-hidden="true"></div>
+        <button class="icon mapbig" id="mapbig" aria-pressed="false" aria-label="Enlarge map" title="Enlarge map">⤢</button>
+      </div>
     </section>
 
     <section class="panel nodata" id="nodata" hidden>
@@ -137,7 +127,7 @@
   </main>
 
   <footer class="foot" id="foot">
-    <span class="note">Booked = sold on Hudle or blocked by the venue. Only fully elapsed days count. Court-hours, so 30- and 60-minute slots compare. Jaipur time.</span>
+    <span class="note">Booked = bought by a customer on Hudle; % booked is of the court time offered. Slots a venue blocks are left out. Only fully elapsed days count. Jaipur time.</span>
     <span class="powered">Powered by <i class="logo" role="img" aria-label="Kedia Group"></i></span>
   </footer>
   <script src="/app.js"></script>

@@ -14,7 +14,6 @@ import pytest
 from fastapi.testclient import TestClient
 
 from tests.test_insights import TODAY, _seed
-from tracker.insights import lead_histogram
 from tracker.store import Store
 from tracker.types import Sport
 from tracker.views import all_views, overview, rows_for, view_key, views_as_of
@@ -30,14 +29,6 @@ def test_an_evening_build_is_for_the_next_day() -> None:
     assert views_as_of(evening, "Asia/Kolkata") == dt.date(2026, 9, 23)
     assert views_as_of(evening - dt.timedelta(minutes=1), "Asia/Kolkata") == dt.date(2026, 9, 22)
     assert views_as_of(morning, "Asia/Kolkata") == dt.date(2026, 9, 22)
-
-
-def test_lead_histogram_buckets_on_the_lower_edge() -> None:
-    """Regression: a booking exactly 24h ahead counted as '12-24h', or a
-    week-plus booking dropped off the end."""
-    counts = [b["count"] for b in lead_histogram([0.5, 3.0, 23.9, 24.0, 500.0])]
-    # <3h, 3-6h, 6-12h, 12-24h, 1-2d, 2-3d, 3-7d, 7d+
-    assert counts == [1, 1, 0, 1, 1, 0, 0, 1]
 
 
 def test_every_view_is_built_and_matches_the_live_answer(tmp_path: Any) -> None:
@@ -91,3 +82,23 @@ def test_the_api_serves_the_stored_view_with_edge_caching(
     # A view that was never built is still answered, computed on the spot.
     miss = client.get("/api/overview", params={"sport": "pickleball", "window": "7"})
     assert miss.status_code == 200 and miss.json()["totals"]["courts_counted"] == 2
+
+
+def test_the_map_adds_up_to_the_headline_figures(tmp_path: Any) -> None:
+    """Regression: the map's demand total drifting from the booked court-hours
+    in the headline card, because it summed venues or courts the headline
+    leaves out."""
+    url = f"sqlite:///{tmp_path / 'db.sqlite'}"
+    _seed(url)
+    store = Store(url)
+    view = dict(all_views(store, TODAY))[view_key(Sport.PICKLEBALL, "30", None)]
+    counted = [
+        c
+        for v in view["venues"]
+        if v["verdict"] != "unreliable"
+        for c in v["courts"]
+        if c["verdict"] in ("reliable", "partial")
+    ]
+    assert sum(c["booked_hours"] for c in counted) == pytest.approx(view["totals"]["booked_hours"])
+    assert len(counted) == view["totals"]["courts_counted"]
+    store.close()

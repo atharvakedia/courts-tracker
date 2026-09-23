@@ -70,11 +70,11 @@ def row(store: Store) -> dict[str, Any]:
     return rows[0]
 
 
-def test_a_venue_block_counts_as_booked() -> None:
-    """Regression: blocked slots read as vacant, so a venue that records its
-    offline sales by blocking looks empty. The agreed rule is booked-or-vacant."""
+def test_a_venue_block_is_not_a_booking() -> None:
+    """Regression: a slot the venue took off sale stored as booked, so a court
+    blocked all day reads as full. Booked means a customer bought it."""
     assert reading(booked=True).booked
-    assert reading(booked=False, available=False).booked
+    assert not reading(booked=False, available=False).booked
     assert not reading(booked=False, available=True).booked
 
 
@@ -155,8 +155,9 @@ def test_a_whole_grid_payload_parses_every_slot(raw_slots_padel_fort: Any) -> No
     )
     total = sum(len(d.get("slots") or []) for d in raw_slots_padel_fort["data"]["slot_data"])
     assert len(readings) == total == 1116
-    # 6 bought through Hudle + 18 blocked by the venue, all booked under the rule
-    assert sum(r.booked for r in readings) == 24
+    # 6 bought through Hudle; the 18 the venue blocked are not bookings
+    assert sum(r.booked for r in readings) == 6
+    assert sum(not r.hudle_booked and not r.hudle_available for r in readings) == 18
 
 
 def test_runs_are_recorded(store: Store) -> None:
@@ -228,3 +229,32 @@ def test_a_slot_hudle_has_not_created_yet_is_left_out(store: Store) -> None:
     )
     assert [r.slot_uuid for r in readings] == ["real"]
     assert store.apply(readings, seen_at=T0) == 1
+
+
+def test_a_block_stored_as_booked_is_set_back_on_startup(tmp_path: Any) -> None:
+    """Regression: rows written while blocks counted as sold keep booked=true,
+    so the next pass reads every block's unblocking as a cancellation and the
+    store disagrees with the dashboard's rule."""
+    import sqlalchemy as sa
+
+    url = f"sqlite:///{tmp_path / 'db.sqlite'}"
+    store = Store(url)
+    store.initialize()
+    store.apply([reading(booked=False, available=False, slot_id="block")], seen_at=T0)
+    store.apply([reading(booked=True, slot_id="sale")], seen_at=T0)
+    engine = sa.create_engine(url)
+    with engine.begin() as conn:
+        conn.execute(
+            sa.text(
+                "UPDATE slots SET booked = 1, booked_at = first_seen_at WHERE slot_uuid = 'block'"
+            )
+        )
+    engine.dispose()
+    store.initialize()
+    with engine.connect() as conn:
+        rows = {
+            r.slot_uuid: (r.booked, r.booked_at is not None)
+            for r in conn.execute(sa.text("SELECT slot_uuid, booked, booked_at FROM slots"))
+        }
+    assert rows == {"block": (False, False), "sale": (True, True)}
+    store.close()

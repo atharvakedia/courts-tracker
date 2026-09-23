@@ -5,7 +5,7 @@
   'use strict';
   const state = {
     sport: 'padel', window: '7', venue: null, panel: 'venues', data: null, filter: '',
-    views: { day: 'pct', hour: 'pct', week: 'grid', spread: 'days', venues: 'list', metric: 'demand' },
+    views: { day: 'pct', hour: 'pct', week: 'grid', metric: 'demand' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem('ht.state') || '{}');
@@ -20,7 +20,7 @@
   if (['7', '30', 'all'].includes(q.get('window'))) state.window = q.get('window');
   if (q.get('venue')) state.venue = q.get('venue');
   // Which panel a phone opens on; desktop shows them all.
-  if (['venues', 'day', 'hour', 'week', 'spread'].includes(q.get('panel'))) state.panel = q.get('panel');
+  if (['venues', 'day', 'hour', 'week', 'map'].includes(q.get('panel'))) state.panel = q.get('panel');
 
   const $ = (id) => document.getElementById(id);
   const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
@@ -100,7 +100,9 @@
   // A scale that leaves headroom above the tallest bar and ends on a clean step.
   const ceilPct = (vals) => Math.min(100, Math.max(10, Math.ceil((Math.max(0, ...vals) * 1.15) / 10) * 10));
 
-  function booked3(t, rows, cats, div = () => 1) {
+  // Booked and vacant are the court time offered; withBlocked adds the venue's
+  // blocked time on top as its own segment, outside the % booked.
+  function bookedVacant(t, rows, cats, div = () => 1, withBlocked = false) {
     const s = (name, key, color, top) => ({
       name, type: 'bar', stack: 'h', barMaxWidth: 24, barCategoryGap: '30%',
       itemStyle: { color, borderRadius: top ? [4, 4, 0, 0] : 0, borderColor: t.panel, borderWidth: 1 },
@@ -108,22 +110,22 @@
       data: rows.map((r) => +(r[key] / div(r)).toFixed(1)),
     });
     return [
-      s('On Hudle', 'hudle_booked_hours', t.hudle, false),
-      s('Venue block', 'blocked_hours', t.block, false),
-      s('Vacant', 'vacant_hours', t.vacant, true),
+      s('Booked', 'booked_hours', t.hudle, false),
+      s('Vacant', 'vacant_hours', t.vacant, !withBlocked),
+      ...(withBlocked ? [s('Venue block', 'blocked_hours', t.block, true)] : []),
     ];
   }
 
-  function stackTip(title, rows, div = () => 1, unit = 'court-h') {
+  function stackTip(title, rows, div = () => 1, unit = 'court-h', withBlocked = false) {
     return (ps) => {
       const r = rows[ps[0].dataIndex];
       const d = div(r);
       const line = (k, color, label) => `<div style="display:flex;gap:10px;justify-content:space-between"><span><span class="key" style="background:${color}"></span>${label}</span><b>${num(r[k] / d, 1)}</b></div>`;
       return `<div style="min-width:170px"><b>${title(r)}</b>
-        ${line('hudle_booked_hours', ps[0].color, 'On Hudle')}
-        ${line('blocked_hours', ps[1].color, 'Venue block')}
-        ${line('vacant_hours', ps[2].color, 'Vacant')}
-        <div style="color:${css('--ink-3')};margin-top:4px">${pct(r.occupancy)} booked · ${unit}</div></div>`;
+        ${line('booked_hours', ps[0].color, 'Booked')}
+        ${line('vacant_hours', ps[1].color, 'Vacant')}
+        ${withBlocked ? line('blocked_hours', ps[2].color, 'Venue block') : ''}
+        <div style="color:${css('--ink-3')};margin-top:4px">${pct(r.occupancy)} booked · ${unit}${r.blocked_hours ? `<br/>venue blocks are not counted as booked` : ''}</div></div>`;
     };
   }
 
@@ -278,9 +280,9 @@
     $('nodata').hidden = !empty;
     kpis(d);
     venues(d);
-    venueView(d);
+    venueDen(d);
     if (empty) { nodata(d, name); return; }
-    ['day', 'hour', 'week', 'spread'].forEach((k) => drawPanel(k, d));
+    ['day', 'hour', 'week', 'map'].forEach((k) => drawPanel(k, d));
   }
 
   function nodata(d, name) {
@@ -288,7 +290,7 @@
     const other = sport === 'padel' ? 'pickleball' : 'padel';
     $('nd-title').textContent = name ? `Nothing counted at ${name}` : `No settled ${sport} days yet`;
     $('nd-text').textContent = name
-      ? 'Its courts are listings with almost nothing booked or blocked, so they are left out of every figure.'
+      ? 'Its courts are blocked by the venue or have almost nothing booked on Hudle, so they are left out of every figure.'
       : `No ${sport} court has a fully elapsed day in ${range(d)}. Charts fill in after the first daily pass that follows a played day.`;
     const acts = [];
     if (name) acts.push(['all', 'All venues']);
@@ -317,31 +319,22 @@
   }
 
   function kpis(d) {
-    const t = d.totals, prev = d.previous, lead = d.lead_time;
+    const t = d.totals, lead = d.lead_time;
     const T = theme();
-    let delta = `<span class="delta flat">no earlier data to compare</span>`;
-    if (t.occupancy != null && prev.occupancy != null) {
-      const pts = 100 * (t.occupancy - prev.occupancy);
-      const cls = Math.abs(pts) < 0.5 ? 'flat' : pts > 0 ? 'up' : 'down';
-      const arrow = cls === 'flat' ? '≈' : pts > 0 ? '▲' : '▼';
-      delta = `<span class="delta ${cls}">${arrow} ${Math.abs(pts).toFixed(1)} pts</span> vs ${fmtDay(prev.start)} – ${fmtDay(prev.end)}`;
-    }
     const occSeries = d.days.map((x) => x.occupancy);
     const share = (k) => (t.total_hours ? (100 * t[k]) / t.total_hours : 0);
-    const onHudle = t.booked_hours ? Math.round((100 * t.hudle_booked_hours) / t.booked_hours) : null;
     const ph = d.peaks.hour, pw = d.peaks.weekday;
     const cards = [
       {
         cls: 'hero', name: `Booked · ${d.venue ? 'this venue' : `${t.courts_counted} courts`} · ${range(d)}`,
         body: `<div class="line"><p class="val">${pct(t.occupancy, 1)}</p><div class="spark" title="% booked per day">${sparkSvg(occSeries, T.accent)}</div></div>`,
-        sub: delta,
+        sub: 'of the court time offered to customers',
       },
       {
         name: 'Court-hours booked',
-        body: `<p class="val">${t.total_hours ? `${num(t.booked_hours)}<small>of ${num(t.total_hours)}</small>` : '—'}</p>
-          <div class="meter" aria-hidden="true"><i style="width:${share('hudle_booked_hours')}%;background:${T.hudle}"></i><i style="width:${share('blocked_hours')}%;background:${T.block}"></i><i style="flex:1;background:${T.vacant}"></i></div>`,
-        sub: onHudle == null ? 'nothing booked in this view'
-          : `<span class="key" style="background:${T.hudle}"></span>${onHudle}% on Hudle · <span class="key" style="background:${T.block}"></span>${100 - onHudle}% venue blocks`,
+        body: `<p class="val">${t.total_hours ? `${num(t.booked_hours)}<small>of ${num(t.total_hours)} offered</small>` : '—'}</p>
+          <div class="meter" aria-hidden="true"><i style="width:${share('booked_hours')}%;background:${T.hudle}"></i><i style="flex:1;background:${T.vacant}"></i></div>`,
+        sub: t.blocked_hours ? `+ <b>${num(t.blocked_hours)}</b> h blocked by venues · not counted` : 'no venue blocks in this view',
       },
       {
         name: 'Busiest hour',
@@ -372,19 +365,23 @@
     const row = (v) => {
       const reasons = v.courts.flatMap((c) => c.reasons.map((r) => `${c.name}: ${r}`)).join('\n');
       const n = v.courts.length;
-      const meta = `${num(v.booked_hours)} of ${num(v.total_hours)} court-h · ${n} court${n === 1 ? '' : 's'}${v.price_per_hour ? ` · ₹${num(v.price_per_hour)}/h` : ''}`;
-      const tag = v.verdict === 'partial' ? '<span class="tag v partial">low activity</span>' : v.verdict === 'unreliable' ? '<span class="tag v unreliable">listing only</span>' : '';
-      const wh = v.total_hours ? (100 * v.hudle_booked_hours) / v.total_hours : 0;
-      const wb = v.total_hours ? (100 * v.blocked_hours) / v.total_hours : 0;
+      const offered = v.total_hours
+        ? `${num(v.booked_hours)} of ${num(v.total_hours)} court-h offered`
+        : `all ${num(v.blocked_hours)} court-h blocked`;
+      const meta = `${offered} · ${n} court${n === 1 ? '' : 's'}${v.price_per_hour ? ` · ₹${num(v.price_per_hour)}/h` : ''}`;
+      const tag = v.verdict === 'partial' ? '<span class="tag v partial">low activity</span>'
+        : v.verdict !== 'unreliable' ? ''
+          : `<span class="tag v unreliable">${v.total_hours ? 'listing only' : 'all blocked'}</span>`;
+      const wh = v.total_hours ? (100 * v.booked_hours) / v.total_hours : 0;
       return `<div class="row" role="option" tabindex="0" data-u="${esc(v.venue_uuid)}" data-v="${v.verdict}" aria-selected="${v.venue_uuid === d.venue}" title="${esc(reasons || v.name)}">
         <span class="nm">${esc(v.name)}${v.new ? '<span class="tag new">NEW</span>' : ''}${tag}</span>
         <span class="pct">${pct(v.occupancy)}</span>
-        <div class="track"><i style="background:${T.hudle}" data-w="${wh}"></i><i style="background:${T.block}" data-w="${wb}"></i></div>
+        <div class="track"><i style="background:${T.hudle}" data-w="${wh}"></i></div>
         <span class="meta">${esc(meta)}</span></div>`;
     };
     const match = (v) => !f || v.name.toLowerCase().includes(f);
     const a = counted.filter(match), b = listing.filter(match);
-    host.innerHTML = (a.map(row).join('') + (b.length ? `<div class="group">Listing only · not counted</div>${b.map(row).join('')}` : '')) || '<p class="empty">No venue matches.</p>';
+    host.innerHTML = (a.map(row).join('') + (b.length ? `<div class="group">Not counted · blocked or listing only</div>${b.map(row).join('')}` : '')) || '<p class="empty">No venue matches.</p>';
     requestAnimationFrame(() => host.querySelectorAll('.track i').forEach((el) => { el.style.width = `${el.dataset.w}%`; }));
     const sel = host.querySelector('[aria-selected="true"]');
     if (sel) sel.scrollIntoView({ block: 'nearest' });
@@ -399,28 +396,21 @@
   const TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_{tone}_Gray_{part}/MapServer/tile/{z}/{y}/{x}';
   const ATTRIBUTION = 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors';
   const JAIPUR = [26.9124, 75.7873];
-  const mapState = { map: null, tiles: null, tileStyle: null, layers: null, fittedFor: null, bounds: null };
-
-  function venueView(d) {
-    $('venues-panel').dataset.view = state.views.venues;
-    if (state.views.venues !== 'map') setMapBig(false);
-    if (state.views.venues === 'map') drawMap(d);
-    else venueDen(d);
-  }
+  const mapState = { map: null, tiles: null, tileStyle: null, heat: null, dots: null, fittedFor: null, bounds: null, pending: null };
 
   function venueDen(d) {
     const counted = d.venues.filter((v) => v.verdict !== 'unreliable');
-    const listing = d.venues.length - counted.length;
-    if (state.views.venues !== 'map') {
-      $('den-venues').textContent = `% of listed court-hours booked · ${counted.length} counted, ${listing} listing-only · ${range(d)}`;
-      return;
-    }
+    const out = d.venues.length - counted.length;
+    $('den-venues').textContent = `% of court time offered that was booked · ${counted.length} counted, ${out} not counted · ${range(d)}`;
+  }
+
+  function mapDen(d) {
     const placed = d.venues.filter((v) => v.latitude != null).length;
     const missing = d.venues.length - placed;
     const what = state.views.metric === 'supply'
-      ? 'Supply: where the courts are, every listed court'
+      ? 'Supply: where the courts open to customers are'
       : `Demand: where court-hours are booked, ${range(d)}`;
-    $('den-venues').textContent = `${what}${missing ? ` · ${missing} venue${missing === 1 ? '' : 's'} not placed yet` : ''}`;
+    $('den-map').textContent = `${what}${missing ? ` · ${missing} venue${missing === 1 ? '' : 's'} not placed yet` : ''}`;
   }
 
   function setMapBig(on) {
@@ -438,12 +428,23 @@
   }
 
   function drawMap(d) {
-    venueDen(d);
+    mapDen(d);
     if (typeof L === 'undefined') { $('map').innerHTML = '<p class="empty">The map library did not load.</p>'; return; }
+    // A hidden map (a phone showing another tab) has no size to draw into, and
+    // the heat layer cannot paint a zero-size canvas: draw once it is shown.
+    if (!$('map').clientWidth) { mapState.pending = d; return; }
+    mapState.pending = null;
     const t = theme();
     if (!mapState.map) {
-      mapState.map = L.map('map', { zoomControl: true, attributionControl: true, preferCanvas: true }).setView(JAIPUR, 12);
+      mapState.map = L.map('map', { zoomControl: true, attributionControl: true }).setView(JAIPUR, 12);
       mapState.map.attributionControl.setPrefix(false);
+      // Dots live in their own pane above the heat, so the heat canvas never
+      // sits between the pointer and a venue.
+      mapState.map.createPane('venues').style.zIndex = 450;
+      // One heat layer and one dot group for the life of the page: each redraw
+      // replaces their contents, so nothing from an earlier view can linger.
+      if (typeof L.heatLayer === 'function') mapState.heat = L.heatLayer([], { radius: 45, blur: 35 }).addTo(mapState.map);
+      mapState.dots = L.layerGroup().addTo(mapState.map);
       new ResizeObserver(() => mapState.map.invalidateSize()).observe($('map'));
     }
     const map = mapState.map;
@@ -456,42 +457,48 @@
       ]).addTo(map);
       mapState.tileStyle = tone;
     }
-    if (mapState.layers) mapState.layers.remove();
 
     const supply = state.views.metric === 'supply';
-    const weight = (v) => (supply ? v.courts.length : v.booked_hours || 0);
+    // The map counts exactly what every other figure counts: courts judged
+    // reliable or low-activity. A venue left out (all blocked, or a listing
+    // with almost nothing booked) is drawn as a grey dot and adds no heat.
+    const counted = (c) => c.verdict === 'reliable' || c.verdict === 'partial';
+    const weight = (v) => (v.verdict === 'unreliable' ? 0
+      : supply ? v.courts.filter(counted).length
+        : v.courts.filter(counted).reduce((sum, c) => sum + (c.booked_hours || 0), 0));
     const ramp = supply ? t.seq.slice(1) : t.dem;
     const placed = d.venues.filter((v) => v.latitude != null && v.longitude != null);
     const max = Math.max(1e-9, ...placed.map(weight));
-    const layers = L.layerGroup();
-    if (typeof L.heatLayer === 'function' && placed.length) {
+    if (mapState.heat) {
       // Saturates at about two of the largest venues side by side, so one big
-      // club alone reads warm and a cluster of them reads hot.
-      L.heatLayer(placed.map((v) => [v.latitude, v.longitude, weight(v)]), {
-        radius: 45, blur: 35, max: 2 * max, minOpacity: 0.25,
+      // club alone reads warm and a cluster of them reads hot. A venue that
+      // adds nothing (no courts offered, no hours booked) adds no heat.
+      mapState.heat.setOptions({
+        max: 2 * max, minOpacity: 0.3,
         gradient: { 0.1: ramp[0], 0.4: ramp[1], 0.7: ramp[2], 1: ramp[3] },
-      }).addTo(layers);
+      });
+      mapState.heat.setLatLngs(placed.filter((v) => weight(v) > 0).map((v) => [v.latitude, v.longitude, weight(v)]));
     }
+    mapState.dots.clearLayers();
     // Largest first, so a small venue beside a big one stays clickable on top.
     [...placed].sort((a, b) => weight(b) - weight(a)).forEach((v) => {
       const selected = v.venue_uuid === d.venue;
       const dead = v.verdict === 'unreliable';
       const n = v.courts.length;
       const dot = L.circleMarker([v.latitude, v.longitude], {
-        radius: 3 + 5 * Math.sqrt(weight(v) / max), className: 'dot',
+        pane: 'venues', radius: 4 + 5 * Math.sqrt(weight(v) / max), className: 'dot',
         color: selected ? t.ink : t.panel, weight: selected ? 3 : 1.5,
         fillColor: dead ? t.ink3 : supply ? ramp[3] : ramp[2], fillOpacity: dead ? 0.5 : 0.9,
       });
       dot.bindTooltip(
         `<b>${esc(v.name)}</b><br><span>${n} court${n === 1 ? '' : 's'} · ${num(v.booked_hours)} court-h booked (${pct(v.occupancy)})</span>`
-        + (dead ? '<br><span>listing only · not counted in demand</span>' : ''),
-        { direction: 'top', offset: [0, -6] },
+        + (dead ? `<br><span>${v.total_hours ? 'listing only' : 'all court time blocked'} · not counted</span>` : ''),
+        { direction: 'top', offset: [0, -6], pane: 'tooltipPane' },
       );
       dot.on('click', () => selectVenue(v.venue_uuid));
       dot.on('mouseover', () => fetchView(viewUrl(state.sport, state.window, v.venue_uuid)).catch(() => {}));
-      dot.addTo(layers);
+      dot.addTo(mapState.dots);
     });
-    mapState.layers = layers.addTo(map);
     const total = placed.reduce((a, v) => a + weight(v), 0);
     $('mapkey').innerHTML = `<b>${supply ? `${num(total)} courts` : `${num(total)} court-h booked`}</b>`
       + `<span class="ramp" style="background:linear-gradient(90deg, ${ramp[0]}, ${ramp[1]}, ${ramp[2]}, ${ramp[3]})"></span>`
@@ -509,9 +516,9 @@
   }
 
   function drawPanel(k, d) {
-    if (k === 'venues' || k === 'metric') { venueView(d); return; }
+    if (k === 'map' || k === 'metric') { drawMap(d); return; }
     if (!d.totals.total_hours) return;
-    ({ day: byDay, hour: byHour, week: byWeek, spread })[k](d, theme());
+    ({ day: byDay, hour: byHour, week: byWeek })[k](d, theme());
   }
 
   function who(d) {
@@ -526,7 +533,7 @@
     if (state.views.day === 'pct') {
       const vals = rows.map((r) => (r.occupancy == null ? null : +(100 * r.occupancy).toFixed(1)));
       const avg = 100 * d.totals.occupancy;
-      $('den-day').textContent = `booked ÷ listed court-hours, each day · ${who(d)} · ${range(d)}`;
+      $('den-day').textContent = `booked ÷ court-hours offered, each day · ${who(d)} · ${range(d)}`;
       setChart('c-day', {
         ...base(t),
         grid: { left: 40, right: 52, top: 14, bottom: 24 },
@@ -542,16 +549,16 @@
         }],
       }, `Percent booked per day, ${range(d)}; average ${avg.toFixed(0)}%.`);
     } else {
-      $('den-day').textContent = `court-hours each day: booked on Hudle, blocked by the venue, vacant · ${who(d)} · ${range(d)}`;
+      $('den-day').textContent = `court-hours offered each day: booked, vacant · ${who(d)} · ${range(d)}`;
       setChart('c-day', {
         ...base(t),
-        legend: legend(t, ['On Hudle', 'Venue block', 'Vacant']),
+        legend: legend(t, ['Booked', 'Vacant']),
         grid: { left: 44, right: 12, top: 28, bottom: 24 },
         tooltip: { ...base(t).tooltip, trigger: 'axis', formatter: stackTip(title, rows) },
         xAxis: xCat(t, labels),
         yAxis: yVal(t, { axisLabel: { color: t.ink3, fontSize: 11, formatter: (v) => num(v) } }),
-        series: booked3(t, rows, cats),
-      }, `Court-hours per day split into booked on Hudle, venue blocks and vacant, ${range(d)}.`);
+        series: bookedVacant(t, rows, cats),
+      }, `Court-hours offered per day, booked and vacant, ${range(d)}.`);
     }
   }
 
@@ -568,7 +575,7 @@
       const avg = 100 * d.totals.occupancy;
       const anyThin = rows.some(thin);
       const top = ceilPct(rows.filter((r) => !thin(r)).map((r) => 100 * (r.occupancy || 0)));
-      $('den-hour').textContent = `booked ÷ listed court-hours at each start hour, all days · ${who(d)} · ${range(d)}${anyThin ? ' · faint = little court time' : ''}`;
+      $('den-hour').textContent = `booked ÷ court-hours offered at each start hour, all days · ${who(d)} · ${range(d)}${anyThin ? ' · faint = little court time' : ''}`;
       setChart('c-hour', {
         ...base(t),
         grid: { left: 40, right: 52, top: 14, bottom: 24 },
@@ -589,16 +596,16 @@
       }, `Percent booked by hour of day, ${range(d)}.`);
     } else {
       const div = (r) => r.days || 1;
-      $('den-hour').textContent = `court-hours on an average day at each start hour · ${who(d)} · ${range(d)}`;
+      $('den-hour').textContent = `court-hours on an average day at each start hour · venue blocks shown, not counted as booked · ${who(d)} · ${range(d)}`;
       setChart('c-hour', {
         ...base(t),
-        legend: legend(t, ['On Hudle', 'Venue block', 'Vacant']),
+        legend: legend(t, ['Booked', 'Vacant', 'Venue block']),
         grid: { left: 40, right: 12, top: 28, bottom: 24 },
-        tooltip: { ...base(t).tooltip, trigger: 'axis', formatter: stackTip(title, rows, div, 'court-h on an average day') },
+        tooltip: { ...base(t).tooltip, trigger: 'axis', formatter: stackTip(title, rows, div, 'court-h on an average day', true) },
         xAxis: xCat(t, labels, { axisLabel: { color: t.ink3, fontSize: 11, interval: 0, formatter: (v, i) => (i % 2 ? '' : v) } }),
         yAxis: yVal(t),
-        series: booked3(t, rows, labels, div),
-      }, `Average court-hours per day by hour, split into booked on Hudle, venue blocks and vacant, ${range(d)}.`);
+        series: bookedVacant(t, rows, labels, div, true),
+      }, `Average court-hours per day by hour: booked, vacant, and blocked by the venue (not counted as booked), ${range(d)}.`);
     }
   }
 
@@ -616,7 +623,7 @@
       const values = cells.map((c) => 100 * (c.occupancy || 0));
       const low = Math.floor(Math.min(100, ...values) / 10) * 10;
       const top = Math.max(low + 10, Math.ceil(Math.max(0, ...values) / 10) * 10);
-      const wide = $('c-week').clientWidth / Math.max(1, hours.length) >= 24;
+      const wide = $('c-week').clientWidth / Math.max(1, hours.length) >= 18;
       const data = cells.map((c) => ({
         value: [hours.indexOf(c.hour), c.weekday, c.occupancy == null ? null : Math.round(100 * c.occupancy)],
         total: c.total_hours, booked: c.booked_hours,
@@ -642,7 +649,7 @@
     } else {
       const vals = rows.map((r) => (r.occupancy == null ? null : +(100 * r.occupancy).toFixed(1)));
       const avg = 100 * d.totals.occupancy;
-      $('den-week').textContent = `booked ÷ listed court-hours on each weekday · ${who(d)} · ${range(d)}`;
+      $('den-week').textContent = `booked ÷ court-hours offered on each weekday · ${who(d)} · ${range(d)}`;
       setChart('c-week', {
         ...base(t),
         grid: { left: 40, right: 52, top: 18, bottom: 24 },
@@ -659,48 +666,6 @@
     }
   }
 
-  function spread(d, t) {
-    if (state.views.spread === 'days') {
-      const rows = d.spread;
-      const labels = rows.map((b, i) => (i === 0 ? 'none' : `${Math.round(100 * b.low)}–${Math.round(100 * b.high)}`));
-      // Axis ticks name each bucket by its upper edge, short enough for a phone.
-      const ticks = rows.map((b, i) => (i === 0 ? '0' : `${Math.round(100 * b.high)}`));
-      const total = rows.reduce((s, b) => s + b.court_days, 0);
-      $('den-spread').textContent = `court-days (one court, one day) by % of its hours booked · ${num(total)} court-days · ${who(d)} · ${range(d)}`;
-      setChart('c-spread', {
-        ...base(t),
-        grid: { left: 40, right: 8, top: 18, bottom: 36 },
-        tooltip: { ...base(t).tooltip, trigger: 'axis',
-          formatter: (ps) => { const i = ps[0].dataIndex, b = rows[i]; return `<b>${i === 0 ? 'Nothing booked' : `${labels[i]}% of hours booked`}</b><br/>${num(b.court_days)} court-days<br/><span style="color:${t.ink3}">${pct(total ? b.court_days / total : null)} of all court-days</span>`; } },
-        xAxis: xCat(t, ticks, { name: '% of the day booked (up to)', nameLocation: 'middle', nameGap: 22, nameTextStyle: { color: t.ink3, fontSize: 11 }, axisLabel: { color: t.ink3, fontSize: 10, interval: 0 } }),
-        yAxis: yVal(t),
-        series: [{
-          type: 'bar', barMaxWidth: 24, barCategoryGap: '20%',
-          data: rows.map((b, i) => ({ value: b.court_days, itemStyle: { color: i === 0 ? t.axis : t.accent, borderRadius: [4, 4, 0, 0] } })),
-          label: { show: true, position: 'top', color: t.ink2, fontSize: 10, formatter: (p) => (total && p.value / total >= 0.08 ? pct(p.value / total) : '') },
-        }],
-      }, `Histogram of court-days by share of hours booked, ${range(d)}.`);
-    } else {
-      const labels = d.lead_histogram.map((b) => b.label);
-      const counts = d.lead_histogram.map((b) => b.count);
-      const n = d.lead_time.n;
-      $('den-spread').textContent = `hours between booking and play · ${num(n)} Hudle bookings (venue blocks carry no time) · ${who(d)} · ${range(d)}`;
-      if (!n) {
-        setChart('c-spread', { ...base(theme()), title: { text: 'No Hudle bookings here: this venue records its sales as blocks, which carry no booking time.', left: 'center', top: 'middle', textStyle: { color: theme().ink3, fontSize: 12, fontWeight: 'normal', width: 260, overflow: 'break' } } }, 'No booking lead times for this view.');
-        return;
-      }
-      setChart('c-spread', {
-        ...base(t),
-        grid: { left: 40, right: 8, top: 18, bottom: 36 },
-        tooltip: { ...base(t).tooltip, trigger: 'axis', formatter: (ps) => `<b>Booked ${labels[ps[0].dataIndex]} ahead</b><br/>${num(ps[0].value)} bookings · ${pct(ps[0].value / n)}` },
-        xAxis: xCat(t, labels, { name: 'booked this far ahead', nameLocation: 'middle', nameGap: 22, nameTextStyle: { color: t.ink3, fontSize: 11 }, axisLabel: { color: t.ink3, fontSize: 10, interval: 0 } }),
-        yAxis: yVal(t),
-        series: [{ type: 'bar', data: counts, barMaxWidth: 24, itemStyle: { color: t.accent, borderRadius: [4, 4, 0, 0] },
-          label: { show: true, position: 'top', color: t.ink2, fontSize: 10, formatter: (p) => (p.value / n >= 0.08 ? pct(p.value / n) : '') } }],
-      }, `Histogram of booking lead times, ${range(d)}.`);
-    }
-  }
-
   // ---------- wiring ----------
   $('theme').addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
@@ -708,6 +673,7 @@
     try { localStorage.setItem('ht.theme', next); } catch (_) {}
     if (state.data) draw(state.data);
   });
+  new ResizeObserver(() => { if (mapState.pending && $('map').clientWidth) drawMap(mapState.pending); }).observe($('map'));
   $('mapbig').addEventListener('click', () => setMapBig(!$('grid').classList.contains('map-big')));
   $('search').addEventListener('input', (e) => { state.filter = e.target.value; if (state.data) venues(state.data); });
   $('venue-list').addEventListener('click', (e) => { const r = e.target.closest('.row'); if (r) selectVenue(r.dataset.u); });

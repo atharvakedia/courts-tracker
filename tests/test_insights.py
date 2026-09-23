@@ -16,7 +16,6 @@ from tracker.insights import (
     by_date,
     by_hour,
     by_weekday,
-    court_day_spread,
     lead_summary,
     lead_times,
     occupancy,
@@ -36,7 +35,7 @@ def row(
     *,
     minutes: int = 60,
     booked: bool = False,
-    hudle: bool = False,
+    blocked: bool = False,
     booked_at: dt.datetime | None = None,
 ) -> dict[str, Any]:
     start_local = dt.datetime.combine(day, dt.time(hour))
@@ -46,7 +45,8 @@ def row(
         "start_utc": (start_local - dt.timedelta(hours=5, minutes=30)).replace(tzinfo=dt.UTC),
         "duration_minutes": minutes,
         "booked": booked,
-        "hudle_booked": hudle and booked,
+        "hudle_booked": booked,
+        "hudle_available": not blocked,
         "booked_at": booked_at,
         "price": 900,
         "facility_uuid": "f",
@@ -54,19 +54,19 @@ def row(
     }
 
 
-def test_occupancy_is_in_court_minutes_and_counts_venue_blocks_as_booked() -> None:
+def test_occupancy_is_in_court_minutes_and_leaves_venue_blocks_out() -> None:
     """Regression: slot counts compared across 30- and 60-minute grids, or a
-    venue's blocked (offline-sold) slots read as vacant."""
+    venue block counted as a booking (a court blocked all day reading full)."""
     day = TODAY - dt.timedelta(days=1)
     rows = [
-        row(day, 18, minutes=60, booked=True, hudle=True),
-        row(day, 19, minutes=30, booked=True, hudle=False),
+        row(day, 18, minutes=60, booked=True),
+        row(day, 19, minutes=30, blocked=True),
         row(day, 20, minutes=30),
     ]
     occ = occupancy(rows)
-    assert (occ.booked_minutes, occ.total_minutes) == (90, 120)
-    assert (occ.hudle_booked_minutes, occ.blocked_minutes) == (60, 30)
-    assert occ.rate == 0.75
+    assert (occ.booked_minutes, occ.total_minutes, occ.blocked_minutes) == (60, 90, 30)
+    assert occ.rate == pytest.approx(2 / 3)
+    assert occupancy([row(day, 18, blocked=True)]).rate is None
 
 
 def test_hour_profile_runs_in_business_day_order_and_counts_its_days() -> None:
@@ -75,7 +75,7 @@ def test_hour_profile_runs_in_business_day_order_and_counts_its_days() -> None:
     d1, d2 = TODAY - dt.timedelta(days=2), TODAY - dt.timedelta(days=1)
     rows = [
         row(d1, 1, booked=True),
-        row(d1, 19, booked=True, hudle=True),
+        row(d1, 19, booked=True),
         row(d2, 19, minutes=30),
         row(d2, 6),
     ]
@@ -113,30 +113,15 @@ def test_peak_ignores_an_hour_with_too_little_court_time_to_mean_anything() -> N
     assert peak([]) is None
 
 
-def test_court_day_spread_puts_empty_days_in_their_own_bucket() -> None:
-    """Regression: a court-day with nothing sold merged with lightly sold ones,
-    or a bucket edge (exactly 50%) landing in the bucket above."""
-    day = TODAY - dt.timedelta(days=1)
-    empty = [row(day, h) for h in range(6, 10)]
-    half = [{**r, "facility_uuid": "g"} for r in (row(day, 6, booked=True), row(day, 7))]
-    full = [{**row(day, 6, booked=True), "facility_uuid": "h"}]
-    spread = court_day_spread(empty + half + full)
-    assert len(spread) == 11
-    assert spread[0] == {"low": 0.0, "high": 0.0, "court_days": 1}
-    assert spread[5] == {"low": 0.4, "high": 0.5, "court_days": 1}
-    assert spread[10]["court_days"] == 1
-    assert sum(b["court_days"] for b in spread) == 3
-
-
 def test_lead_time_ignores_blocks_and_bookings_entered_after_play() -> None:
     """Regression: a venue block's stamp, or an offline sale reconciled after
     the slot, read as a customer booking with a real lead time."""
     day = TODAY - dt.timedelta(days=1)
-    r = row(day, 19, booked=True, hudle=True)
+    r = row(day, 19, booked=True)
     r["booked_at"] = r["start_utc"] - dt.timedelta(hours=6)
-    late = row(day, 20, booked=True, hudle=True)
+    late = row(day, 20, booked=True)
     late["booked_at"] = late["start_utc"] + dt.timedelta(hours=2)
-    block = row(day, 21, booked=True, hudle=False)
+    block = row(day, 21, blocked=True)
     block["booked_at"] = block["start_utc"] - dt.timedelta(days=3)
     assert lead_times([r, late, block]) == [6.0]
     assert lead_summary([6.0])["median_hours"] == 6.0
@@ -150,33 +135,30 @@ def _court(
         day = TODAY - dt.timedelta(days=d)
         for h in range(hours):
             if h < hudle_per_day:
-                out.append(row(day, 6 + h, booked=True, hudle=True))
+                out.append(row(day, 6 + h, booked=True))
             elif h < hudle_per_day + blocks_per_day:
-                out.append(row(day, 6 + h, booked=True, hudle=False))
+                out.append(row(day, 6 + h, blocked=True))
             else:
                 out.append(row(day, 6 + h))
     return out
 
 
-def test_only_dead_listings_are_excluded_and_blocks_count_as_sales() -> None:
-    """Regression: a venue that records offline sales as blocks excluded, or a
-    quiet court dropped (inflating the market), or a dead listing's 0% counted
-    as demand. Blocks are sales; only a listing with nothing on it is out."""
-    assert (
-        reliability(_court(14, hudle_per_day=3, blocks_per_day=1), TODAY)["verdict"] == "reliable"
-    )
-    assert (
-        reliability(_court(14, hudle_per_day=3, blocks_per_day=0), TODAY)["verdict"] == "reliable"
-    )
-    assert (
-        reliability(_court(14, hudle_per_day=0, blocks_per_day=4), TODAY)["verdict"] == "reliable"
-    )
-    assert (
-        reliability(_court(14, hudle_per_day=0, blocks_per_day=15), TODAY)["verdict"] == "reliable"
-    )
-    assert (
-        reliability(_court(14, hudle_per_day=0, blocks_per_day=0), TODAY)["verdict"] == "unreliable"
-    )
+def test_fully_blocked_courts_and_dead_listings_are_left_out() -> None:
+    """Regression: a court the venue blocks every day counted as full (it
+    offered nothing, so it has no occupancy), a quiet court dropped (inflating
+    the market), or a dead listing's 0% counted as demand."""
+
+    def judge(hudle: int, blocks: int) -> dict[str, Any]:
+        return reliability(_court(14, hudle_per_day=hudle, blocks_per_day=blocks), TODAY)
+
+    assert judge(3, 1)["verdict"] == "reliable"
+    assert judge(3, 0)["verdict"] == "reliable"
+    assert judge(0, 4)["verdict"] == "unreliable", "blocks are not sales"
+    everything_blocked = judge(0, 16)
+    assert everything_blocked["verdict"] == "unreliable"
+    assert everything_blocked["occupancy"] is None
+    assert "blocked" in everything_blocked["reasons"][0]
+    assert judge(0, 0)["verdict"] == "unreliable"
     quiet = (
         _court(3, hudle_per_day=2, blocks_per_day=0)
         + _court(14, hudle_per_day=0, blocks_per_day=0)[48:]
@@ -232,7 +214,9 @@ def test_the_overview_endpoint_serves_a_whole_view(
     assert body["venues"][0]["name"] == "Good Club"
     assert body["venues"][0]["verdict"] == "reliable"
     assert body["totals"]["courts_counted"] == 1
-    assert body["totals"]["occupancy"] == pytest.approx(4 / 16, abs=1e-3)
+    # Three sold of the fifteen offered; the 21:00 block is out of both sides.
+    assert body["totals"]["occupancy"] == pytest.approx(3 / 15, abs=1e-3)
+    assert body["totals"]["blocked_hours"] == pytest.approx(body["window"]["days"] * 0.5)
     assert body["venues"][0]["price_per_hour"] == 600
     assert {c["hour"] for c in body["heatmap"]} == set(range(6, 22))
     assert body["lead_time"]["n"] > 0
@@ -283,12 +267,9 @@ def _seed(url: str) -> None:
     store.close()
 
 
-def test_a_venue_narrows_every_chart_and_carries_the_previous_window(
-    tmp_path: Any, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_a_venue_narrows_every_chart(tmp_path: Any, monkeypatch: pytest.MonkeyPatch) -> None:
     """Regression: the venue drill-down still drawing the market's hours and
-    weekdays, the change figure comparing different windows, or a mistyped
-    venue silently answering with the whole market."""
+    weekdays, or a mistyped venue silently answering with the whole market."""
     url = f"sqlite:///{tmp_path / 'db.sqlite'}"
     _seed(url)
     monkeypatch.setenv("DATABASE_URL", url)
@@ -299,15 +280,14 @@ def test_a_venue_narrows_every_chart_and_carries_the_previous_window(
     monkeypatch.setattr(api, "_today", lambda: TODAY)
     client = TestClient(api.app)
     market = client.get("/api/overview", params={"sport": "pickleball", "window": "7"}).json()
-    assert market["totals"]["occupancy"] == pytest.approx(5 / 32, abs=1e-3)
-    assert market["previous"]["occupancy"] == pytest.approx(5 / 32, abs=1e-3)
+    assert market["totals"]["occupancy"] == pytest.approx(4 / 31, abs=1e-3)
     assert market["window"]["days"] == 7
 
     good = client.get(
         "/api/overview", params={"sport": "pickleball", "window": "7", "venue": "v1"}
     ).json()
     assert good["venue"] == "v1"
-    assert good["totals"]["occupancy"] == pytest.approx(4 / 16, abs=1e-3)
+    assert good["totals"]["occupancy"] == pytest.approx(3 / 15, abs=1e-3)
     assert good["totals"]["courts_counted"] == 1
     assert len(good["venues"]) == 2, "the list stays whole so the reader can switch venue"
     where = {v["venue_uuid"]: (v["latitude"], v["longitude"]) for v in good["venues"]}
@@ -315,10 +295,9 @@ def test_a_venue_narrows_every_chart_and_carries_the_previous_window(
     by_hr = {h["hour"]: h for h in good["hours"]}
     assert by_hr[18]["occupancy"] == 1.0 and by_hr[6]["occupancy"] == 0.0
     assert by_hr[18]["days"] == 7
-    assert sum(d["total_hours"] for d in good["days"]) == pytest.approx(7 * 16 * 0.5)
+    assert sum(d["total_hours"] for d in good["days"]) == pytest.approx(7 * 15 * 0.5)
     assert {w["weekday"] for w in good["weekdays"]} == set(range(7))
     assert good["peaks"]["hour"]["hour"] in (18, 19, 20, 21)
-    assert sum(b["court_days"] for b in good["spread"]) == 7
 
     missing = client.get(
         "/api/overview", params={"sport": "pickleball", "window": "7", "venue": "nope"}

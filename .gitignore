@@ -18,3 +18,5 @@ data/*.log
 .env
 .neon
 data/
+.vercel
+.env*

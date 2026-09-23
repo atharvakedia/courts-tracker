@@ -1,0 +1,25 @@
+name: ci
+
+# Lint, type-check and test every pull request, and main after each merge.
+# A PR can merge only when this passes (branch protection on main).
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - run: python -m venv .venv && .venv/bin/pip install -e ".[dev]"
+      - run: make ci-check

@@ -28,7 +28,6 @@ import datetime as dt
 import json
 import logging
 import sys
-from collections.abc import Mapping
 from enum import StrEnum
 from typing import Any, TextIO
 
@@ -140,12 +139,3 @@ def configure_logging(
     root.addHandler(handler)
     root.setLevel(level)
     return handler
-
-
-def describe_fields(fields: Mapping[str, Any]) -> str:
-    """Render a field mapping the way :class:`ConsoleFormatter` would.
-
-    Used where a summary has to go to stdout as text rather than through a
-    handler, so the two renderings stay identical.
-    """
-    return " ".join(f"{key}={_render(value)}" for key, value in fields.items())

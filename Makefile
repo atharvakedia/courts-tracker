@@ -8,7 +8,6 @@ PY      := $(VENV)/bin/python
 PYTEST  := $(VENV)/bin/pytest
 RUFF    := $(VENV)/bin/ruff
 MYPY    := $(VENV)/bin/mypy
-UVICORN := $(VENV)/bin/uvicorn
 
 # Everything the linter and formatter cover, named once so a new top-level
 # module cannot quietly sit outside the gate. smoke_test.py is the script
@@ -19,7 +18,7 @@ SOURCES := tracker tests smoke_test.py
 # for style, not for strict typing.
 TYPED   := tracker
 
-.PHONY: install check ci-check fmt lint typecheck test run collect collect-dry discover clean
+.PHONY: install check ci-check fmt lint typecheck test run daily discover clean
 
 install:  ## create the venv and install the project with dev extras
 	python3 -m venv $(VENV)
@@ -54,14 +53,13 @@ ci-check:
 	$(MYPY) $(TYPED)
 	$(PYTEST) tests
 
+# Local dashboard (API + public/) on http://127.0.0.1:8000, against DATABASE_URL.
 run:
-	$(UVICORN) tracker.web:app --host 127.0.0.1 --port 8000 --reload
+	$(PY) -m tracker serve --reload
 
-collect:
-	$(PY) -m tracker collect
-
-collect-dry:
-	$(PY) -m tracker collect --dry-run
+# One daily pass against DATABASE_URL. Makes real, rate-limited Hudle requests.
+daily:
+	$(PY) -m tracker daily
 
 discover:
 	$(PY) -m tracker discover

@@ -3,12 +3,14 @@
    figure answers for the same view, and the URL carries it. */
 (function () {
   'use strict';
+  // Versioned so a changed default reaches viewers who saved the old one.
+  const STATE_KEY = 'ht.state.v2';
   const state = {
     sport: 'padel', window: '7', venue: null, panel: 'venues', data: null, filter: '',
-    views: { day: 'pct', hour: 'pct', week: 'grid', metric: 'demand' },
+    views: { day: 'rev', hour: 'pct', week: 'grid', metric: 'demand' },
   };
   try {
-    const saved = JSON.parse(localStorage.getItem('ht.state') || '{}');
+    const saved = JSON.parse(localStorage.getItem(STATE_KEY) || '{}');
     state.sport = saved.sport || state.sport;
     state.window = saved.window || state.window;
     Object.assign(state.views, saved.views || {});
@@ -137,7 +139,7 @@
 
   // ---------- controls ----------
   function persist() {
-    try { localStorage.setItem('ht.state', JSON.stringify({ sport: state.sport, window: state.window, views: state.views })); } catch (_) {}
+    try { localStorage.setItem(STATE_KEY, JSON.stringify({ sport: state.sport, window: state.window, views: state.views })); } catch (_) {}
     const p = new URLSearchParams({ sport: state.sport, window: state.window });
     if (state.venue) p.set('venue', state.venue);
     history.replaceState(null, '', `?${p}`);

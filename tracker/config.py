@@ -16,31 +16,23 @@ from zoneinfo import ZoneInfo
 
 import yaml
 
-from tracker.types import FacilityKind, SlotState, Sport
+from tracker.types import FacilityKind, Sport
 
 __all__ = [
     "BackoffConfig",
     "Config",
     "ConfigError",
-    "DashboardConfig",
     "DiscoveryConfig",
     "FacilityConfig",
     "FacilityKind",
     "HttpConfig",
     "PollConfig",
-    "SlotState",
     "Sport",
-    "StorageConfig",
     "VenueConfig",
     "load_config",
 ]
 
 T = TypeVar("T")
-
-
-#: Overrides ``storage.url`` when set. The only config value read from the
-#: environment: everything else is the frozen, reviewed file.
-STORAGE_URL_ENV_VAR = "PADEL_TRACKER_STORAGE_URL"
 
 
 class ConfigError(ValueError):
@@ -91,11 +83,6 @@ def _enum(enum_cls: type[T], value: Any, where: str) -> T:
 
 
 @dataclass(frozen=True, slots=True)
-class StorageConfig:
-    url: str
-
-
-@dataclass(frozen=True, slots=True)
 class BackoffConfig:
     initial_seconds: float
     multiplier: float
@@ -105,22 +92,13 @@ class BackoffConfig:
 
 @dataclass(frozen=True, slots=True)
 class PollConfig:
-    cadence_minutes: int
-    horizon_days: int
-    #: Days before today the grid request starts at. Hudle keeps serving a date
-    #: after it elapses, so re-reading yesterday captures each date's settled
-    #: state after every booking for it is in -- and survives an outage that
-    #: swallowed the last polls before midnight.
-    lookback_days: int
+    """How gently the Hudle client behaves: pacing, timeouts, retries, breaker."""
+
     request_gap_seconds: float
     timeout_seconds: float
+    #: Failed requests in a row before the client's circuit breaker opens.
     max_consecutive_failures: int
     backoff: BackoffConfig
-
-    @property
-    def expected_snapshots_per_day(self) -> int:
-        """How many polls a full day should contain, for coverage reporting."""
-        return (24 * 60) // self.cadence_minutes
 
 
 @dataclass(frozen=True, slots=True)
@@ -128,7 +106,6 @@ class DiscoveryConfig:
     city_id: int
     sports: Mapping[str, int]
     per_page: int
-    drift_check_days: int
     alert_on_venue_set_change: Sport
     equipment_name_hints: tuple[str, ...]
     court_name_override: tuple[str, ...]
@@ -154,16 +131,6 @@ class HttpConfig:
 
 
 @dataclass(frozen=True, slots=True)
-class DashboardConfig:
-    default_sport: Sport
-    headline_metric: str
-    peak_hours: tuple[int, ...]
-
-    def is_peak(self, hour: int) -> bool:
-        return hour in self.peak_hours
-
-
-@dataclass(frozen=True, slots=True)
 class FacilityConfig:
     uuid: str
     name: str
@@ -172,22 +139,6 @@ class FacilityConfig:
     grid_minutes: int | None
     price_per_court_hour: int | None
     active: bool
-
-    @property
-    def is_court(self) -> bool:
-        return self.kind is FacilityKind.COURT
-
-    @property
-    def price_per_slot(self) -> float | None:
-        """Per-slot price implied by the per-court-hour price and the grid.
-
-        Play Padel's 1000 per slot looks cheapest but is 2000 per court-hour;
-        the config stores only the per-hour figure so nothing compares per-slot
-        prices across venues by accident.
-        """
-        if self.price_per_court_hour is None or self.grid_minutes is None:
-            return None
-        return self.price_per_court_hour * self.grid_minutes / 60.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -198,16 +149,12 @@ class VenueConfig:
     slug: str
     numeric_id: str
     active: bool
-    show_in_dashboard: bool
     facilities: tuple[FacilityConfig, ...]
 
     @property
     def ssr_path(self) -> str:
         """Path of the Next.js page that carries the facility UUIDs."""
         return f"/venues/{self.slug}/{self.numeric_id}"
-
-    def courts(self, *, active_only: bool = True) -> list[FacilityConfig]:
-        return [f for f in self.facilities if f.is_court and (f.active or not active_only)]
 
     def facility_by_uuid(self, facility_uuid: str) -> FacilityConfig | None:
         return next((f for f in self.facilities if f.uuid == facility_uuid), None)
@@ -216,47 +163,11 @@ class VenueConfig:
 @dataclass(frozen=True, slots=True)
 class Config:
     timezone: str
-    storage: StorageConfig
     poll: PollConfig
     business_day_start_hour: int
     discovery: DiscoveryConfig
     http: HttpConfig
-    dashboard: DashboardConfig
     venues: tuple[VenueConfig, ...]
-
-    @property
-    def tzinfo(self) -> ZoneInfo:
-        return ZoneInfo(self.timezone)
-
-    def active_courts(self) -> list[tuple[VenueConfig, FacilityConfig]]:
-        """Every (venue, court) pair worth polling: kind==court and active."""
-        return [
-            (venue, facility)
-            for venue in self.venues
-            if venue.active
-            for facility in venue.facilities
-            if facility.is_court and facility.active
-        ]
-
-    def courts_for_sport(self, sport: Sport) -> list[tuple[VenueConfig, FacilityConfig]]:
-        return [(v, f) for v, f in self.active_courts() if f.sport is sport]
-
-    def dashboard_venues(self) -> list[VenueConfig]:
-        """Venues the dashboard presents.
-
-        Deliberately independent of ``active``, which governs *polling*. A venue
-        can be collected and not shown: hiding one loses nothing, while dropping
-        it from the poll opens a permanent hole in a forward-only dataset. Padel
-        Up is the live case -- zero bookings ever observed, so its flat 0% line
-        reads as a broken collector rather than as a finding.
-        """
-        return [venue for venue in self.venues if venue.show_in_dashboard]
-
-    def dashboard_venue_uuids(self) -> frozenset[str]:
-        return frozenset(venue.uuid for venue in self.dashboard_venues())
-
-    def hidden_venue_uuids(self) -> frozenset[str]:
-        return frozenset(v.uuid for v in self.venues if not v.show_in_dashboard)
 
     def venue_by_uuid(self, venue_uuid: str) -> VenueConfig | None:
         return next((v for v in self.venues if v.uuid == venue_uuid), None)
@@ -301,7 +212,6 @@ def _load_venue(raw: Mapping[str, Any], where: str) -> VenueConfig:
         slug=str(_require(raw, "slug", where)),
         numeric_id=str(_require(raw, "numeric_id", where)),
         active=bool(_require(raw, "active", where)),
-        show_in_dashboard=bool(raw.get("show_in_dashboard", True)),
         facilities=facilities,
     )
 
@@ -318,23 +228,13 @@ def load_config(path: str | Path) -> Config:
     backoff_raw = _mapping(_require(poll_raw, "backoff", "poll"), "poll.backoff")
     discovery_raw = _mapping(_require(root, "discovery", "<root>"), "discovery")
     http_raw = _mapping(_require(root, "http", "<root>"), "http")
-    dashboard_raw = _mapping(_require(root, "dashboard", "<root>"), "dashboard")
-    storage_raw = _mapping(_require(root, "storage", "<root>"), "storage")
     venues_raw = _sequence(_require(root, "venues", "<root>"), "venues")
 
     sports_raw = _mapping(_require(discovery_raw, "sports", "discovery"), "discovery.sports")
 
     config = Config(
         timezone=str(_require(root, "timezone", "<root>")),
-        # A container mounts its volume somewhere the checked-in config cannot
-        # know about, so the storage URL alone may come from the environment.
-        storage=StorageConfig(
-            url=os.environ.get(STORAGE_URL_ENV_VAR) or str(_require(storage_raw, "url", "storage"))
-        ),
         poll=PollConfig(
-            cadence_minutes=int(_require(poll_raw, "cadence_minutes", "poll")),
-            horizon_days=int(_require(poll_raw, "horizon_days", "poll")),
-            lookback_days=int(poll_raw.get("lookback_days", 1)),
             request_gap_seconds=float(_require(poll_raw, "request_gap_seconds", "poll")),
             timeout_seconds=float(_require(poll_raw, "timeout_seconds", "poll")),
             max_consecutive_failures=int(_require(poll_raw, "max_consecutive_failures", "poll")),
@@ -350,7 +250,6 @@ def load_config(path: str | Path) -> Config:
             city_id=int(_require(discovery_raw, "city_id", "discovery")),
             sports={str(k): int(v) for k, v in sports_raw.items()},
             per_page=int(_require(discovery_raw, "per_page", "discovery")),
-            drift_check_days=int(_require(discovery_raw, "drift_check_days", "discovery")),
             alert_on_venue_set_change=_enum(
                 Sport,
                 _require(discovery_raw, "alert_on_venue_set_change", "discovery"),
@@ -380,20 +279,6 @@ def load_config(path: str | Path) -> Config:
             },
             user_agent=str(_require(http_raw, "user_agent", "http")),
         ),
-        dashboard=DashboardConfig(
-            default_sport=_enum(
-                Sport,
-                _require(dashboard_raw, "default_sport", "dashboard"),
-                "dashboard.default_sport",
-            ),
-            headline_metric=str(_require(dashboard_raw, "headline_metric", "dashboard")),
-            peak_hours=tuple(
-                int(h)
-                for h in _sequence(
-                    _require(dashboard_raw, "peak_hours", "dashboard"), "dashboard.peak_hours"
-                )
-            ),
-        ),
         venues=tuple(
             _load_venue(_mapping(item, f"venues[{i}]"), f"venues[{i}]")
             for i, item in enumerate(venues_raw)
@@ -402,7 +287,5 @@ def load_config(path: str | Path) -> Config:
 
     if not 0 <= config.business_day_start_hour <= 23:
         raise ConfigError("business_day_start_hour must be between 0 and 23")
-    if config.poll.cadence_minutes <= 0:
-        raise ConfigError("poll.cadence_minutes must be positive")
     ZoneInfo(config.timezone)
     return config

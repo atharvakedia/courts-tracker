@@ -1,7 +1,7 @@
 [project]
 name = "padel-tracker"
 version = "0.1.0"
-description = "Court-occupancy tracking for Jaipur padel venues listed on Hudle"
+description = "Court-occupancy tracker for Jaipur padel and pickleball courts on Hudle"
 requires-python = ">=3.11"
 dependencies = [
     "httpx>=0.28",
@@ -9,7 +9,6 @@ dependencies = [
     "pyyaml>=6.0",
     "fastapi>=0.115",
     "uvicorn>=0.32",
-    "apscheduler>=3.10",
     "psycopg[binary]>=3.2",
 ]
 
@@ -35,10 +34,6 @@ python_version = "3.11"
 strict = true
 warn_return_any = true
 disallow_untyped_defs = true
-
-[[tool.mypy.overrides]]
-module = ["apscheduler.*"]
-ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 markers = ["live: hits the real Hudle API; deselected by default"]

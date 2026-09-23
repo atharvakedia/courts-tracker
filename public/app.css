@@ -12,6 +12,8 @@
   --s-hudle: #1c5cab; --s-block: #6da7ec; --s-vacant: #e1e0d9;
   /* sequential ramp for the heatmap, near-zero recedes toward the surface */
   --seq-0: #f3f7fd; --seq-1: #b7d3f6; --seq-2: #5598e7; --seq-3: #1c5cab; --seq-4: #0d366b;
+  /* the map's demand layer: a warm ramp, so supply and demand never read alike */
+  --dem-1: #fbd5ad; --dem-2: #f39a4c; --dem-3: #d9601c; --dem-4: #8f3309;
   --up: #006300; --down: #d03b3b; --warn: #b07800; --new: #4a3aa7;
   --ease: cubic-bezier(.2,.7,.2,1); --r: 12px;
   --font: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -23,6 +25,7 @@
   --accent: #3987e5; --accent-soft: #1a2a40;
   --s-hudle: #86b6ef; --s-block: #2a78d6; --s-vacant: #383835;
   --seq-0: #1f2530; --seq-1: #184f95; --seq-2: #2a78d6; --seq-3: #6da7ec; --seq-4: #cde2fb;
+  --dem-1: #6b2d0b; --dem-2: #c2531a; --dem-3: #f28c3f; --dem-4: #fed2a6;
   --up: #0ca30c; --down: #e66767; --warn: #fab219; --new: #9085e9;
 }
 * { box-sizing: border-box; }
@@ -135,6 +138,14 @@ button:focus-visible, input:focus-visible, .row:focus-visible { outline: 2px sol
 .mapwrap .leaflet-tooltip span { color: var(--ink-2); }
 .mapwrap .leaflet-tooltip-top::before { border-top-color: var(--rule); }
 .mapwrap .dot { transition: stroke-width .2s var(--ease); }
+.mapwrap .mapbig { position: absolute; top: 10px; left: 52px; z-index: 1000; width: 34px; height: 34px; font-size: 20px; line-height: 1; color: var(--ink); box-shadow: 0 1px 4px rgb(0 0 0 / .15); }
+/* Enlarged, the venues panel takes the whole grid and the charts step aside. */
+.grid.map-big .panel.venues { grid-column: 1 / -1; grid-row: 1 / -1; }
+.grid.map-big .chartp { display: none; }
+.mapwrap .mapkey { position: absolute; left: 8px; bottom: 22px; z-index: 1000; background: var(--panel); border: 1px solid var(--rule); border-radius: 8px; box-shadow: 0 1px 4px rgb(0 0 0 / .15); padding: 6px 9px; font-size: 11px; color: var(--ink-2); pointer-events: none; }
+.mapwrap .mapkey b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
+.mapwrap .mapkey .ramp { display: block; width: 120px; height: 7px; border-radius: 99px; }
+.mapwrap .mapkey .ends { display: flex; justify-content: space-between; margin-top: 2px; color: var(--ink-3); }
 
 /* ---- empty ---- */
 .empty { margin: auto; color: var(--ink-3); text-align: center; font-size: 13px; padding: 16px; }

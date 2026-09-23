@@ -66,9 +66,11 @@
       <div class="mapwrap">
         <div id="map" role="img" aria-label="Map of Jaipur venues"></div>
         <div class="mini float" data-k="metric" role="group" aria-label="Measure">
-          <button data-v="total" aria-pressed="false">Court-hours</button>
-          <button data-v="booked" aria-pressed="true">Booked</button>
+          <button data-v="supply" aria-pressed="false">Courts</button>
+          <button data-v="demand" aria-pressed="true">Hours booked</button>
         </div>
+        <div class="mapkey" id="mapkey" aria-hidden="true"></div>
+        <button class="icon mapbig" id="mapbig" aria-pressed="false" aria-label="Enlarge map" title="Enlarge map">⤢</button>
       </div>
     </section>
 
@@ -100,7 +102,7 @@
 
     <section class="panel chartp" data-p="week">
       <header>
-        <div class="ttl"><h2>By weekday</h2>
+        <div class="ttl"><h2>Busy hours</h2>
           <div class="mini" data-k="week" role="group" aria-label="View">
             <button data-v="grid" aria-pressed="true">Weekday × hour</button>
             <button data-v="bars" aria-pressed="false">Weekday</button>

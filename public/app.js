@@ -5,13 +5,14 @@
   'use strict';
   const state = {
     sport: 'padel', window: '7', venue: null, panel: 'venues', data: null, filter: '',
-    views: { day: 'pct', hour: 'pct', week: 'grid', spread: 'days', venues: 'list', metric: 'booked' },
+    views: { day: 'pct', hour: 'pct', week: 'grid', spread: 'days', venues: 'list', metric: 'demand' },
   };
   try {
     const saved = JSON.parse(localStorage.getItem('ht.state') || '{}');
     state.sport = saved.sport || state.sport;
     state.window = saved.window || state.window;
     Object.assign(state.views, saved.views || {});
+    if (!['supply', 'demand'].includes(state.views.metric)) state.views.metric = 'demand';
   } catch (_) {}
   // A shared link wins over what this browser last looked at.
   const q = new URLSearchParams(location.search);
@@ -49,6 +50,7 @@
       ink: css('--ink'), ink2: css('--ink-2'), ink3: css('--ink-3'), rule: css('--rule'), axis: css('--axis'),
       panel: css('--panel'), accent: css('--accent'), hudle: css('--s-hudle'), block: css('--s-block'),
       vacant: css('--s-vacant'), seq: [0, 1, 2, 3, 4].map((i) => css(`--seq-${i}`)),
+      dem: [1, 2, 3, 4].map((i) => css(`--dem-${i}`)),
     };
   }
 
@@ -354,17 +356,19 @@
   }
 
   // ---------- venue map ----------
-  // The venues panel's second view: every located venue on Jaipur's streets,
-  // a heat layer for where court-hours (or booked court-hours) concentrate,
-  // and a dot per venue sized by the same figure that filters on click.
+  // The venues panel's second view: where Jaipur's courts are (supply) against
+  // where court time is bought (demand). The heat is the reading: nearby
+  // venues add up, so a neighbourhood of small clubs glows like one big one.
+  // Dots are markers for hovering and clicking, lightly sized by the figure.
   // Esri's gray canvas needs no key; its labels come as a separate layer on top.
   const TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_{tone}_Gray_{part}/MapServer/tile/{z}/{y}/{x}';
   const ATTRIBUTION = 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, &copy; OpenStreetMap contributors';
   const JAIPUR = [26.9124, 75.7873];
-  const mapState = { map: null, tiles: null, tileStyle: null, layers: null, fittedFor: null };
+  const mapState = { map: null, tiles: null, tileStyle: null, layers: null, fittedFor: null, bounds: null };
 
   function venueView(d) {
     $('venues-panel').dataset.view = state.views.venues;
+    if (state.views.venues !== 'map') setMapBig(false);
     if (state.views.venues === 'map') drawMap(d);
     else venueDen(d);
   }
@@ -377,9 +381,25 @@
       return;
     }
     const placed = d.venues.filter((v) => v.latitude != null).length;
-    const what = state.views.metric === 'booked' ? 'Court-hours booked' : 'Court-hours listed';
     const missing = d.venues.length - placed;
-    $('den-venues').textContent = `${what} per venue · bigger dot, more hours · ${range(d)}${missing ? ` · ${missing} not placed yet` : ''}`;
+    const what = state.views.metric === 'supply'
+      ? 'Supply: where the courts are, every listed court'
+      : `Demand: where court-hours are booked, ${range(d)}`;
+    $('den-venues').textContent = `${what}${missing ? ` · ${missing} venue${missing === 1 ? '' : 's'} not placed yet` : ''}`;
+  }
+
+  function setMapBig(on) {
+    $('grid').classList.toggle('map-big', on);
+    $('mapbig').setAttribute('aria-pressed', String(on));
+    $('mapbig').title = on ? 'Back to the charts' : 'Enlarge map';
+    $('mapbig').textContent = on ? '⤡' : '⤢';
+    // The frame changes size, so the venues are framed again to fill it.
+    if (mapState.map) requestAnimationFrame(() => { mapState.map.invalidateSize(); fitVenues(); });
+    if (!on) requestAnimationFrame(() => Object.values(charts).forEach((c) => c.resize()));
+  }
+
+  function fitVenues() {
+    if (mapState.map && mapState.bounds) mapState.map.fitBounds(mapState.bounds, { padding: [36, 36], maxZoom: 14 });
   }
 
   function drawMap(d) {
@@ -403,44 +423,53 @@
     }
     if (mapState.layers) mapState.layers.remove();
 
-    const key = state.views.metric === 'booked' ? 'booked_hours' : 'total_hours';
+    const supply = state.views.metric === 'supply';
+    const weight = (v) => (supply ? v.courts.length : v.booked_hours || 0);
+    const ramp = supply ? t.seq.slice(1) : t.dem;
     const placed = d.venues.filter((v) => v.latitude != null && v.longitude != null);
-    const max = Math.max(1e-9, ...placed.map((v) => v[key] || 0));
+    const max = Math.max(1e-9, ...placed.map(weight));
     const layers = L.layerGroup();
     if (typeof L.heatLayer === 'function' && placed.length) {
-      L.heatLayer(placed.map((v) => [v.latitude, v.longitude, (v[key] || 0) / max]), {
-        radius: 42, blur: 30, max: 0.6, minOpacity: 0.3,
-        gradient: { 0.1: t.seq[1], 0.35: t.seq[2], 0.65: t.seq[3], 1: t.seq[4] },
+      // Saturates at about two of the largest venues side by side, so one big
+      // club alone reads warm and a cluster of them reads hot.
+      L.heatLayer(placed.map((v) => [v.latitude, v.longitude, weight(v)]), {
+        radius: 45, blur: 35, max: 2 * max, minOpacity: 0.25,
+        gradient: { 0.1: ramp[0], 0.4: ramp[1], 0.7: ramp[2], 1: ramp[3] },
       }).addTo(layers);
     }
     // Largest first, so a small venue beside a big one stays clickable on top.
-    [...placed].sort((a, b) => (b[key] || 0) - (a[key] || 0)).forEach((v) => {
-      const share = (v[key] || 0) / max;
+    [...placed].sort((a, b) => weight(b) - weight(a)).forEach((v) => {
       const selected = v.venue_uuid === d.venue;
       const dead = v.verdict === 'unreliable';
+      const n = v.courts.length;
       const dot = L.circleMarker([v.latitude, v.longitude], {
-        radius: 4 + 12 * Math.sqrt(share), className: 'dot',
+        radius: 3 + 5 * Math.sqrt(weight(v) / max), className: 'dot',
         color: selected ? t.ink : t.panel, weight: selected ? 3 : 1.5,
-        fillColor: dead ? t.ink3 : t.accent, fillOpacity: dead ? 0.45 : 0.85,
+        fillColor: dead ? t.ink3 : supply ? ramp[3] : ramp[2], fillOpacity: dead ? 0.5 : 0.9,
       });
       dot.bindTooltip(
-        `<b>${esc(v.name)}</b><br><span>${num(v.booked_hours)} of ${num(v.total_hours)} court-h booked · ${pct(v.occupancy)}</span>`
-        + (dead ? '<br><span>listing only · not counted</span>' : ''),
+        `<b>${esc(v.name)}</b><br><span>${n} court${n === 1 ? '' : 's'} · ${num(v.booked_hours)} court-h booked (${pct(v.occupancy)})</span>`
+        + (dead ? '<br><span>listing only · not counted in demand</span>' : ''),
         { direction: 'top', offset: [0, -6] },
       );
       dot.on('click', () => selectVenue(v.venue_uuid));
       dot.addTo(layers);
     });
     mapState.layers = layers.addTo(map);
+    const total = placed.reduce((a, v) => a + weight(v), 0);
+    $('mapkey').innerHTML = `<b>${supply ? `${num(total)} courts` : `${num(total)} court-h booked`}</b>`
+      + `<span class="ramp" style="background:linear-gradient(90deg, ${ramp[0]}, ${ramp[1]}, ${ramp[2]}, ${ramp[3]})"></span>`
+      + `<span class="ends"><span>${supply ? 'few courts' : 'little booked'}</span><span>${supply ? 'many' : 'most'}</span></span>`;
 
     // Frame the venues when the sport changes, not on every redraw: a reader
     // who zoomed into a neighbourhood keeps it while switching windows.
+    mapState.bounds = placed.length ? L.latLngBounds(placed.map((v) => [v.latitude, v.longitude])) : null;
     if (placed.length && mapState.fittedFor !== d.sport) {
       map.invalidateSize();
-      map.fitBounds(L.latLngBounds(placed.map((v) => [v.latitude, v.longitude])), { padding: [36, 36], maxZoom: 14 });
+      fitVenues();
       mapState.fittedFor = d.sport;
     }
-    $('map').setAttribute('aria-label', `Map of ${placed.length} ${d.sport} venues in Jaipur, sized by ${key === 'booked_hours' ? 'court-hours booked' : 'court-hours listed'}.`);
+    $('map').setAttribute('aria-label', `Map of ${placed.length} ${d.sport} venues in Jaipur, shaded by ${supply ? 'number of courts' : 'court-hours booked'}.`);
   }
 
   function drawPanel(k, d) {
@@ -540,30 +569,40 @@
   function byWeek(d, t) {
     const rows = d.weekdays;
     if (state.views.week === 'grid') {
-      const hours = d.hours.map((r) => r.hour);
-      const maxT = Math.max(...d.heatmap.map((c) => c.total_hours), 0);
-      const thin = (c) => c.total_hours < 0.25 * maxT;
-      // The colour scale stops at the busiest well-sold cell, so the evening
-      // rush and the midday lull read apart instead of all sitting mid-blue.
-      const top = ceilPct(d.heatmap.filter((c) => !thin(c)).map((c) => 100 * (c.occupancy || 0)));
-      const data = d.heatmap.map((c) => ({
-        value: [hours.indexOf(c.hour), c.weekday, c.occupancy == null ? null : +(100 * c.occupancy).toFixed(0)],
-        total: c.total_hours, booked: c.booked_hours, thin: thin(c),
-        itemStyle: thin(c) ? { opacity: 0.3 } : undefined,
+      // Hours when almost every court is shut (the small hours) are dropped:
+      // a percentage of a sliver of court time is noise, not a busy hour.
+      const perHour = Object.fromEntries(d.hours.map((r) => [r.hour, r.total_hours]));
+      const busiest = Math.max(0, ...Object.values(perHour));
+      const hours = d.hours.map((r) => r.hour).filter((h) => perHour[h] >= 0.25 * busiest);
+      const cells = d.heatmap.filter((c) => hours.includes(c.hour));
+      // The scale spans the values actually present, so a grid that runs 20% to
+      // 45% shows its quiet and busy hours apart instead of one shade of blue.
+      const values = cells.map((c) => 100 * (c.occupancy || 0));
+      const low = Math.floor(Math.min(100, ...values) / 10) * 10;
+      const top = Math.max(low + 10, Math.ceil(Math.max(0, ...values) / 10) * 10);
+      const wide = $('c-week').clientWidth / Math.max(1, hours.length) >= 24;
+      const data = cells.map((c) => ({
+        value: [hours.indexOf(c.hour), c.weekday, c.occupancy == null ? null : Math.round(100 * c.occupancy)],
+        total: c.total_hours, booked: c.booked_hours,
+        // Busy squares are the dark end of the ramp in light mode and the light
+        // end in dark mode; either way the panel colour reads on them.
+        label: { color: (100 * (c.occupancy || 0) - low) / (top - low) > 0.45 ? t.panel : t.ink },
       }));
-      $('den-week').textContent = `% of court-hours booked, weekday × start hour · ${who(d)} · ${range(d)}${d.heatmap.some(thin) ? ' · faint = little court time' : ''}`;
+      const perCell = Math.max(1, Math.round(d.window.days / 7));
+      $('den-week').textContent = `Each square: % of court time booked at that hour on that weekday · ${perCell === 1 ? 'one day each' : `about ${perCell} days each`} · ${who(d)} · ${range(d)}`;
       setChart('c-week', {
         ...base(t),
         grid: { left: 40, right: 8, top: 4, bottom: 44 },
         tooltip: { ...base(t).tooltip, trigger: 'item',
-          formatter: (p) => `<b>${LONG_DAYS[p.value[1]]} ${hh(hours[p.value[0]])}</b><br/>${p.value[2]}% booked<br/><span style="color:${t.ink3}">${num(p.data.booked, 1)} of ${num(p.data.total, 1)} court-h${p.data.thin ? '<br/>little court time: read with care' : ''}</span>` },
-        xAxis: xCat(t, hours.map(String), { axisLine: { show: false }, axisLabel: { color: t.ink3, fontSize: 11, interval: 0, formatter: (v, i) => (i % 2 ? '' : v) } }),
+          formatter: (p) => `<b>${LONG_DAYS[p.value[1]]} ${hh(hours[p.value[0]])}</b><br/>${p.value[2]}% of court time booked<br/><span style="color:${t.ink3}">${num(p.data.booked, 1)} of ${num(p.data.total, 1)} court-h</span>` },
+        xAxis: xCat(t, hours.map(String), { axisLine: { show: false }, axisLabel: { color: t.ink3, fontSize: 11, interval: 0, formatter: (v, i) => (wide || i % 2 === 0 ? v : '') } }),
         yAxis: { type: 'category', data: DAYS, inverse: true, axisLine: { show: false }, axisTick: { show: false }, axisLabel: { color: t.ink3, fontSize: 11 } },
-        visualMap: { min: 0, max: top, calculable: false, orient: 'horizontal', left: 'center', bottom: 0, itemHeight: 140, itemWidth: 8,
-          textStyle: { color: t.ink3, fontSize: 10 }, text: [top < 100 ? `${top}%+ booked` : '100% booked', '0%'], inRange: { color: t.seq } },
+        visualMap: { min: low, max: top, calculable: false, orient: 'horizontal', left: 'center', bottom: 0, itemHeight: 140, itemWidth: 8,
+          textStyle: { color: t.ink3, fontSize: 10 }, text: [`busier  ${top}%`, `quiet  ${low}%`], inRange: { color: t.seq } },
         series: [{ type: 'heatmap', data, itemStyle: { borderColor: t.panel, borderWidth: 2, borderRadius: 3 },
+          label: { show: wide, fontSize: 10, formatter: (p) => (p.value[2] == null ? '' : p.value[2]) },
           emphasis: { itemStyle: { borderColor: t.ink, borderWidth: 1 } } }],
-      }, `Heatmap of percent booked by weekday and hour, ${range(d)}.`);
+      }, `Heatmap of percent of court time booked by weekday and hour, ${range(d)}.`);
     } else {
       const vals = rows.map((r) => (r.occupancy == null ? null : +(100 * r.occupancy).toFixed(1)));
       const avg = 100 * d.totals.occupancy;
@@ -631,6 +670,7 @@
     try { localStorage.setItem('ht.theme', next); } catch (_) {}
     if (state.data) draw(state.data);
   });
+  $('mapbig').addEventListener('click', () => setMapBig(!$('grid').classList.contains('map-big')));
   $('search').addEventListener('input', (e) => { state.filter = e.target.value; if (state.data) venues(state.data); });
   $('venue-list').addEventListener('click', (e) => { const r = e.target.closest('.row'); if (r) selectVenue(r.dataset.u); });
   $('venue-list').addEventListener('keydown', (e) => {

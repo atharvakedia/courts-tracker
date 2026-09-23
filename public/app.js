@@ -548,6 +548,25 @@
           markLine: avgLine(t, +avg.toFixed(1), `avg\n${avg.toFixed(0)}%`),
         }],
       }, `Percent booked per day, ${range(d)}; average ${avg.toFixed(0)}%.`);
+    } else if (state.views.day === 'rev') {
+      const vals = rows.map((r) => r.revenue);
+      const total = vals.reduce((a, v) => a + v, 0);
+      const avg = rows.length ? total / rows.length : 0;
+      const inr = (v) => `₹${num(v)}`;
+      const short = (v) => (v >= 1e5 ? `₹${(v / 1e5).toFixed(1)}L` : v >= 1e3 ? `₹${(v / 1e3).toFixed(0)}k` : `₹${v}`);
+      $('den-day').textContent = `revenue from customer bookings each day, at Hudle's listed prices (offers and discounts not reflected) · ${inr(total)} in all · ${who(d)} · ${range(d)}`;
+      setChart('c-day', {
+        ...base(t),
+        grid: { left: 48, right: 52, top: 14, bottom: 24 },
+        tooltip: { ...base(t).tooltip, trigger: 'axis',
+          formatter: (ps) => { const r = rows[ps[0].dataIndex]; return `<b>${title(r)}</b><br/>${inr(r.revenue)} from bookings<br/><span style="color:${t.ink3}">${num(r.booked_hours, 1)} court-h booked · listed prices</span>`; } },
+        xAxis: xCat(t, labels),
+        yAxis: yVal(t, { axisLabel: { color: t.ink3, fontSize: 11, formatter: short } }),
+        series: [{
+          name: 'Revenue', type: 'bar', data: vals, barMaxWidth: 24, itemStyle: { color: t.accent, borderRadius: [4, 4, 0, 0] },
+          markLine: avgLine(t, Math.round(avg), `avg\n${short(Math.round(avg))}`),
+        }],
+      }, `Revenue from customer bookings per day at listed prices, ${range(d)}; ${inr(total)} in all.`);
     } else {
       $('den-day').textContent = `court-hours offered each day: booked, vacant · ${who(d)} · ${range(d)}`;
       setChart('c-day', {

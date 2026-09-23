@@ -99,10 +99,22 @@ def heatmap(rows: Iterable[Row]) -> list[dict[str, Any]]:
     ]
 
 
+def revenue(rows: Iterable[Row]) -> int:
+    """Rupees from customer bookings, at Hudle's listed price for each slot.
+
+    A venue block is not a sale, so it earns nothing here. Listed prices are
+    what Hudle shows before any offer or discount, so this is an upper bound
+    on what customers paid.
+    """
+    return round(
+        sum(float(r["price"]) for r in rows if r["hudle_booked"] and r["price"] is not None)
+    )
+
+
 def by_date(rows: Iterable[Row]) -> list[dict[str, Any]]:
-    """Occupancy per business date across every row given (one venue or all)."""
+    """Occupancy and revenue per business date across every row given."""
     return [
-        {"business_date": day.isoformat(), **occupancy(group).as_dict()}
+        {"business_date": day.isoformat(), **occupancy(group).as_dict(), "revenue": revenue(group)}
         for day, group in sorted(by(rows, "business_date").items())
     ]
 

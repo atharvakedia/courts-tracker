@@ -57,6 +57,7 @@ from tracker.logging_setup import LogFormat, configure_logging, describe_fields
 from tracker.storage_sqlite import SQLiteStorage
 from tracker.store import Store
 from tracker.types import SlotState
+from tracker.views import publish_views
 
 logger = logging.getLogger("tracker.cli")
 
@@ -412,11 +413,13 @@ def cmd_daily(args: argparse.Namespace) -> int:
                 print(f"discovered {venues} pickleball venues, {courts} courts")
                 print(f"located {locate_venues(store, client)} more venues")
             result = run_daily(config, store, client, now=now)
+        # Built even after a partial pass: the views then show what was read.
+        views = publish_views(store, now=utc_now(), tz=config.timezone)
     finally:
         store.close()
     print(
         f"daily pass: {result.courts_ok} courts ok, {result.courts_failed} failed, "
-        f"{result.slots_seen} slots seen, {result.slots_written} written"
+        f"{result.slots_seen} slots seen, {result.slots_written} written; {views} views built"
         + (" -- STOPPED EARLY (circuit open)" if result.stopped_early else "")
     )
     if result.stopped_early:

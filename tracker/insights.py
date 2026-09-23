@@ -14,6 +14,7 @@ running its bookings through Hudle is upgraded without anyone editing a list.
 
 from __future__ import annotations
 
+import bisect
 import collections
 import datetime as dt
 import statistics
@@ -77,17 +78,6 @@ def by(rows: Iterable[Row], key: str) -> dict[Any, list[Row]]:
     out: dict[Any, list[Row]] = collections.defaultdict(list)
     for r in rows:
         out[r[key]].append(r)
-    return out
-
-
-def daily_series(rows: Iterable[Row]) -> list[dict[str, Any]]:
-    """Occupancy per venue per business date."""
-    out = []
-    for (venue, day), group in sorted(
-        by([{**r, "_k": (r["venue_uuid"], r["business_date"])} for r in rows], "_k").items()
-    ):
-        occ = occupancy(group)
-        out.append({"venue_uuid": venue, "business_date": day.isoformat(), **occ.as_dict()})
     return out
 
 
@@ -210,6 +200,19 @@ def lead_summary(hours: Sequence[float]) -> dict[str, Any]:
         "median_hours": round(statistics.median(ordered), 1),
         "p90_hours": round(p90, 1),
     }
+
+
+#: Lead-time buckets, in hours: the dashboard's "booked ahead" histogram.
+LEAD_EDGES = (0, 3, 6, 12, 24, 48, 72, 168)
+LEAD_LABELS = ("<3h", "3–6h", "6–12h", "12–24h", "1–2d", "2–3d", "3–7d", "7d+")  # noqa: RUF001
+
+
+def lead_histogram(hours: Sequence[float]) -> list[dict[str, Any]]:
+    """How many bookings fell in each lead-time bucket, smallest first."""
+    counts = [0] * len(LEAD_EDGES)
+    for h in hours:
+        counts[bisect.bisect_right(LEAD_EDGES, h) - 1] += 1
+    return [{"label": label, "count": n} for label, n in zip(LEAD_LABELS, counts, strict=True)]
 
 
 def price_per_hour(rows: Iterable[Row]) -> float | None:

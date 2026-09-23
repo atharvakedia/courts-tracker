@@ -206,21 +206,56 @@
     } catch (_) { el.dataset.s = 'stale'; el.lastElementChild.textContent = 'Offline'; }
   }
 
+  // Every view fetched is kept for the life of the page (the data changes once
+  // a day), keyed by its URL; an in-flight request is shared, not repeated.
+  const views = new Map();
+  function viewUrl(sport, win, venue) {
+    const p = new URLSearchParams({ sport, window: win });
+    if (venue) p.set('venue', venue);
+    return `/api/overview?${p}`;
+  }
+  function fetchView(url) {
+    if (!views.has(url)) {
+      const req = fetch(url).then((r) => {
+        if (!r.ok) { const e = new Error(`HTTP ${r.status}`); e.status = r.status; throw e; }
+        return r.json();
+      });
+      req.catch(() => views.delete(url)); // a failure is retried next time
+      views.set(url, req);
+    }
+    return views.get(url);
+  }
+  // What the reader is likely to click next: the other windows of this view,
+  // and the other sport. Fetched when the browser is idle, one at a time.
+  function prefetch() {
+    const wins = ['7', '30', 'all'];
+    const next = wins.filter((w) => w !== state.window).map((w) => viewUrl(state.sport, w, state.venue));
+    const other = state.sport === 'padel' ? 'pickleball' : 'padel';
+    next.push(...wins.map((w) => viewUrl(other, w, null)));
+    if (state.venue) next.push(...wins.map((w) => viewUrl(state.sport, w, null)));
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 200));
+    const step = () => { const u = next.shift(); if (u) fetchView(u).catch(() => {}).finally(() => idle(step)); };
+    idle(step);
+  }
+
+  let loading = 0;
   async function load() {
     persist();
+    const ticket = ++loading;
+    const url = viewUrl(state.sport, state.window, state.venue);
     document.body.style.cursor = 'progress';
     try {
-      const p = new URLSearchParams({ sport: state.sport, window: state.window });
-      if (state.venue) p.set('venue', state.venue);
-      const r = await fetch(`/api/overview?${p}`);
-      // A venue from a shared link may have no rows in this window: fall back to all.
-      if (r.status === 404 && state.venue) { state.venue = null; return load(); }
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      state.data = await r.json();
+      const data = await fetchView(url);
+      if (ticket !== loading) return; // a later click superseded this one
+      state.data = data;
       draw(state.data);
+      prefetch();
     } catch (err) {
+      if (ticket !== loading) return;
+      // A venue from a shared link may have no rows in this window: fall back to all.
+      if (err.status === 404 && state.venue) { state.venue = null; return load(); }
       $('venue-list').innerHTML = `<p class="empty">Could not load: ${esc(err.message)}</p>`;
-    } finally { document.body.style.cursor = ''; }
+    } finally { if (ticket === loading) document.body.style.cursor = ''; }
   }
 
   // ---------- drawing ----------
@@ -453,6 +488,7 @@
         { direction: 'top', offset: [0, -6] },
       );
       dot.on('click', () => selectVenue(v.venue_uuid));
+      dot.on('mouseover', () => fetchView(viewUrl(state.sport, state.window, v.venue_uuid)).catch(() => {}));
       dot.addTo(layers);
     });
     mapState.layers = layers.addTo(map);
@@ -645,20 +681,22 @@
         }],
       }, `Histogram of court-days by share of hours booked, ${range(d)}.`);
     } else {
-      const hours = d.lead_time_hours;
-      const edges = [0, 3, 6, 12, 24, 48, 72, 168, Infinity];
-      const labels = ['<3h', '3–6h', '6–12h', '12–24h', '1–2d', '2–3d', '3–7d', '7d+'];
-      const counts = labels.map((_, i) => hours.filter((h) => h >= edges[i] && h < edges[i + 1]).length);
-      $('den-spread').textContent = `hours between booking and play · ${num(hours.length)} Hudle bookings (venue blocks carry no time) · ${who(d)} · ${range(d)}`;
-      if (!hours.length) { chart('c-spread').clear(); return; }
+      const labels = d.lead_histogram.map((b) => b.label);
+      const counts = d.lead_histogram.map((b) => b.count);
+      const n = d.lead_time.n;
+      $('den-spread').textContent = `hours between booking and play · ${num(n)} Hudle bookings (venue blocks carry no time) · ${who(d)} · ${range(d)}`;
+      if (!n) {
+        setChart('c-spread', { ...base(theme()), title: { text: 'No Hudle bookings here: this venue records its sales as blocks, which carry no booking time.', left: 'center', top: 'middle', textStyle: { color: theme().ink3, fontSize: 12, fontWeight: 'normal', width: 260, overflow: 'break' } } }, 'No booking lead times for this view.');
+        return;
+      }
       setChart('c-spread', {
         ...base(t),
         grid: { left: 40, right: 8, top: 18, bottom: 36 },
-        tooltip: { ...base(t).tooltip, trigger: 'axis', formatter: (ps) => `<b>Booked ${labels[ps[0].dataIndex]} ahead</b><br/>${num(ps[0].value)} bookings · ${pct(ps[0].value / hours.length)}` },
+        tooltip: { ...base(t).tooltip, trigger: 'axis', formatter: (ps) => `<b>Booked ${labels[ps[0].dataIndex]} ahead</b><br/>${num(ps[0].value)} bookings · ${pct(ps[0].value / n)}` },
         xAxis: xCat(t, labels, { name: 'booked this far ahead', nameLocation: 'middle', nameGap: 22, nameTextStyle: { color: t.ink3, fontSize: 11 }, axisLabel: { color: t.ink3, fontSize: 10, interval: 0 } }),
         yAxis: yVal(t),
         series: [{ type: 'bar', data: counts, barMaxWidth: 24, itemStyle: { color: t.accent, borderRadius: [4, 4, 0, 0] },
-          label: { show: true, position: 'top', color: t.ink2, fontSize: 10, formatter: (p) => (p.value / hours.length >= 0.08 ? pct(p.value / hours.length) : '') } }],
+          label: { show: true, position: 'top', color: t.ink2, fontSize: 10, formatter: (p) => (p.value / n >= 0.08 ? pct(p.value / n) : '') } }],
       }, `Histogram of booking lead times, ${range(d)}.`);
     }
   }
@@ -673,6 +711,11 @@
   $('mapbig').addEventListener('click', () => setMapBig(!$('grid').classList.contains('map-big')));
   $('search').addEventListener('input', (e) => { state.filter = e.target.value; if (state.data) venues(state.data); });
   $('venue-list').addEventListener('click', (e) => { const r = e.target.closest('.row'); if (r) selectVenue(r.dataset.u); });
+  // Pointing at a venue starts its fetch, so the click usually finds it ready.
+  $('venue-list').addEventListener('pointerover', (e) => {
+    const r = e.target.closest('.row');
+    if (r && r.dataset.u !== state.venue) fetchView(viewUrl(state.sport, state.window, r.dataset.u)).catch(() => {});
+  });
   $('venue-list').addEventListener('keydown', (e) => {
     const r = e.target.closest('.row');
     if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectVenue(r.dataset.u); }

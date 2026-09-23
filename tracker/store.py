@@ -88,6 +88,17 @@ slots = sa.Table(
     sa.Index("ix_slots_facility_date", "facility_uuid", "business_date"),
 )
 
+#: The dashboard's answers, built once a day (see tracker.views). One row per
+#: view; the payload is the JSON the API returns.
+views = sa.Table(
+    "views",
+    metadata,
+    sa.Column("view_key", sa.Text, primary_key=True),
+    sa.Column("as_of", sa.Date, nullable=False),
+    sa.Column("built_at", UTC_DT, nullable=False),
+    sa.Column("payload", sa.Text, nullable=False),
+)
+
 runs = sa.Table(
     "runs",
     metadata,
@@ -377,6 +388,31 @@ class Store:
                     error=error,
                 )
             )
+
+    # -- views ---------------------------------------------------------------
+
+    def replace_views(
+        self, built: Sequence[tuple[str, str]], *, as_of: dt.date, built_at: dt.datetime
+    ) -> None:
+        """Swap the stored views for a freshly built set, in one transaction, so
+        a reader sees either the old set or the new one, never a mix."""
+        with self._engine.begin() as conn:
+            conn.execute(sa.delete(views))
+            if built:
+                conn.execute(
+                    sa.insert(views),
+                    [
+                        {"view_key": k, "as_of": as_of, "built_at": built_at, "payload": p}
+                        for k, p in built
+                    ],
+                )
+
+    def view(self, view_key: str) -> str | None:
+        """A stored view's JSON, or None if it was never built."""
+        with self._engine.connect() as conn:
+            return conn.execute(
+                sa.select(views.c.payload).where(views.c.view_key == view_key)
+            ).scalar_one_or_none()
 
     def latest_runs(self, limit: int = 10) -> list[dict[str, Any]]:
         stmt = sa.select(runs).order_by(runs.c.started_at.desc()).limit(limit)

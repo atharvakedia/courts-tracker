@@ -102,6 +102,18 @@ def overview(
     past = [r for r in past if r["business_date"] >= start]
     counted = [r for r in past if verdicts[r["facility_uuid"]]["verdict"] == Verdict.RELIABLE.value]
 
+    # "New" means it appeared after tracking began, not that it arrived in the
+    # first load: the backfill makes every venue first-seen on the same day.
+    tracking_start = min((v["first_seen_at"] for v in venues.values()), default=None)
+
+    def is_new(venue: dict[str, Any]) -> bool:
+        seen = venue.get("first_seen_at")
+        if not seen or not tracking_start:
+            return False
+        return seen - tracking_start > dt.timedelta(days=1) and seen.date() >= today - dt.timedelta(
+            days=NEW_VENUE_DAYS
+        )
+
     venue_rows = []
     for venue_uuid, vrows in by(past, "venue_uuid").items():
         court_ids = sorted({r["facility_uuid"] for r in vrows})
@@ -111,10 +123,7 @@ def overview(
             {
                 "venue_uuid": venue_uuid,
                 "name": v.get("name", venue_uuid),
-                "new": bool(
-                    v.get("first_seen_at")
-                    and v["first_seen_at"].date() >= today - dt.timedelta(days=NEW_VENUE_DAYS)
-                ),
+                "new": is_new(v),
                 "courts": [
                     {
                         "facility_uuid": f,

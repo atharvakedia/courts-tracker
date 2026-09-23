@@ -1,0 +1,12 @@
+.venv
+.git
+data
+fixtures
+tests
+docs
+deploy
+smoke_test.py
+*.egg-info
+.env
+.env.local
+.neon

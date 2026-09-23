@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Hudle tracker · Jaipur</title>
+  <meta name="color-scheme" content="light dark" />
+  <script>
+    (function () {
+      var m = 'light';
+      try { m = localStorage.getItem('ht.theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch (_) {}
+      document.documentElement.dataset.theme = m;
+    })();
+  </script>
+  <link rel="stylesheet" href="/app.css" />
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body>
+  <header class="bar">
+    <div class="brand"><span class="mark"></span><b>Hudle tracker</b><span class="city">Jaipur</span></div>
+    <div class="seg" id="sport" role="group" aria-label="Sport">
+      <button data-v="padel" aria-pressed="true">Padel</button>
+      <button data-v="pickleball" aria-pressed="false">Pickleball</button>
+    </div>
+    <div class="seg" id="window" role="group" aria-label="Window">
+      <button data-v="7" aria-pressed="true">7 days</button>
+      <button data-v="30" aria-pressed="false">30 days</button>
+      <button data-v="all" aria-pressed="false">All</button>
+    </div>
+    <div class="right">
+      <span class="fresh" id="fresh"><i></i><span>…</span></span>
+      <button class="icon" id="theme" aria-label="Toggle theme">◐</button>
+    </div>
+  </header>
+
+  <section class="kpis" id="kpis"></section>
+
+  <nav class="tabs" id="tabs" aria-label="Panel">
+    <button data-p="venues" aria-pressed="true">Venues</button>
+    <button data-p="trend" aria-pressed="false">Trend</button>
+    <button data-p="heat" aria-pressed="false">Peak hours</button>
+    <button data-p="lead" aria-pressed="false">Lead time</button>
+  </nav>
+
+  <main class="grid" id="grid">
+    <section class="panel venues" data-p="venues">
+      <header><h2>Occupancy by venue</h2><p class="den" id="den-venues"></p></header>
+      <div class="legend">
+        <span><i class="sw reliable"></i>Reliable — counted</span>
+        <span><i class="sw partial"></i>Partial</span>
+        <span><i class="sw unreliable"></i>Unreliable — excluded</span>
+      </div>
+      <div class="list" id="venue-list"></div>
+    </section>
+    <section class="panel" data-p="trend">
+      <header><h2>Occupancy by day</h2><p class="den" id="den-trend"></p></header>
+      <div class="chart" id="c-trend"></div>
+    </section>
+    <section class="panel" data-p="heat">
+      <header><h2>Peak hours</h2><p class="den" id="den-heat"></p></header>
+      <div class="chart" id="c-heat"></div>
+    </section>
+    <section class="panel" data-p="lead">
+      <header><h2>How far ahead people book</h2><p class="den" id="den-lead"></p></header>
+      <div class="chart" id="c-lead"></div>
+    </section>
+  </main>
+
+  <footer class="foot" id="foot">A slot is booked or vacant. Slots a venue blocks count as booked. Only fully elapsed days count; times are Jaipur.</footer>
+  <script src="/app.js"></script>
+</body>
+</html>

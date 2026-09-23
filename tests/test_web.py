@@ -30,7 +30,7 @@ from tests.conftest import (
 from tracker.config import Config
 from tracker.storage import Storage
 from tracker.storage_sqlite import SQLiteStorage
-from tracker.web import create_app
+from tracker.web.app import create_app
 from tracker.web.schemas import (
     METRIC_DEFINITIONS,
     BlockedEventsResponse,

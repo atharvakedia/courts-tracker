@@ -1283,7 +1283,7 @@ def test_cli_serve_hands_the_app_to_uvicorn_as_a_string() -> None:
     """
     args = cli.build_parser().parse_args(["serve", "--port", "9001"])
     assert args.port == 9001
-    assert cli.WEB_APP_PATH == "tracker.web:app"
+    assert cli.WEB_APP_PATH == "tracker.web.app:app"
 
     probe = subprocess.run(
         [sys.executable, "-c", "import tracker.__main__, sys; print('tracker.web' in sys.modules)"],

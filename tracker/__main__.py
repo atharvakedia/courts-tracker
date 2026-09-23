@@ -71,7 +71,7 @@ DEFAULT_PORT = 8000
 #: The ASGI app ``serve`` runs. Passed to uvicorn as a string so this module
 #: never imports ``tracker.web`` -- the CLI stays usable when the dashboard is
 #: broken, half-written or absent.
-WEB_APP_PATH = "tracker.web:app"
+WEB_APP_PATH = "tracker.web.app:app"
 
 
 def default_config_path() -> Path:

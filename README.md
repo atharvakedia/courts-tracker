@@ -15,6 +15,8 @@ on [Hudle](https://hudle.in), and shows it on a dashboard.
   without a booking (`is_available` false) is *blocked*: it was never offered, so it is
   left out of both sides of % booked (booked ÷ court time offered) and reported on its
   own. A court blocked all day is not a full court. The raw flags are stored per slot.
+  Hudle occasionally flags a slot booked while still showing a court free
+  (`available_count` 1); it is counted as booked, as Hudle's `is_booked` says.
 - **Slots Hudle has not created yet are skipped.** Hudle sometimes shows a slot with no
   `id` (and no `created_at`), only on days not yet played. Without an id the slot has
   no stable identity, so it is left out (`tracker/slots.py`).

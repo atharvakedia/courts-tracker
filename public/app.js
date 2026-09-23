@@ -3,12 +3,14 @@
    figure answers for the same view, and the URL carries it. */
 (function () {
   'use strict';
+  // Versioned so a changed default reaches viewers who saved the old one.
+  const STATE_KEY = 'ht.state.v2';
   const state = {
     sport: 'padel', window: '7', venue: null, panel: 'venues', data: null, filter: '',
-    views: { day: 'pct', hour: 'pct', week: 'grid', metric: 'demand' },
+    views: { day: 'rev', hour: 'pct', week: 'grid', metric: 'demand' },
   };
   try {
-    const saved = JSON.parse(localStorage.getItem('ht.state') || '{}');
+    const saved = JSON.parse(localStorage.getItem(STATE_KEY) || '{}');
     state.sport = saved.sport || state.sport;
     state.window = saved.window || state.window;
     Object.assign(state.views, saved.views || {});
@@ -137,7 +139,7 @@
 
   // ---------- controls ----------
   function persist() {
-    try { localStorage.setItem('ht.state', JSON.stringify({ sport: state.sport, window: state.window, views: state.views })); } catch (_) {}
+    try { localStorage.setItem(STATE_KEY, JSON.stringify({ sport: state.sport, window: state.window, views: state.views })); } catch (_) {}
     const p = new URLSearchParams({ sport: state.sport, window: state.window });
     if (state.venue) p.set('venue', state.venue);
     history.replaceState(null, '', `?${p}`);
@@ -548,6 +550,25 @@
           markLine: avgLine(t, +avg.toFixed(1), `avg\n${avg.toFixed(0)}%`),
         }],
       }, `Percent booked per day, ${range(d)}; average ${avg.toFixed(0)}%.`);
+    } else if (state.views.day === 'rev') {
+      const vals = rows.map((r) => r.revenue);
+      const total = vals.reduce((a, v) => a + v, 0);
+      const avg = rows.length ? total / rows.length : 0;
+      const inr = (v) => `₹${num(v)}`;
+      const short = (v) => (v >= 1e5 ? `₹${(v / 1e5).toFixed(1)}L` : v >= 1e3 ? `₹${(v / 1e3).toFixed(0)}k` : `₹${v}`);
+      $('den-day').textContent = `revenue from customer bookings each day, at Hudle's listed prices (offers and discounts not reflected) · ${inr(total)} in all · ${who(d)} · ${range(d)}`;
+      setChart('c-day', {
+        ...base(t),
+        grid: { left: 48, right: 52, top: 14, bottom: 24 },
+        tooltip: { ...base(t).tooltip, trigger: 'axis',
+          formatter: (ps) => { const r = rows[ps[0].dataIndex]; return `<b>${title(r)}</b><br/>${inr(r.revenue)} from bookings<br/><span style="color:${t.ink3}">${num(r.booked_hours, 1)} court-h booked · listed prices</span>`; } },
+        xAxis: xCat(t, labels),
+        yAxis: yVal(t, { axisLabel: { color: t.ink3, fontSize: 11, formatter: short } }),
+        series: [{
+          name: 'Revenue', type: 'bar', data: vals, barMaxWidth: 24, itemStyle: { color: t.accent, borderRadius: [4, 4, 0, 0] },
+          markLine: avgLine(t, Math.round(avg), `avg\n${short(Math.round(avg))}`),
+        }],
+      }, `Revenue from customer bookings per day at listed prices, ${range(d)}; ${inr(total)} in all.`);
     } else {
       $('den-day').textContent = `court-hours offered each day: booked, vacant · ${who(d)} · ${range(d)}`;
       setChart('c-day', {

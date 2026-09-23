@@ -21,6 +21,7 @@ from tracker.insights import (
     occupancy,
     peak,
     reliability,
+    revenue,
 )
 from tracker.slots import parse_slot
 from tracker.store import Store
@@ -303,3 +304,12 @@ def test_a_venue_narrows_every_chart(tmp_path: Any, monkeypatch: pytest.MonkeyPa
         "/api/overview", params={"sport": "pickleball", "window": "7", "venue": "nope"}
     )
     assert missing.status_code == 404
+
+
+def test_revenue_counts_customer_bookings_at_listed_price_and_nothing_else() -> None:
+    """Regression: a venue block earning revenue (it was never sold), vacant
+    slots adding their price, or a day's revenue missing from the by-day data."""
+    day = TODAY - dt.timedelta(days=1)
+    rows = [row(day, 18, booked=True), row(day, 19, blocked=True), row(day, 20)]
+    assert revenue(rows) == 900
+    assert [d["revenue"] for d in by_date(rows)] == [900]

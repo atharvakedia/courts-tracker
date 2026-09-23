@@ -65,7 +65,7 @@ class UnknownVenueError(LookupError):
 #: their key, so code reading a newer shape (a PR preview on the production
 #: database, or a deploy before the next build) computes its views on the spot
 #: rather than drawing ones built for another shape.
-VIEWS_VERSION = 2
+VIEWS_VERSION = 3
 
 
 def view_key(sport: Sport, window: str, venue: str | None) -> str:

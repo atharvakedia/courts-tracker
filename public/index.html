@@ -27,46 +27,96 @@
       <button data-v="30" aria-pressed="false">30 days</button>
       <button data-v="all" aria-pressed="false">All</button>
     </div>
+    <div class="scope" id="scope" aria-live="polite"></div>
     <div class="right">
       <span class="fresh" id="fresh"><i></i><span>…</span></span>
       <button class="icon" id="theme" aria-label="Toggle theme">◐</button>
     </div>
   </header>
 
-  <section class="kpis" id="kpis"></section>
+  <section class="kpis" id="kpis" aria-label="Headline figures"></section>
 
   <nav class="tabs" id="tabs" aria-label="Panel">
     <button data-p="venues" aria-pressed="true">Venues</button>
-    <button data-p="trend" aria-pressed="false">Trend</button>
-    <button data-p="heat" aria-pressed="false">Peak hours</button>
-    <button data-p="lead" aria-pressed="false">Lead time</button>
+    <button data-p="day" aria-pressed="false">By day</button>
+    <button data-p="hour" aria-pressed="false">By hour</button>
+    <button data-p="week" aria-pressed="false">Weekday</button>
+    <button data-p="spread" aria-pressed="false">Spread</button>
   </nav>
 
   <main class="grid" id="grid">
     <section class="panel venues" data-p="venues">
-      <header><h2>Occupancy by venue</h2><p class="den" id="den-venues"></p></header>
-      <div class="legend">
-        <span><i class="sw reliable"></i>Counted</span>
-        <span><i class="sw partial"></i>Low activity — counted</span>
-        <span><i class="sw unreliable"></i>Listing only — excluded</span>
+      <header>
+        <div class="ttl"><h2>Venues</h2><span class="hint">tap one to filter every chart</span></div>
+        <p class="den" id="den-venues"></p>
+      </header>
+      <input class="search" id="search" type="search" placeholder="Find a venue" aria-label="Find a venue" autocomplete="off" />
+      <div class="list" id="venue-list" role="listbox" aria-label="Venues"></div>
+    </section>
+
+    <section class="panel chartp" data-p="day">
+      <header>
+        <div class="ttl"><h2>By day</h2>
+          <div class="mini" data-k="day" role="group" aria-label="Measure">
+            <button data-v="pct" aria-pressed="true">% booked</button>
+            <button data-v="hrs" aria-pressed="false">Court-hours</button>
+          </div>
+        </div>
+        <p class="den" id="den-day"></p>
+      </header>
+      <div class="chart" id="c-day" role="img"></div>
+    </section>
+
+    <section class="panel chartp" data-p="hour">
+      <header>
+        <div class="ttl"><h2>By hour of day</h2>
+          <div class="mini" data-k="hour" role="group" aria-label="Measure">
+            <button data-v="pct" aria-pressed="true">% booked</button>
+            <button data-v="hrs" aria-pressed="false">Court-hours / day</button>
+          </div>
+        </div>
+        <p class="den" id="den-hour"></p>
+      </header>
+      <div class="chart" id="c-hour" role="img"></div>
+    </section>
+
+    <section class="panel chartp" data-p="week">
+      <header>
+        <div class="ttl"><h2>By weekday</h2>
+          <div class="mini" data-k="week" role="group" aria-label="View">
+            <button data-v="grid" aria-pressed="true">Weekday × hour</button>
+            <button data-v="bars" aria-pressed="false">Weekday</button>
+          </div>
+        </div>
+        <p class="den" id="den-week"></p>
+      </header>
+      <div class="chart" id="c-week" role="img"></div>
+    </section>
+
+    <section class="panel chartp" data-p="spread">
+      <header>
+        <div class="ttl"><h2>Spread</h2>
+          <div class="mini" data-k="spread" role="group" aria-label="View">
+            <button data-v="days" aria-pressed="true">Court-days</button>
+            <button data-v="lead" aria-pressed="false">Booked ahead</button>
+          </div>
+        </div>
+        <p class="den" id="den-spread"></p>
+      </header>
+      <div class="chart" id="c-spread" role="img"></div>
+    </section>
+
+    <section class="panel nodata" id="nodata" hidden>
+      <div class="nd">
+        <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="6" y="26" width="7" height="14" rx="2"/><rect x="17" y="18" width="7" height="22" rx="2"/><rect x="28" y="30" width="7" height="10" rx="2"/><rect x="39" y="34" width="7" height="6" rx="2"/></svg>
+        <h2 id="nd-title">No settled days yet</h2>
+        <p id="nd-text"></p>
+        <div class="nd-actions" id="nd-actions"></div>
       </div>
-      <div class="list" id="venue-list"></div>
-    </section>
-    <section class="panel" data-p="trend">
-      <header><h2>Occupancy by day</h2><p class="den" id="den-trend"></p></header>
-      <div class="chart" id="c-trend"></div>
-    </section>
-    <section class="panel" data-p="heat">
-      <header><h2>Peak hours</h2><p class="den" id="den-heat"></p></header>
-      <div class="chart" id="c-heat"></div>
-    </section>
-    <section class="panel" data-p="lead">
-      <header><h2>How far ahead people book</h2><p class="den" id="den-lead"></p></header>
-      <div class="chart" id="c-lead"></div>
     </section>
   </main>
 
-  <footer class="foot" id="foot">A slot is booked or vacant. Slots a venue blocks count as booked. Only fully elapsed days count; times are Jaipur.</footer>
+  <footer class="foot" id="foot">Booked = sold on Hudle or blocked by the venue. Only fully elapsed days count. Court-hours, so 30- and 60-minute slots compare. Jaipur time.</footer>
   <script src="/app.js"></script>
 </body>
 </html>

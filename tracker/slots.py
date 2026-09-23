@@ -1,11 +1,11 @@
 """One Hudle slot, read once, as the fact the tracker stores.
 
-A slot is either **booked** or **vacant**. Hudle reports two flags, and a slot
-counts as booked when a customer bought it (``is_booked``) *or* the venue made
-it unavailable (``is_available`` false) -- venues block slots to record sales
-made off-platform, and an hour held every day ahead is sold time too. The raw
-flags are kept beside the verdict, because *how* a slot became unavailable is
-the evidence for whether a venue actually runs its bookings on Hudle.
+A slot is **booked** when a customer bought it on Hudle (``is_booked``). A slot
+the venue made unavailable without a booking (``is_available`` false) is
+**blocked**: taken off sale, not sold, so it is not a booking -- the dashboard
+leaves it out of occupancy and reports it on its own. Both raw flags are kept,
+because how a venue uses blocks is evidence of whether it runs its bookings on
+Hudle.
 
 **When it was booked** comes from Hudle's ``updated_at``: the last time Hudle
 changed the slot, which for a booked slot is the booking. Verified on real data:
@@ -55,8 +55,8 @@ class SlotReading:
 
     @property
     def booked(self) -> bool:
-        """The one rule: sold through Hudle, or taken off sale by the venue."""
-        return self.hudle_booked or not self.hudle_available
+        """Bought by a customer on Hudle. A venue block is not a booking."""
+        return self.hudle_booked
 
 
 def parse_slot(

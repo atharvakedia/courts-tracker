@@ -1,11 +1,15 @@
 """``python -m tracker <command>`` -- the operator's entry point.
 
-Three commands, one job each:
+Four commands, one job each:
 
 * ``daily`` is the scheduled job (GitHub Actions, once a day). It seeds the
   padel courts named in ``config.yaml``, optionally (``--discover``) refreshes
   the pickleball venue list from Hudle, then reads every tracked court's grid
-  once and records what changed in the store named by ``DATABASE_URL``.
+  once, records what changed in the store named by ``DATABASE_URL``, and
+  rebuilds the stored dashboard views.
+* ``views`` rebuilds the stored dashboard views alone, from the data already
+  stored; it runs on every merge to main, so a change to what a view holds is
+  live without waiting for the next daily pass.
 * ``discover`` re-checks the configured venue and facility sets against Hudle
   and prints what drifted. It never edits ``config.yaml``: the venue tree is
   human-reviewed, and a facility silently adopted would be tracked without
@@ -186,6 +190,18 @@ def _open_store() -> Store:
     return store
 
 
+def cmd_views(args: argparse.Namespace) -> int:
+    """Rebuild every stored dashboard view from the data already in the store."""
+    config = load_config(args.config)
+    store = _open_store()
+    try:
+        built = publish_views(store, now=utc_now(), tz=config.timezone)
+    finally:
+        store.close()
+    print(f"{built} views built")
+    return int(ExitCode.OK)
+
+
 def cmd_daily(args: argparse.Namespace) -> int:
     """Seed the configured courts, discover pickleball if due, then poll everything once."""
     config = load_config(args.config)
@@ -273,6 +289,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--discover", action="store_true", help="first refresh the pickleball court list"
     )
     daily.set_defaults(func=cmd_daily)
+
+    views = commands.add_parser(
+        "views", parents=[common], help="rebuild the stored dashboard views (no Hudle requests)"
+    )
+    views.set_defaults(func=cmd_views)
 
     serve = commands.add_parser(
         "serve", parents=[common], help="run the dashboard locally against DATABASE_URL"

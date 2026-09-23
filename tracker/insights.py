@@ -1,8 +1,11 @@
 """The dashboard's numbers, computed from slot rows. Pure: no I/O, no clock.
 
 Every figure is in court-minutes (shown as court-hours), so a 30-minute grid
-and a 60-minute grid compare. A slot is booked or vacant; booked includes slots
-a venue blocked, which is how venues record sales made off Hudle.
+and a 60-minute grid compare. Occupancy is measured on the court time a venue
+offered to customers: a slot is **booked** when a customer bought it on Hudle
+and **vacant** when it stayed on sale. A slot the venue **blocked** was never
+offered, so it is left out of both sides of the ratio and reported on its own;
+a court blocked all day is not a full court.
 
 Only **settled** days count toward occupancy: business dates that have fully
 elapsed. The forward book is mostly unbooked at any moment and would read as
@@ -14,7 +17,6 @@ running its bookings through Hudle is upgraded without anyone editing a list.
 
 from __future__ import annotations
 
-import bisect
 import collections
 import datetime as dt
 import statistics
@@ -34,11 +36,18 @@ class Verdict(StrEnum):
     NO_DATA = "no_data"
 
 
+def is_blocked(r: Row) -> bool:
+    """Taken off sale by the venue: not bought, and not available to buy."""
+    return not r["hudle_booked"] and not r["hudle_available"]
+
+
 @dataclass(frozen=True, slots=True)
 class Occupancy:
+    """``total_minutes`` is the court time offered to customers (booked +
+    vacant); ``blocked_minutes`` is kept beside it, outside the ratio."""
+
     booked_minutes: int
     total_minutes: int
-    hudle_booked_minutes: int
     blocked_minutes: int
 
     @property
@@ -50,9 +59,8 @@ class Occupancy:
             "occupancy": round(self.rate, 4) if self.rate is not None else None,
             "booked_hours": round(self.booked_minutes / 60, 1),
             "total_hours": round(self.total_minutes / 60, 1),
-            "hudle_booked_hours": round(self.hudle_booked_minutes / 60, 1),
-            "blocked_hours": round(self.blocked_minutes / 60, 1),
             "vacant_hours": round((self.total_minutes - self.booked_minutes) / 60, 1),
+            "blocked_hours": round(self.blocked_minutes / 60, 1),
         }
 
 
@@ -61,17 +69,16 @@ def settled(rows: Iterable[Row], today: dt.date) -> list[Row]:
 
 
 def occupancy(rows: Iterable[Row]) -> Occupancy:
-    booked = total = hudle = blocked = 0
+    booked = total = blocked = 0
     for r in rows:
         m = int(r["duration_minutes"])
+        if is_blocked(r):
+            blocked += m
+            continue
         total += m
-        if r["booked"]:
+        if r["hudle_booked"]:
             booked += m
-            if r["hudle_booked"]:
-                hudle += m
-            else:
-                blocked += m
-    return Occupancy(booked, total, hudle, blocked)
+    return Occupancy(booked, total, blocked)
 
 
 def by(rows: Iterable[Row], key: str) -> dict[Any, list[Row]]:
@@ -150,32 +157,6 @@ def peak(entries: Sequence[Mapping[str, Any]]) -> Mapping[str, Any] | None:
     return max(eligible, key=lambda e: e["occupancy"], default=None)
 
 
-#: Upper edges (inclusive) of the court-day buckets after the "nothing booked" one.
-SPREAD_EDGES = (0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
-
-
-def court_day_spread(rows: Iterable[Row]) -> list[dict[str, Any]]:
-    """How many court-days sold how much: the distribution behind the average.
-
-    A court-day is one court on one business date. The first bucket is court-days
-    with nothing booked; then (0, 10%], (10%, 20%] ... (90%, 100%].
-    """
-    counts = [0] * (len(SPREAD_EDGES) + 1)
-    groups = by([{**r, "_k": (r["facility_uuid"], r["business_date"])} for r in rows], "_k")
-    for group in groups.values():
-        rate = occupancy(group).rate
-        if rate is None:
-            continue
-        idx = 0 if rate == 0 else 1 + next(i for i, e in enumerate(SPREAD_EDGES) if rate <= e)
-        counts[idx] += 1
-    lows = (0.0, 0.0, *SPREAD_EDGES[:-1])
-    highs = (0.0, *SPREAD_EDGES)
-    return [
-        {"low": lo, "high": hi, "court_days": n}
-        for lo, hi, n in zip(lows, highs, counts, strict=True)
-    ]
-
-
 def lead_times(rows: Iterable[Row]) -> list[float]:
     """Hours from booking to play, for customer bookings stamped before play.
 
@@ -202,19 +183,6 @@ def lead_summary(hours: Sequence[float]) -> dict[str, Any]:
     }
 
 
-#: Lead-time buckets, in hours: the dashboard's "booked ahead" histogram.
-LEAD_EDGES = (0, 3, 6, 12, 24, 48, 72, 168)
-LEAD_LABELS = ("<3h", "3–6h", "6–12h", "12–24h", "1–2d", "2–3d", "3–7d", "7d+")  # noqa: RUF001
-
-
-def lead_histogram(hours: Sequence[float]) -> list[dict[str, Any]]:
-    """How many bookings fell in each lead-time bucket, smallest first."""
-    counts = [0] * len(LEAD_EDGES)
-    for h in hours:
-        counts[bisect.bisect_right(LEAD_EDGES, h) - 1] += 1
-    return [{"label": label, "count": n} for label, n in zip(LEAD_LABELS, counts, strict=True)]
-
-
 def price_per_hour(rows: Iterable[Row]) -> float | None:
     rates = [
         float(r["price"]) * 60 / int(r["duration_minutes"])
@@ -235,8 +203,8 @@ def reliability(court_rows: Sequence[Row], today: dt.date) -> dict[str, Any]:
     ahead = [r for r in court_rows if r["business_date"] >= today]
     occ = occupancy(past)
     days = {r["business_date"] for r in past}
-    days_booked = {r["business_date"] for r in past if r["booked"]}
-    taken = [r for r in past if r["booked"]]
+    days_booked = {r["business_date"] for r in past if r["hudle_booked"]}
+    taken = [r for r in past if r["hudle_booked"]]
     late = sum(1 for r in taken if r["booked_at"] and r["booked_at"] > r["start_utc"])
     stamp_days: dict[Any, set[dt.date]] = collections.defaultdict(set)
     for r in taken:
@@ -246,20 +214,17 @@ def reliability(court_rows: Sequence[Row], today: dt.date) -> dict[str, Any]:
     ahead_days = {r["business_date"] for r in ahead}
     held: dict[int, set[dt.date]] = collections.defaultdict(set)
     for r in ahead:
-        if r["booked"] and not r["hudle_booked"]:
+        if is_blocked(r):
             held[r["start_local"].hour].add(r["business_date"])
     permanent = sorted(
         h for h, d in held.items() if len(ahead_days) >= 5 and len(d) >= 0.8 * len(ahead_days)
     )
 
-    total = occ.total_minutes
-    hb = occ.hudle_booked_minutes / total if total else 0.0
-    bl = occ.blocked_minutes / total if total else 0.0
+    listed = occ.total_minutes + occ.blocked_minutes
     evidence = {
         "settled_days": len(days),
         "occupancy": round(occ.rate, 3) if occ.rate is not None else None,
-        "hudle_booked_share": round(hb, 3),
-        "blocked_share": round(bl, 3),
+        "blocked_share": round(occ.blocked_minutes / listed, 3) if listed else None,
         "days_with_bookings": round(len(days_booked) / len(days), 2) if days else None,
         "late_entry_share": round(late / len(taken), 2) if taken else None,
         "bulk_share": round(bulk / len(taken), 2) if taken else None,
@@ -272,15 +237,17 @@ def reliability(court_rows: Sequence[Row], today: dt.date) -> dict[str, Any]:
 def _verdict(e: Mapping[str, Any]) -> tuple[Verdict, list[str]]:
     """Whether to count a court, and why.
 
-    Venue blocks count as bookings -- the sale happened, just not on Hudle --
-    so the only court left out is a dead listing, whose 0% says nothing about
+    Left out: a court the venue blocks entirely (nothing was offered, so there
+    is no occupancy to measure) and a dead listing, whose 0% says nothing about
     demand. A quiet court is counted: leaving it out would inflate the market.
     """
     if not e["settled_days"]:
         return Verdict.NO_DATA, ["no settled days yet"]
-    if (e["occupancy"] or 0.0) < 0.02:
+    if e["occupancy"] is None:
+        return Verdict.UNRELIABLE, ["every slot blocked by the venue: nothing offered on Hudle"]
+    if e["occupancy"] < 0.02:
         return Verdict.UNRELIABLE, [
-            "almost nothing booked or blocked in weeks: a listing, not their booking system"
+            "almost nothing booked on Hudle in weeks: a listing, not their booking system"
         ]
     reasons: list[str] = []
     verdict = Verdict.RELIABLE
@@ -289,8 +256,10 @@ def _verdict(e: Mapping[str, Any]) -> tuple[Verdict, list[str]]:
         reasons.append(
             f"low activity: bookings on {int(100 * (e['days_with_bookings'] or 0))}% of days"
         )
-    if e["hudle_booked_share"] < 0.01:
-        reasons.append("taken slots are almost all venue blocks: sold off Hudle, no booking times")
+    if (e["blocked_share"] or 0) >= 0.25:
+        reasons.append(
+            f"{int(100 * e['blocked_share'])}% of court time blocked by the venue, left out"
+        )
     if (e["late_entry_share"] or 0) >= 0.2:
         reasons.append(f"{int(100 * e['late_entry_share'])}% entered after the slot started")
     if e["permanent_hold_hours"]:

@@ -10,10 +10,11 @@ on [Hudle](https://hudle.in), and shows it on a dashboard.
 
 ## What counts
 
-- **Booked or vacant.** A slot is booked if it was sold on Hudle (`is_booked`) *or* the
-  venue made it unavailable (`is_available` false). Venues block slots to record sales
-  made off Hudle, so a blocked slot counts as sold time. The raw flags are stored next
-  to that verdict.
+- **Booked, vacant or blocked.** A slot is *booked* when a customer bought it on Hudle
+  (`is_booked`) and *vacant* when it stayed on sale. A slot the venue made unavailable
+  without a booking (`is_available` false) is *blocked*: it was never offered, so it is
+  left out of both sides of % booked (booked ÷ court time offered) and reported on its
+  own. A court blocked all day is not a full court. The raw flags are stored per slot.
 - **Slots Hudle has not created yet are skipped.** Hudle sometimes shows a slot with no
   `id` (and no `created_at`), only on days not yet played. Without an id the slot has
   no stable identity, so it is left out (`tracker/slots.py`).
@@ -26,8 +27,10 @@ on [Hudle](https://hudle.in), and shows it on a dashboard.
 - **Court-hours.** Every figure is summed in court-minutes and shown as court-hours, so
   30-minute and 60-minute grids compare.
 - **Reliability**, judged per court from its own settled days (`tracker/insights.py`):
-  - *Listing only:* less than 2% of court time booked. The court is shown but left out
-    of every figure, because its 0% says nothing about demand.
+  - *All blocked:* the venue blocked every slot, so nothing was offered and there is no
+    occupancy to measure. Shown, left out of every figure.
+  - *Listing only:* less than 2% of the court time offered was booked. The court is shown
+    but left out of every figure, because its 0% says nothing about demand.
   - *Low activity:* bookings on less than 30% of days. The court is counted and badged.
 
 ## How it runs
@@ -84,11 +87,11 @@ ever committed: `config.yaml` refers to the Hudle ones as `${HUDLE_API_SECRET}` 
 ## Dashboard
 
 - Padel or Pickleball; a 7-day, 30-day or All window (All is the last 90 settled days).
-  Each view compares against the window before it.
-- Venues as a list or a map. The map shows supply (courts) or demand (hours booked).
-  Selecting a venue narrows every chart to it.
-- By day, by hour of day, a weekday-by-hour busy-hours grid, and the spread of
-  occupancy across court-days.
+- A venue list; selecting a venue narrows every chart to it.
+- By day, by hour of day (whose court-hours view also shows venue blocks, not counted
+  as booked), and a weekday-by-hour busy-hours grid.
+- A map of Jaipur: supply (courts open to customers) or demand (hours booked), as a
+  heat layer with a dot per venue; hover a dot for the venue, click it to filter.
 - A freshness marker from `/api/health`, which reports when the daily pass last ran.
 
 ## Local development
@@ -111,4 +114,13 @@ lists now and prints suggested changes; it never edits the file. It exits 1 when
 padel venue set, a configured venue's name or its facilities have changed.
 
 Tests run on the recorded Hudle responses in `fixtures/raw/` and make no network calls.
+
+## Changes and deploys
+
+`main` is protected: code reaches it only through a pull request whose `ci` check
+(`make ci-check`) passes. Vercel builds a preview deployment for every PR branch, on the
+production database (read-only from the site's side); merging deploys production.
+Stored views carry a version (`VIEWS_VERSION` in `tracker/views.py`): bump it when a
+view's shape or meaning changes, so previews and fresh deploys compute views on the spot
+until the `views` workflow, which runs on every merge, has rebuilt them.
 `smoke_test.py` is the script that recorded those fixtures.

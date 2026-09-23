@@ -10,8 +10,7 @@ narrows to each venue from there, so the market view and every venue view of
 a window share one pass over the data.
 
 Windows are settled business dates only (the day before ``today`` and back),
-in Jaipur time. Each view also carries the same figures for the window before
-it, so the page can say whether occupancy rose or fell.
+in Jaipur time.
 """
 
 from __future__ import annotations
@@ -29,9 +28,7 @@ from tracker.insights import (
     by_date,
     by_hour,
     by_weekday,
-    court_day_spread,
     heatmap,
-    lead_histogram,
     lead_summary,
     lead_times,
     occupancy,
@@ -54,12 +51,25 @@ NEW_VENUE_DAYS = 14
 NEXT_DAY_FROM_HOUR = 22
 
 
+RULE = (
+    "Booked = bought by a customer on Hudle. % booked is of the court time offered "
+    "to customers; slots a venue blocks are left out."
+)
+
+
 class UnknownVenueError(LookupError):
     """The venue has no rows for this sport in this window."""
 
 
+#: Bumped whenever a view's shape or meaning changes. Stored views carry it in
+#: their key, so code reading a newer shape (a PR preview on the production
+#: database, or a deploy before the next build) computes its views on the spot
+#: rather than drawing ones built for another shape.
+VIEWS_VERSION = 2
+
+
 def view_key(sport: Sport, window: str, venue: str | None) -> str:
-    return f"{sport.value}|{window}|{venue or ''}"
+    return f"v{VIEWS_VERSION}|{sport.value}|{window}|{venue or ''}"
 
 
 def views_as_of(now: dt.datetime, tz: str) -> dt.date:
@@ -69,12 +79,12 @@ def views_as_of(now: dt.datetime, tz: str) -> dt.date:
 
 
 def rows_for(store: Store, sport: Sport, today: dt.date) -> Sequence[Row]:
-    """Every row any window of this sport needs: the longest window, the one
-    before it, and the look-ahead reliability reads."""
+    """Every row any window of this sport needs: the longest window and the
+    look-ahead reliability reads."""
     longest = max(WINDOWS.values())
     return store.slots_between(
         sport=sport,
-        date_from=today - dt.timedelta(days=2 * longest),
+        date_from=today - dt.timedelta(days=longest),
         date_to=today + dt.timedelta(days=LOOKAHEAD_DAYS),
     )
 
@@ -88,10 +98,8 @@ class _Window:
     today: dt.date
     start: dt.date
     end: dt.date
-    prev_start: dt.date
     rows: list[Row]
     counted: list[Row]
-    previous: list[Row]
     per_court: dict[str, list[Row]]
     venue_rows: list[dict[str, Any]]
 
@@ -107,9 +115,7 @@ def _window(
 ) -> _Window:
     days = WINDOWS[window]
     start, end = today - dt.timedelta(days=days), today - dt.timedelta(days=1)
-    prev_start = start - dt.timedelta(days=days)
     last = today + dt.timedelta(days=LOOKAHEAD_DAYS)
-    before = [r for r in rows if prev_start <= r["business_date"] < start]
     current = [r for r in rows if start <= r["business_date"] <= last]
 
     per_court = by(current, "facility_uuid")
@@ -119,10 +125,6 @@ def _window(
     # since their quiet days are real demand and leaving them out inflates it.
     counted_verdicts = {Verdict.RELIABLE.value, Verdict.PARTIAL.value}
     counted = [r for r in past if verdicts[r["facility_uuid"]]["verdict"] in counted_verdicts]
-    counted_courts = {r["facility_uuid"] for r in counted}
-    # The previous window is judged on the courts counted now, so the change
-    # figure compares like with like rather than a different court set.
-    previous = [r for r in before if r["facility_uuid"] in counted_courts]
 
     # "New" means it appeared after tracking began, not that it arrived in the
     # first load: the backfill makes every venue first-seen on the same day.
@@ -137,7 +139,8 @@ def _window(
 
     venue_rows = []
     for venue_uuid, vrows in by(past, "venue_uuid").items():
-        court_ids = sorted({r["facility_uuid"] for r in vrows})
+        per_venue_court = by(vrows, "facility_uuid")
+        court_ids = sorted(per_venue_court)
         v = venues.get(venue_uuid, {})
         venue_rows.append(
             {
@@ -150,6 +153,7 @@ def _window(
                     {
                         "facility_uuid": f,
                         "name": courts[f].name if f in courts else f,
+                        "booked_hours": occupancy(per_venue_court[f]).as_dict()["booked_hours"],
                         **verdicts[f],
                     }
                     for f in court_ids
@@ -166,22 +170,19 @@ def _window(
         today,
         start,
         end,
-        prev_start,
         current,
         counted,
-        previous,
         per_court,
         venue_rows,
     )
 
 
 def _payload(w: _Window, venue: str | None) -> dict[str, Any]:
-    counted, previous = w.counted, w.previous
+    counted = w.counted
     if venue is not None:
         if venue not in {r["venue_uuid"] for r in w.rows}:
             raise UnknownVenueError(venue)
         counted = [r for r in counted if r["venue_uuid"] == venue]
-        previous = [r for r in previous if r["venue_uuid"] == venue]
     hours = lead_times(counted)
     hourly = by_hour(counted)
     weekdays = by_weekday(counted)
@@ -194,7 +195,7 @@ def _payload(w: _Window, venue: str | None) -> dict[str, Any]:
             "end": w.end.isoformat(),
             "days": len({r["business_date"] for r in counted}),
         },
-        "rule": "A slot is booked or vacant; slots a venue blocks count as booked.",
+        "rule": RULE,
         "totals": {
             **occupancy(counted).as_dict(),
             "courts_counted": len({r["facility_uuid"] for r in counted}),
@@ -206,20 +207,13 @@ def _payload(w: _Window, venue: str | None) -> dict[str, Any]:
                 }
             ),
         },
-        "previous": {
-            "start": w.prev_start.isoformat(),
-            "end": (w.start - dt.timedelta(days=1)).isoformat(),
-            **occupancy(previous).as_dict(),
-        },
         "peaks": {"hour": peak(hourly), "weekday": peak(weekdays)},
         "venues": w.venue_rows,
         "days": by_date(counted),
         "hours": hourly,
         "weekdays": weekdays,
-        "spread": court_day_spread(counted),
         "heatmap": heatmap(counted),
         "lead_time": lead_summary(hours),
-        "lead_histogram": lead_histogram(hours),
     }
 
 

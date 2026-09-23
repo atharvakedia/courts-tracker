@@ -100,7 +100,10 @@ def overview(
     verdicts = {fid: reliability(court_rows, today) for fid, court_rows in per_court.items()}
     past = settled(rows, today)
     past = [r for r in past if r["business_date"] >= start]
-    counted = [r for r in past if verdicts[r["facility_uuid"]]["verdict"] == Verdict.RELIABLE.value]
+    # Every court except a dead listing is counted; low-activity courts included,
+    # since their quiet days are real demand and leaving them out inflates it.
+    counted_verdicts = {Verdict.RELIABLE.value, Verdict.PARTIAL.value}
+    counted = [r for r in past if verdicts[r["facility_uuid"]]["verdict"] in counted_verdicts]
 
     # "New" means it appeared after tracking began, not that it arrived in the
     # first load: the backfill makes every venue first-seen on the same day.

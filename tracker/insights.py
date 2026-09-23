@@ -182,42 +182,29 @@ def reliability(court_rows: Sequence[Row], today: dt.date) -> dict[str, Any]:
 
 
 def _verdict(e: Mapping[str, Any]) -> tuple[Verdict, list[str]]:
+    """Whether to count a court, and why.
+
+    Venue blocks count as bookings -- the sale happened, just not on Hudle --
+    so the only court left out is a dead listing, whose 0% says nothing about
+    demand. A quiet court is counted: leaving it out would inflate the market.
+    """
     if not e["settled_days"]:
         return Verdict.NO_DATA, ["no settled days yet"]
-    occ = e["occupancy"] or 0.0
-    hb, bl = e["hudle_booked_share"], e["blocked_share"]
-    if occ < 0.02:
+    if (e["occupancy"] or 0.0) < 0.02:
         return Verdict.UNRELIABLE, [
-            "almost nothing is ever booked or blocked: a listing, not their booking system"
-        ]
-    if bl > 0.85:
-        return Verdict.UNRELIABLE, [
-            "nearly every slot is blocked: closed, or the calendar is not kept"
+            "almost nothing booked or blocked in weeks: a listing, not their booking system"
         ]
     reasons: list[str] = []
-    if hb >= 0.03 and bl >= 0.01:
-        verdict = Verdict.RELIABLE
-        reasons.append("customers book on Hudle and the venue blocks slots there too")
-    elif hb >= 0.03:
-        verdict = Verdict.PARTIAL
-        reasons.append(
-            "customers book on Hudle, but the venue never blocks: offline sales may be missing"
-        )
-    else:
-        verdict = Verdict.PARTIAL
-        reasons.append(
-            "almost all taken slots are venue blocks: "
-            "Hudle is their calendar, demand is off-platform"
-        )
+    verdict = Verdict.RELIABLE
     if (e["days_with_bookings"] or 0) < 0.3:
-        verdict = Verdict.PARTIAL if verdict is Verdict.RELIABLE else verdict
-        reasons.append(f"bookings on only {int(100 * (e['days_with_bookings'] or 0))}% of days")
+        verdict = Verdict.PARTIAL
+        reasons.append(
+            f"low activity: bookings on {int(100 * (e['days_with_bookings'] or 0))}% of days"
+        )
+    if e["hudle_booked_share"] < 0.01:
+        reasons.append("taken slots are almost all venue blocks: sold off Hudle, no booking times")
     if (e["late_entry_share"] or 0) >= 0.2:
         reasons.append(f"{int(100 * e['late_entry_share'])}% entered after the slot started")
-    if (e["bulk_share"] or 0) >= 0.4:
-        reasons.append(f"{int(100 * e['bulk_share'])}% set in bulk admin actions")
     if e["permanent_hold_hours"]:
-        reasons.append(
-            f"hours {e['permanent_hold_hours']} held every day ahead (counted as booked)"
-        )
+        reasons.append(f"hours {e['permanent_hold_hours']} held every day ahead")
     return verdict, reasons

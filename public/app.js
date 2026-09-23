@@ -92,15 +92,15 @@
     const w = d.window, range = `${w.start} → ${w.end}`;
     const lead = d.lead_time, t = d.totals;
     $('kpis').innerHTML = [
-      ['Occupancy', pct(t.occupancy, 1), `booked ÷ all court-hours · reliable courts`],
+      ['Occupancy', pct(t.occupancy, 1), `booked ÷ all court-hours · venue blocks count as booked`],
       ['Booked court-hours', num(t.booked_hours), `of ${num(t.total_hours)} listed`],
       ['Booked ahead (median)', lead.median_hours == null ? '—' : `${num(lead.median_hours)} h`, lead.n ? `90% within ${num(lead.p90_hours)} h · ${lead.n} bookings` : 'no customer bookings yet'],
-      ['Courts counted', `${t.courts_counted} / ${t.courts_tracked}`, 'reliable / tracked'],
+      ['Courts counted', `${t.courts_counted} / ${t.courts_tracked}`, 'counted / tracked · listings excluded'],
     ].map(([n, v, s]) => `<article class="kpi"><p class="name">${n}</p><p class="val">${v}</p><p class="sub">${esc(s)}</p></article>`).join('');
 
     $('den-venues').textContent = `booked ÷ all court-hours · ${range}`;
-    $('den-trend').textContent = `reliable courts · ${range}`;
-    $('den-heat').textContent = `occupancy by Jaipur hour and weekday · reliable courts · ${range}`;
+    $('den-trend').textContent = `counted courts · ${range}`;
+    $('den-heat').textContent = `occupancy by Jaipur hour and weekday · counted courts · ${range}`;
     $('den-lead').textContent = `hours between booking and play · customer bookings · ${range}`;
 
     venues(d.venues);
@@ -116,7 +116,7 @@
       const reasons = v.courts.flatMap((c) => c.reasons.map((r) => `${c.name}: ${r}`)).join('\n');
       const meta = `${num(v.booked_hours)} of ${num(v.total_hours)} court-h · ${v.courts.length} court${v.courts.length === 1 ? '' : 's'}${v.price_per_hour ? ` · ₹${num(v.price_per_hour)}/h` : ''}`;
       return `<div class="row" data-v="${v.verdict}" title="${esc(reasons)}">
-        <span class="nm">${esc(v.name)}${v.new ? '<span class="tag new">NEW</span>' : ''}${v.verdict !== 'reliable' ? `<span class="tag v">${v.verdict}</span>` : ''}</span>
+        <span class="nm">${esc(v.name)}${v.new ? '<span class="tag new">NEW</span>' : ''}${v.verdict === 'partial' ? '<span class="tag v">low activity</span>' : v.verdict === 'unreliable' ? '<span class="tag v">listing only</span>' : ''}</span>
         <span class="pct">${pct(v.occupancy)}</span>
         <div class="track"><div class="fill" style="background:var(--${v.verdict === 'no_data' ? 'unreliable' : v.verdict})" data-w="${100 * (v.occupancy || 0)}"></div></div>
         <span class="meta">${esc(meta)}</span></div>`;
@@ -137,7 +137,7 @@
           name: names[u] || u, type: 'line', smooth: .3, symbolSize: 6, lineStyle: { width: 2 }, itemStyle: { color: palette[i % 4] },
           data: dates.map((dt) => { const r = d.daily.find((x) => x.venue_uuid === u && x.business_date === dt); return r ? +(100 * r.occupancy).toFixed(1) : null; }),
         }))
-      : [{ name: 'All reliable courts', type: 'line', smooth: .3, symbolSize: 6, lineStyle: { width: 2 }, itemStyle: { color: css('--accent') },
+      : [{ name: 'All counted courts', type: 'line', smooth: .3, symbolSize: 6, lineStyle: { width: 2 }, itemStyle: { color: css('--accent') },
            areaStyle: { color: css('--accent-2'), opacity: .35 },
            data: dates.map((dt) => byDate[dt].t ? +(100 * byDate[dt].b / byDate[dt].t).toFixed(1) : null) }];
     if (!dates.length) { chart('c-trend').clear(); return; }

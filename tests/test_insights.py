@@ -89,21 +89,30 @@ def _court(
     return out
 
 
-def test_reliability_verdicts_follow_the_evidence() -> None:
-    """Regression: a shopfront listing (the Padel Up pattern) counted as a real
-    market signal, or a venue that runs its calendar on Hudle excluded."""
+def test_only_dead_listings_are_excluded_and_blocks_count_as_sales() -> None:
+    """Regression: a venue that records offline sales as blocks excluded, or a
+    quiet court dropped (inflating the market), or a dead listing's 0% counted
+    as demand. Blocks are sales; only a listing with nothing on it is out."""
     assert (
         reliability(_court(14, hudle_per_day=3, blocks_per_day=1), TODAY)["verdict"] == "reliable"
     )
-    assert reliability(_court(14, hudle_per_day=3, blocks_per_day=0), TODAY)["verdict"] == "partial"
-    assert reliability(_court(14, hudle_per_day=0, blocks_per_day=4), TODAY)["verdict"] == "partial"
+    assert (
+        reliability(_court(14, hudle_per_day=3, blocks_per_day=0), TODAY)["verdict"] == "reliable"
+    )
+    assert (
+        reliability(_court(14, hudle_per_day=0, blocks_per_day=4), TODAY)["verdict"] == "reliable"
+    )
+    assert (
+        reliability(_court(14, hudle_per_day=0, blocks_per_day=15), TODAY)["verdict"] == "reliable"
+    )
     assert (
         reliability(_court(14, hudle_per_day=0, blocks_per_day=0), TODAY)["verdict"] == "unreliable"
     )
-    assert (
-        reliability(_court(14, hudle_per_day=0, blocks_per_day=15), TODAY)["verdict"]
-        == "unreliable"
+    quiet = (
+        _court(3, hudle_per_day=2, blocks_per_day=0)
+        + _court(14, hudle_per_day=0, blocks_per_day=0)[48:]
     )
+    assert reliability(quiet, TODAY)["verdict"] == "partial"
     assert reliability([], TODAY)["verdict"] == "no_data"
 
 

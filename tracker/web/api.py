@@ -110,9 +110,8 @@ def overview(
         seen = venue.get("first_seen_at")
         if not seen or not tracking_start:
             return False
-        return seen - tracking_start > dt.timedelta(days=1) and seen.date() >= today - dt.timedelta(
-            days=NEW_VENUE_DAYS
-        )
+        recent = seen.date() >= today - dt.timedelta(days=NEW_VENUE_DAYS)
+        return bool(seen - tracking_start > dt.timedelta(days=1) and recent)
 
     venue_rows = []
     for venue_uuid, vrows in by(past, "venue_uuid").items():

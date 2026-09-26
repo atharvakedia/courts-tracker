@@ -6,6 +6,7 @@ test touches the network. Each test names the regression it guards.
 
 from __future__ import annotations
 
+import dataclasses
 import datetime as dt
 import json
 from typing import Any
@@ -14,6 +15,7 @@ import pytest
 
 from tracker.config import Config
 from tracker.daily import (
+    CATCH_UP_DAYS,
     daily_window,
     fetch_range,
     locate_venues,
@@ -126,6 +128,56 @@ def test_one_court_failing_does_not_lose_the_others(
     assert (result.courts_ok, result.courts_failed) == (2, 1)
     assert not result.ok
     assert "f2" in (store.latest_runs(1)[0]["error"] or "")
+
+
+def test_a_failing_court_is_marked_until_a_read_succeeds(
+    test_config: Config, store: Store, raw_slots_padel_fort: Any
+) -> None:
+    """Regression: a court Hudle stopped answering for counting as a court with
+    no bookings, because nothing recorded that its recent days were never read."""
+    seen = NOW - dt.timedelta(days=1)
+    store.upsert_venue(venue_uuid=FORT, name="Fort", slug="f", numeric_id="1", seen_at=seen)
+    store.upsert_court(
+        facility_uuid="f1", venue_uuid=FORT, name="Court", sport=Sport.PADEL, seen_at=seen
+    )
+    window = (dt.date(2026, 9, 11), dt.date(2026, 9, 11))
+    gone = FakeHudle({}, fail={"f1": HudleHttpError(404, "gone")})
+    run_daily(test_config, store, gone, now=NOW, window=window)  # type: ignore[arg-type]
+    (failing,) = store.tracked_courts()
+    assert "404" in (failing.read_error or "") and failing.last_read_at is None
+
+    later = NOW + dt.timedelta(days=1)
+    back = FakeHudle({"f1": raw_slots_padel_fort})
+    run_daily(test_config, store, back, now=later, window=window)  # type: ignore[arg-type]
+    (read,) = store.tracked_courts()
+    assert read.read_error is None and read.last_read_at == later
+
+
+def test_a_court_last_read_before_the_window_is_read_from_then(
+    test_config: Config, store: Store, raw_slots_padel_fort: Any
+) -> None:
+    """Regression: the days a court missed (it was failing, or a pass stopped
+    before reaching it) never being read once settled, so they stay as they
+    looked before play."""
+    window = (dt.date(2026, 9, 22), dt.date(2026, 9, 25))
+    four_days_ago = NOW - dt.timedelta(days=4)  # 06:00 IST on the 19th
+    after_midnight = four_days_ago - dt.timedelta(hours=4)  # 02:00 IST: the 18th's business day
+    months_ago = NOW - dt.timedelta(days=90)
+    courts = [
+        dataclasses.replace(court("f1"), last_read_at=four_days_ago),
+        dataclasses.replace(court("f2"), last_read_at=after_midnight),
+        dataclasses.replace(court("f3"), last_read_at=months_ago),
+        court("f4"),
+    ]
+    client = FakeHudle({c.facility_uuid: raw_slots_padel_fort for c in courts})
+    run_daily(test_config, store, client, now=NOW, courts=courts, window=window)  # type: ignore[arg-type]
+    starts = {facility: start for facility, start, _ in client.calls}
+    assert starts == {
+        "f1": dt.date(2026, 9, 19),
+        "f2": dt.date(2026, 9, 18),
+        "f3": window[0] - dt.timedelta(days=CATCH_UP_DAYS),
+        "f4": window[0],
+    }
 
 
 def test_a_hudle_gateway_timeout_splits_the_range_instead_of_failing(

@@ -11,15 +11,18 @@ import datetime as dt
 from typing import Any
 
 import pytest
+import sqlalchemy as sa
 
 from tracker.slots import SlotReading, parse_grid, parse_slot
-from tracker.store import Store
+from tracker.store import Store, _utc, slots
 from tracker.types import Sport
 
 T0 = dt.datetime(2026, 9, 20, 3, 0, tzinfo=dt.UTC)
 T1 = T0 + dt.timedelta(days=1)
 T2 = T1 + dt.timedelta(days=1)
 VENUE, COURT = "venue-1", "court-1"
+#: Before every slot these tests store: a mirror from here holds all of them.
+FROM = dt.date(2026, 9, 1)
 
 
 def raw(
@@ -63,11 +66,11 @@ def store() -> Store:
 
 
 def row(store: Store) -> dict[str, Any]:
-    rows = store.slots_between(
-        sport=Sport.PICKLEBALL, date_from=dt.date(2026, 9, 1), date_to=dt.date(2026, 10, 30)
-    )
+    """The one stored slot, every column (the views' read carries only theirs)."""
+    with store._engine.connect() as conn:
+        rows = [dict(r) for r in conn.execute(sa.select(slots)).mappings()]
     assert len(rows) == 1
-    return rows[0]
+    return {k: _utc(v) if isinstance(v, dt.datetime) else v for k, v in rows[0].items()}
 
 
 def test_a_venue_block_is_not_a_booking() -> None:
@@ -258,3 +261,73 @@ def test_a_block_stored_as_booked_is_set_back_on_startup(tmp_path: Any) -> None:
         }
     assert rows == {"block": (False, False), "sale": (True, True)}
     store.close()
+
+
+def test_a_mirror_reads_only_what_changed_since_its_last_refresh(tmp_path: Any) -> None:
+    """Regression: every views build reading three months of slots from the
+    database, which is what used up its monthly transfer allowance."""
+    source, mirror = (
+        Store(f"sqlite:///{tmp_path / 's.db'}"),
+        Store(f"sqlite:///{tmp_path / 'm.db'}"),
+    )
+    source.initialize()
+    mirror.initialize()
+    source.apply([reading(slot_id="a"), reading(slot_id="b")], seen_at=T0)
+    assert mirror.refresh_mirror(source, from_date=FROM) == 2, "an empty mirror reads everything"
+    # Each later pass books or frees "a" and leaves "b" alone (not rewritten).
+    source.apply([reading(slot_id="a", booked=True), reading(slot_id="b")], seen_at=T2)
+    assert mirror.refresh_mirror(source, from_date=FROM) == 2, (
+        "the pass before the newest is read again"
+    )
+    source.apply([reading(slot_id="a"), reading(slot_id="b")], seen_at=T2 + dt.timedelta(days=2))
+    assert mirror.refresh_mirror(source, from_date=FROM) == 1, (
+        "b, unchanged since two passes ago, is not"
+    )
+    window = {
+        "sport": Sport.PICKLEBALL,
+        "date_from": dt.date(2026, 9, 1),
+        "date_to": dt.date(2026, 10, 30),
+    }
+    assert mirror.slots_between(**window) == source.slots_between(**window)
+    source.close()
+    mirror.close()
+
+
+def test_a_mirror_that_disagrees_with_its_source_is_read_whole(tmp_path: Any) -> None:
+    """Regression: a mirror kept from another database (the move to a new
+    provider) or missing a row serving the views stale slots forever."""
+    first, second = Store(f"sqlite:///{tmp_path / 'a.db'}"), Store(f"sqlite:///{tmp_path / 'b.db'}")
+    mirror = Store(f"sqlite:///{tmp_path / 'm.db'}")
+    for s in (first, second, mirror):
+        s.initialize()
+    first.apply([reading(slot_id="a"), reading(slot_id="b")], seen_at=T0)
+    second.apply([reading(slot_id="c")], seen_at=T0)
+    mirror.refresh_mirror(first, from_date=FROM)
+    mirror.refresh_mirror(second, from_date=FROM)
+    window = {
+        "sport": Sport.PICKLEBALL,
+        "date_from": dt.date(2026, 9, 1),
+        "date_to": dt.date(2026, 10, 30),
+    }
+    assert mirror.slots_between(**window) == second.slots_between(**window)
+    for s in (first, second, mirror):
+        s.close()
+
+
+def test_a_mirror_holds_only_the_days_the_views_read(tmp_path: Any) -> None:
+    """Regression: a mirror started afresh reading every slot ever stored, a
+    pull that grows with the whole history instead of the three months the
+    views read."""
+    source, mirror = (
+        Store(f"sqlite:///{tmp_path / 's.db'}"),
+        Store(f"sqlite:///{tmp_path / 'm.db'}"),
+    )
+    source.initialize()
+    mirror.initialize()
+    old = reading(slot_id="old", start="2026-08-01 19:00:00", end="2026-08-01 19:30:00")
+    source.apply([old, reading(slot_id="new")], seen_at=T0)
+    assert mirror.refresh_mirror(source, from_date=FROM) == 1
+    window = {"sport": Sport.PICKLEBALL, "date_from": dt.date(2026, 7, 1), "date_to": FROM}
+    assert mirror.slots_between(**window) == []
+    source.close()
+    mirror.close()

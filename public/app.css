@@ -50,7 +50,7 @@ button:focus-visible, input:focus-visible, .row:focus-visible { outline: 2px sol
 .seg button[aria-pressed="true"], .mini button[aria-pressed="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgb(0 0 0 / .1); font-weight: 600; }
 .mini { border-radius: 8px; }
 .mini button { padding: 2px 9px; font-size: 12px; border-radius: 6px; }
-.scope { min-width: 0; display: flex; }
+.scope { min-width: 0; display: flex; gap: 8px; }
 .chip { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; border: 1px solid var(--accent); background: var(--accent-soft); color: var(--ink); border-radius: 99px; padding: 3px 4px 3px 12px; font-size: 13px; cursor: pointer; min-width: 0; }
 .chip b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chip .x { flex: none; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; background: var(--panel); color: var(--ink-2); font-size: 12px; line-height: 1; }
@@ -117,6 +117,8 @@ button:focus-visible, input:focus-visible, .row:focus-visible { outline: 2px sol
 .tag.v { color: var(--ink-2); border: 1px solid var(--axis); }
 .tag.v.partial::before { content: "◔ "; color: var(--warn); }
 .tag.v.unreliable::before { content: "○ "; }
+.tag.v.failing { color: var(--down); border-color: var(--down); }
+.tag.v.failing::before { content: "! "; }
 .group { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .06em; padding: 10px 8px 4px; }
 
 /* ---- Jaipur map ---- */
@@ -141,6 +143,38 @@ button:focus-visible, input:focus-visible, .row:focus-visible { outline: 2px sol
 .mapwrap .mapkey b { display: block; color: var(--ink); font-weight: 600; margin-bottom: 4px; }
 .mapwrap .mapkey .ramp { display: block; width: 120px; height: 7px; border-radius: 99px; }
 .mapwrap .mapkey .ends { display: flex; justify-content: space-between; margin-top: 2px; color: var(--ink-3); }
+
+/* ---- blocked hours ---- */
+.chip.act { border-color: var(--rule); background: var(--panel); padding: 3px 12px; flex: none; }
+.chip.act:hover { border-color: var(--accent); }
+dialog.blocks { border: 1px solid var(--rule); border-radius: var(--r); background: var(--panel); color: var(--ink); padding: 0; width: min(760px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); box-shadow: 0 12px 40px rgb(0 0 0 / .25); }
+dialog.blocks::backdrop { background: rgb(0 0 0 / .35); }
+.bk { display: flex; flex-direction: column; gap: 10px; padding: 14px 16px; }
+.bk header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.bk h2 { font-size: 15px; font-weight: 600; margin: 0; }
+.bk-help { margin: 0; font-size: 12px; color: var(--ink-2); }
+.bk-list { display: flex; flex-direction: column; gap: 4px; }
+.bk-list:empty { display: none; }
+.bk-rule { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border: 1px solid var(--rule); border-radius: 8px; background: var(--bg); font-size: 12px; }
+.bk-rule span { flex: 1 1 auto; min-width: 0; }
+.bk-rule small { color: var(--ink-3); }
+.bk-grid { display: grid; grid-template-columns: 34px repeat(24, minmax(0, 1fr)); gap: 2px; touch-action: none; user-select: none; -webkit-user-select: none; }
+.bk-grid button { border: 0; padding: 0; background: transparent; color: var(--ink-3); font-size: 10px; cursor: pointer; border-radius: 3px; }
+.bk-grid .day { text-align: left; font-size: 11px; }
+.bk-grid .cell { aspect-ratio: 1; min-height: 12px; background: var(--s-vacant); }
+.bk-grid .cell.had { background: repeating-linear-gradient(135deg, var(--s-vacant) 0 3px, var(--s-block) 3px 5px); }
+.bk-grid .cell[aria-pressed="true"] { background: var(--s-hudle); }
+.bk-grid .cell:hover { outline: 1px solid var(--ink-3); }
+.bk-fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.bk-fields label { display: flex; flex-direction: column; gap: 3px; font-size: 11px; color: var(--ink-2); min-width: 0; }
+.bk-fields input, .bk footer button, .bk-rule button { border: 1px solid var(--rule); background: var(--bg); border-radius: 8px; padding: 5px 8px; font-size: 13px; min-width: 0; }
+.bk footer { display: flex; align-items: center; gap: 8px; }
+.bk footer button, .bk-rule button { cursor: pointer; padding: 5px 12px; }
+.bk footer button:hover, .bk-rule button:hover { border-color: var(--accent); }
+.bk-status { flex: 1 1 auto; font-size: 12px; color: var(--ink-2); }
+.bk-status[data-s="err"] { color: var(--down); }
+.bk footer .bk-save { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+.bk footer .bk-save:disabled { opacity: .45; cursor: default; }
 
 /* ---- empty ---- */
 .empty { margin: auto; color: var(--ink-3); text-align: center; font-size: 13px; padding: 16px; }
@@ -192,5 +226,7 @@ button:focus-visible, input:focus-visible, .row:focus-visible { outline: 2px sol
   .grid.is-empty .panel.venues { display: none; }
   .panel header .hint { display: none; }
   .foot .note { white-space: normal; }
+  .bk-fields { grid-template-columns: 1fr 1fr; }
+  .bk-grid { grid-template-columns: 28px repeat(24, minmax(0, 1fr)); gap: 1px; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

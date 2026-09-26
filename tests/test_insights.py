@@ -26,8 +26,18 @@ from tracker.insights import (
 from tracker.slots import parse_slot
 from tracker.store import Store
 from tracker.types import Sport
+from tracker.views import publish_views
 
 TODAY = dt.date(2026, 9, 23)
+#: Noon in Jaipur on TODAY: a views build at this moment builds TODAY's views.
+NOON = dt.datetime(2026, 9, 23, 6, 30, tzinfo=dt.UTC)
+
+
+def _publish(url: str) -> None:
+    """Build the stored views the API serves, as the daily pass would."""
+    store = Store(url)
+    publish_views(store, now=NOON, tz="Asia/Kolkata")
+    store.close()
 
 
 def row(
@@ -183,7 +193,7 @@ def test_the_overview_endpoint_serves_a_whole_view(
     )
     readings = []
     for d in range(1, 8):
-        day = dt.date.today() - dt.timedelta(days=d)
+        day = TODAY - dt.timedelta(days=d)
         for h in range(6, 22):
             state = {"is_booked": h in (18, 19, 20), "is_available": h != 21}
             readings.append(
@@ -205,6 +215,7 @@ def test_the_overview_endpoint_serves_a_whole_view(
             )
     store.apply(readings, seen_at=seen)
     store.close()
+    _publish(url)
 
     monkeypatch.setenv("DATABASE_URL", url)
     from tracker.web.api import app
@@ -273,12 +284,10 @@ def test_a_venue_narrows_every_chart(tmp_path: Any, monkeypatch: pytest.MonkeyPa
     weekdays, or a mistyped venue silently answering with the whole market."""
     url = f"sqlite:///{tmp_path / 'db.sqlite'}"
     _seed(url)
+    _publish(url)
     monkeypatch.setenv("DATABASE_URL", url)
     from tracker.web import api
 
-    # Pin the API's clock to the seeded one: the machine's date and Jaipur's
-    # differ for half of every day.
-    monkeypatch.setattr(api, "_today", lambda: TODAY)
     client = TestClient(api.app)
     market = client.get("/api/overview", params={"sport": "pickleball", "window": "7"}).json()
     assert market["totals"]["occupancy"] == pytest.approx(4 / 31, abs=1e-3)

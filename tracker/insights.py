@@ -36,9 +36,19 @@ class Verdict(StrEnum):
     NO_DATA = "no_data"
 
 
+#: Set on a row a person marked as blocked on the dashboard (tracker.blocks).
+MARKED_BLOCKED = "marked_blocked"
+
+
 def is_blocked(r: Row) -> bool:
-    """Taken off sale by the venue: not bought, and not available to buy."""
-    return not r["hudle_booked"] and not r["hudle_available"]
+    """Taken off sale by the venue: not bought and not available to buy, or
+    marked blocked by a person, whatever Hudle says about it."""
+    return bool(r.get(MARKED_BLOCKED)) or (not r["hudle_booked"] and not r["hudle_available"])
+
+
+def is_booked(r: Row) -> bool:
+    """Bought by a customer on Hudle, in hours nobody marked as a venue block."""
+    return bool(r["hudle_booked"]) and not r.get(MARKED_BLOCKED)
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,7 +86,7 @@ def occupancy(rows: Iterable[Row]) -> Occupancy:
             blocked += m
             continue
         total += m
-        if r["hudle_booked"]:
+        if is_booked(r):
             booked += m
     return Occupancy(booked, total, blocked)
 
@@ -106,9 +116,7 @@ def revenue(rows: Iterable[Row]) -> int:
     what Hudle shows before any offer or discount, so this is an upper bound
     on what customers paid.
     """
-    return round(
-        sum(float(r["price"]) for r in rows if r["hudle_booked"] and r["price"] is not None)
-    )
+    return round(sum(float(r["price"]) for r in rows if is_booked(r) and r["price"] is not None))
 
 
 def by_date(rows: Iterable[Row]) -> list[dict[str, Any]]:
@@ -178,7 +186,7 @@ def lead_times(rows: Iterable[Row]) -> list[float]:
     """
     out = []
     for r in rows:
-        if r["hudle_booked"] and r["booked_at"] and r["booked_at"] < r["start_utc"]:
+        if is_booked(r) and r["booked_at"] and r["booked_at"] < r["start_utc"]:
             out.append((r["start_utc"] - r["booked_at"]).total_seconds() / 3600)
     return out
 
@@ -215,8 +223,8 @@ def reliability(court_rows: Sequence[Row], today: dt.date) -> dict[str, Any]:
     ahead = [r for r in court_rows if r["business_date"] >= today]
     occ = occupancy(past)
     days = {r["business_date"] for r in past}
-    days_booked = {r["business_date"] for r in past if r["hudle_booked"]}
-    taken = [r for r in past if r["hudle_booked"]]
+    days_booked = {r["business_date"] for r in past if is_booked(r)}
+    taken = [r for r in past if is_booked(r)]
     late = sum(1 for r in taken if r["booked_at"] and r["booked_at"] > r["start_utc"])
     stamp_days: dict[Any, set[dt.date]] = collections.defaultdict(set)
     for r in taken:

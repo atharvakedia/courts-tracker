@@ -1,13 +1,14 @@
 """The tracker's database: one row per slot, written only when it changes.
 
-Four tables. ``venues`` and ``courts`` describe what exists on Hudle. ``slots``
+Five tables. ``venues`` and ``courts`` describe what exists on Hudle. ``slots``
 holds one row per slot ever seen -- its current booked/vacant state, when it was
 booked, and how often a booking was cancelled -- so storage grows with the
 number of slots (~200 a day per court set), not with how often we look.
 ``runs`` records every collection pass, which is what tells a gap in the data
-apart from a quiet day.
+apart from a quiet day. ``blocks`` holds the hours people marked as venue
+blocks on the dashboard (see tracker.blocks); nothing from Hudle touches it.
 
-The same code runs on SQLite (tests, local) and Postgres (Neon, production):
+The same code runs on SQLite (tests, local) and Postgres (production):
 SQLAlchemy Core, with the upsert built from the connected dialect's own
 ``INSERT ... ON CONFLICT``.
 """
@@ -15,6 +16,7 @@ SQLAlchemy Core, with the upsert built from the connected dialect's own
 from __future__ import annotations
 
 import datetime as dt
+import json
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from typing import Any
@@ -22,6 +24,7 @@ from typing import Any
 import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql, sqlite
 
+from tracker.blocks import Block
 from tracker.slots import SlotReading
 from tracker.types import Sport
 
@@ -57,6 +60,11 @@ courts = sa.Table(
     sa.Column("tracked", sa.Boolean, nullable=False, server_default=sa.true()),
     sa.Column("first_seen_at", UTC_DT, nullable=False),
     sa.Column("last_seen_at", UTC_DT, nullable=False),
+    # The last pass that read the court, and why the latest read failed (None
+    # once one succeeds). A failing court is left out of every figure (see
+    # tracker.views), and its next read reaches back to the days it missed.
+    sa.Column("last_read_at", UTC_DT),
+    sa.Column("read_error", sa.Text),
 )
 
 slots = sa.Table(
@@ -86,6 +94,9 @@ slots = sa.Table(
     sa.Column("first_seen_at", UTC_DT, nullable=False),
     sa.Column("upstream_created_at", UTC_DT),
     sa.Column("upstream_updated_at", UTC_DT),
+    # When this row was last inserted or changed here: a mirror of the slots
+    # (Store.refresh_mirror) reads only the rows written since it last did.
+    sa.Column("written_at", UTC_DT),
     sa.Index("ix_slots_sport_date", "sport", "business_date"),
     sa.Index("ix_slots_facility_date", "facility_uuid", "business_date"),
 )
@@ -99,6 +110,23 @@ views = sa.Table(
     sa.Column("as_of", sa.Date, nullable=False),
     sa.Column("built_at", UTC_DT, nullable=False),
     sa.Column("payload", sa.Text, nullable=False),
+    # The VIEWS_VERSION that built the view. A build replaces its own version
+    # and older ones, and leaves a newer one (a preview's) alone.
+    sa.Column("version", sa.Integer),
+)
+
+#: Hours people marked as blocked at a venue (see tracker.blocks). ``cells`` is
+#: the JSON list of [weekday, hour] pairs the block covers.
+blocks = sa.Table(
+    "blocks",
+    metadata,
+    sa.Column("block_id", sa.Integer, primary_key=True, autoincrement=True),
+    sa.Column("venue_uuid", sa.Text, nullable=False, index=True),
+    sa.Column("cells", sa.Text, nullable=False),
+    sa.Column("date_from", sa.Date),
+    sa.Column("date_to", sa.Date),
+    sa.Column("note", sa.Text, nullable=False, server_default=""),
+    sa.Column("created_at", UTC_DT, nullable=False),
 )
 
 runs = sa.Table(
@@ -118,6 +146,31 @@ runs = sa.Table(
 )
 
 
+#: The slot columns the dashboard's views read (see tracker.views). A views
+#: build reads three months of slots, so every column left out here is bytes
+#: the database does not send on every build.
+VIEW_COLUMNS = (
+    "venue_uuid",
+    "facility_uuid",
+    "business_date",
+    "start_local",
+    "start_utc",
+    "duration_minutes",
+    "price",
+    "hudle_booked",
+    "hudle_available",
+    "booked_at",
+    "first_seen_at",
+)
+#: What a mirror keeps: the views' columns, the key and the other columns its
+#: table requires, and the stamp it syncs by.
+MIRROR_COLUMNS = (*VIEW_COLUMNS, "slot_uuid", "sport", "booked", "written_at")
+#: A mirror re-reads this much before its newest write: a pass stamps every row
+#: with the time it started and commits up to its whole run later (daily.yml
+#: stops a pass at 150 minutes).
+MIRROR_OVERLAP = dt.timedelta(hours=3)
+
+
 @dataclass(frozen=True, slots=True)
 class Court:
     facility_uuid: str
@@ -125,6 +178,8 @@ class Court:
     name: str
     sport: Sport
     tracked: bool
+    last_read_at: dt.datetime | None = None
+    read_error: str | None = None
 
 
 def _utc(value: dt.datetime | None) -> dt.datetime | None:
@@ -164,7 +219,12 @@ class Store:
             conn.execute(
                 sa.update(slots)
                 .where(slots.c.booked != slots.c.hudle_booked)
-                .values(booked=slots.c.hudle_booked, booked_at=None, booked_seen_at=None)
+                .values(
+                    booked=slots.c.hudle_booked,
+                    booked_at=None,
+                    booked_seen_at=None,
+                    written_at=dt.datetime.now(dt.UTC),
+                )
             )
 
     def _add_missing_columns(self) -> None:
@@ -259,9 +319,30 @@ class Store:
             stmt = stmt.where(courts.c.sport == sport.value)
         with self._engine.connect() as conn:
             return [
-                Court(r.facility_uuid, r.venue_uuid, r.name, Sport(r.sport), r.tracked)
+                Court(
+                    r.facility_uuid,
+                    r.venue_uuid,
+                    r.name,
+                    Sport(r.sport),
+                    r.tracked,
+                    _utc(r.last_read_at),
+                    r.read_error,
+                )
                 for r in conn.execute(stmt)
             ]
+
+    def record_court_read(
+        self, facility_uuid: str, *, at: dt.datetime, error: str | None = None
+    ) -> None:
+        """Record a pass's read of one court: a success moves ``last_read_at``
+        and clears the error; a failure keeps ``last_read_at`` and stores why."""
+        values: dict[str, Any] = {"read_error": error}
+        if error is None:
+            values["last_read_at"] = at
+        with self._engine.begin() as conn:
+            conn.execute(
+                sa.update(courts).where(courts.c.facility_uuid == facility_uuid).values(**values)
+            )
 
     def venues(self) -> dict[str, dict[str, Any]]:
         """Every known venue by uuid, with when it first appeared on Hudle."""
@@ -304,6 +385,7 @@ class Store:
                         "hudle_available": ex.hudle_available,
                         "price": ex.price,
                         "upstream_updated_at": ex.upstream_updated_at,
+                        "written_at": ex.written_at,
                         "booked_at": sa.case(
                             (became_booked, ex.upstream_updated_at),
                             (sa.not_(ex.booked), sa.null()),
@@ -339,8 +421,9 @@ class Store:
         date_to: dt.date,
         venue_uuids: Iterable[str] | None = None,
     ) -> list[dict[str, Any]]:
+        """The views' columns (VIEW_COLUMNS) of every slot of a sport between two dates."""
         stmt = (
-            sa.select(slots)
+            sa.select(*(slots.c[name] for name in VIEW_COLUMNS))
             .where(slots.c.sport == sport.value)
             .where(slots.c.business_date.between(date_from, date_to))
             .order_by(slots.c.facility_uuid, slots.c.start_utc)
@@ -351,18 +434,136 @@ class Store:
             out = []
             for r in conn.execute(stmt).mappings():
                 row = dict(r)
-                for k in (
-                    "start_utc",
-                    "booked_at",
-                    "booked_seen_at",
-                    "last_cancelled_at",
-                    "first_seen_at",
-                    "upstream_created_at",
-                    "upstream_updated_at",
-                ):
+                for k in ("start_utc", "booked_at", "first_seen_at"):
                     row[k] = _utc(row[k])
                 out.append(row)
             return out
+
+    # -- mirror ------------------------------------------------------------
+
+    def refresh_mirror(self, source: Store, *, from_date: dt.date, chunk: int = 1000) -> int:
+        """Bring this store's slots from ``from_date`` on up to date with
+        ``source``'s, reading only what changed. Returns how many slot rows
+        ``source`` sent.
+
+        This store is a mirror: a local file kept between runs, whose slots
+        the views build reads instead of the source's. The source then sends
+        the rows written since the mirror's newest, less MIRROR_OVERLAP, rather
+        than three months of slots on every build. Rows before ``from_date``
+        are dropped. A mirror whose row count differs from the source's
+        afterwards (the first run, another source, a row it never received)
+        is emptied and read whole, from ``from_date``.
+        """
+        with self._engine.begin() as conn:
+            conn.execute(sa.delete(slots).where(slots.c.business_date < from_date))
+            newest = _utc(conn.execute(sa.select(sa.func.max(slots.c.written_at))).scalar_one())
+        since = newest - MIRROR_OVERLAP if newest else None
+        read = self._pull_slots(source, from_date=from_date, since=since, chunk=chunk)
+        if self._slot_count(from_date) != source._slot_count(from_date):
+            with self._engine.begin() as conn:
+                conn.execute(sa.delete(slots))
+            read += self._pull_slots(source, from_date=from_date, since=None, chunk=chunk)
+        return read
+
+    def _pull_slots(
+        self, source: Store, *, from_date: dt.date, since: dt.datetime | None, chunk: int
+    ) -> int:
+        """Upsert ``source``'s slots from ``from_date`` on, written since
+        ``since`` (all of them if None), into this store, MIRROR_COLUMNS only.
+        Times are moved to UTC first: SQLite keeps a time's digits and drops
+        its offset."""
+        stmt = sa.select(*(slots.c[name] for name in MIRROR_COLUMNS)).where(
+            slots.c.business_date >= from_date
+        )
+        if since is not None:
+            stmt = stmt.where(slots.c.written_at >= since)
+        read = 0
+        with source._engine.connect() as src, self._engine.begin() as dst:
+            result = src.execution_options(yield_per=chunk).execute(stmt)
+            for part in result.mappings().partitions():
+                rows = [
+                    {
+                        k: v.astimezone(dt.UTC) if isinstance(v, dt.datetime) and v.tzinfo else v
+                        for k, v in r.items()
+                    }
+                    for r in part
+                ]
+                insert = self._insert(slots).values(rows)
+                dst.execute(
+                    insert.on_conflict_do_update(
+                        index_elements=["slot_uuid"],
+                        set_={n: insert.excluded[n] for n in MIRROR_COLUMNS if n != "slot_uuid"},
+                    )
+                )
+                read += len(part)
+        return read
+
+    def _slot_count(self, from_date: dt.date) -> int:
+        stmt = (
+            sa.select(sa.func.count()).select_from(slots).where(slots.c.business_date >= from_date)
+        )
+        with self._engine.connect() as conn:
+            return int(conn.execute(stmt).scalar_one())
+
+    # -- blocks ------------------------------------------------------------
+
+    def blocks(self, venue_uuid: str | None = None) -> list[Block]:
+        """Every block, or one venue's, oldest first. A database the blocks
+        table has not reached yet (a preview on production before the next
+        pass creates it) has none."""
+        stmt = sa.select(blocks).order_by(blocks.c.block_id)
+        if venue_uuid is not None:
+            stmt = stmt.where(blocks.c.venue_uuid == venue_uuid)
+        with self._engine.connect() as conn:
+            if not sa.inspect(conn).has_table(blocks.name):
+                return []
+            return [
+                Block(
+                    block_id=r.block_id,
+                    venue_uuid=r.venue_uuid,
+                    cells=frozenset((int(wd), int(hr)) for wd, hr in json.loads(r.cells)),
+                    date_from=r.date_from,
+                    date_to=r.date_to,
+                    note=r.note,
+                    created_at=_utc(r.created_at) or r.created_at,
+                )
+                for r in conn.execute(stmt)
+            ]
+
+    def add_block(
+        self,
+        *,
+        venue_uuid: str,
+        cells: Iterable[tuple[int, int]],
+        date_from: dt.date | None,
+        date_to: dt.date | None,
+        note: str,
+        created_at: dt.datetime,
+    ) -> int:
+        blocks.create(self._engine, checkfirst=True)
+        with self._engine.begin() as conn:
+            result = conn.execute(
+                sa.insert(blocks)
+                .values(
+                    venue_uuid=venue_uuid,
+                    cells=json.dumps(sorted([wd, hr] for wd, hr in cells)),
+                    date_from=date_from,
+                    date_to=date_to,
+                    note=note,
+                    created_at=created_at,
+                )
+                .returning(blocks.c.block_id)
+            )
+            return int(result.scalar_one())
+
+    def delete_block(self, block_id: int) -> bool:
+        """Remove a block. False if there was no such block."""
+        blocks.create(self._engine, checkfirst=True)
+        with self._engine.begin() as conn:
+            deleted = conn.execute(
+                sa.delete(blocks).where(blocks.c.block_id == block_id).returning(blocks.c.block_id)
+            ).all()
+            return bool(deleted)
 
     # -- runs --------------------------------------------------------------
 
@@ -410,17 +611,43 @@ class Store:
     # -- views ---------------------------------------------------------------
 
     def replace_views(
-        self, built: Sequence[tuple[str, str]], *, as_of: dt.date, built_at: dt.datetime
+        self,
+        built: Sequence[tuple[str, str]],
+        *,
+        version: int,
+        as_of: dt.date,
+        built_at: dt.datetime,
     ) -> None:
-        """Swap the stored views for a freshly built set, in one transaction, so
-        a reader sees either the old set or the new one, never a mix."""
+        """Swap the stored views of this version for a freshly built set, in
+        one transaction, so a reader sees either the old set or the new one,
+        never a mix. The version just before it stays: a preview building a
+        new version must not take production's views away. Older ones go.
+        Views stored before the version column carry their version only in
+        their key's ``v<N>|`` prefix (see tracker.views.view_key)."""
         with self._engine.begin() as conn:
-            conn.execute(sa.delete(views))
+            conn.execute(
+                sa.delete(views).where(
+                    sa.or_(
+                        views.c.version == version,
+                        views.c.version < version - 1,
+                        sa.and_(
+                            views.c.version.is_(None),
+                            sa.not_(views.c.view_key.startswith(f"v{version - 1}|")),
+                        ),
+                    )
+                )
+            )
             if built:
                 conn.execute(
                     sa.insert(views),
                     [
-                        {"view_key": k, "as_of": as_of, "built_at": built_at, "payload": p}
+                        {
+                            "view_key": k,
+                            "version": version,
+                            "as_of": as_of,
+                            "built_at": built_at,
+                            "payload": p,
+                        }
                         for k, p in built
                     ],
                 )
@@ -431,6 +658,21 @@ class Store:
             return conn.execute(
                 sa.select(views.c.payload).where(views.c.view_key == view_key)
             ).scalar_one_or_none()
+
+    def views_built_at(self, version: int) -> dt.datetime | None:
+        """When this version's views were last built; None if they never were."""
+        with self._engine.connect() as conn:
+            return _utc(
+                conn.execute(
+                    sa.select(sa.func.max(views.c.built_at)).where(views.c.version == version)
+                ).scalar_one()
+            )
+
+    def last_pass_started_at(self) -> dt.datetime | None:
+        """When the latest daily pass over every tracked court started."""
+        stmt = sa.select(sa.func.max(runs.c.started_at)).where(runs.c.job == "daily")
+        with self._engine.connect() as conn:
+            return _utc(conn.execute(stmt).scalar_one())
 
     def latest_runs(self, limit: int = 10) -> list[dict[str, Any]]:
         stmt = sa.select(runs).order_by(runs.c.started_at.desc()).limit(limit)
@@ -468,6 +710,7 @@ def _row(r: SlotReading, seen_at: dt.datetime) -> dict[str, Any]:
         "first_seen_at": seen_at,
         "upstream_created_at": r.upstream_created_at,
         "upstream_updated_at": r.upstream_updated_at,
+        "written_at": seen_at,
     }
 
 
@@ -477,7 +720,7 @@ def _chunks(rows: list[dict[str, Any]], size: int) -> Iterable[list[dict[str, An
 
 
 def _normalise_url(url: str) -> str:
-    """Neon hands out ``postgres://``/``postgresql://``; SQLAlchemy wants a driver."""
+    """Providers hand out ``postgres://``/``postgresql://``; SQLAlchemy wants a driver."""
     for prefix in ("postgres://", "postgresql://"):
         if url.startswith(prefix):
             return "postgresql+psycopg://" + url[len(prefix) :]

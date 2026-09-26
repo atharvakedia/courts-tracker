@@ -9,7 +9,9 @@ Four commands, one job each:
   rebuilds the stored dashboard views.
 * ``views`` rebuilds the stored dashboard views alone, from the data already
   stored; it runs on every merge to main, so a change to what a view holds is
-  live without waiting for the next daily pass.
+  live without waiting for the next daily pass. With ``SLOT_MIRROR`` set,
+  ``daily`` and ``views`` build from that mirror file of the slots, so the
+  database sends only what changed since the last build.
 * ``discover`` re-checks the configured venue and facility sets against Hudle
   and prints what drifted. It never edits ``config.yaml``: the venue tree is
   human-reviewed, and a facility silently adopted would be tracked without
@@ -33,11 +35,15 @@ import argparse
 import datetime as dt
 import logging
 import os
+import shutil
 import sys
-from collections.abc import Sequence
+from collections.abc import Iterator, Sequence
+from contextlib import contextmanager
 from enum import IntEnum
 from pathlib import Path
 from typing import Any
+
+from sqlalchemy.exc import DatabaseError
 
 from tracker.config import Config, ConfigError, load_config
 from tracker.daily import discover_pickleball, locate_venues, run_daily, seed_configured_courts
@@ -190,12 +196,50 @@ def _open_store() -> Store:
     return store
 
 
+@contextmanager
+def _mirror() -> Iterator[Store | None]:
+    """The mirror of the slots at the file SLOT_MIRROR names, if it is set.
+
+    A views build reads its slots from the mirror, refreshed first, so the
+    database sends only what changed since the last build (see
+    tracker.views). GitHub Actions keeps the file between runs in its cache.
+    The build works on a copy that replaces the file only once the build is
+    done, so a run killed halfway leaves the last whole mirror; a file that
+    will not open is started afresh.
+    """
+    path = os.environ.get("SLOT_MIRROR")
+    if not path:
+        yield None
+        return
+    target = Path(path)
+    work = target.with_name(target.name + ".work")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    work.unlink(missing_ok=True)
+    if target.exists():
+        shutil.copyfile(target, work)
+    mirror = Store(f"sqlite:///{work}")
+    try:
+        mirror.initialize()
+    except DatabaseError:
+        logger.warning("mirror_unreadable", extra={"path": path})
+        mirror.close()
+        work.unlink()
+        mirror = Store(f"sqlite:///{work}")
+        mirror.initialize()
+    try:
+        yield mirror
+    finally:
+        mirror.close()
+    work.replace(target)
+
+
 def cmd_views(args: argparse.Namespace) -> int:
     """Rebuild every stored dashboard view from the data already in the store."""
     config = load_config(args.config)
     store = _open_store()
     try:
-        built = publish_views(store, now=utc_now(), tz=config.timezone)
+        with _mirror() as mirror:
+            built = publish_views(store, now=utc_now(), tz=config.timezone, mirror=mirror)
     finally:
         store.close()
     print(f"{built} views built")
@@ -216,7 +260,8 @@ def cmd_daily(args: argparse.Namespace) -> int:
                 print(f"located {locate_venues(store, client)} more venues")
             result = run_daily(config, store, client, now=now)
         # Built even after a partial pass: the views then show what was read.
-        views = publish_views(store, now=utc_now(), tz=config.timezone)
+        with _mirror() as mirror:
+            views = publish_views(store, now=utc_now(), tz=config.timezone, mirror=mirror)
     finally:
         store.close()
     print(

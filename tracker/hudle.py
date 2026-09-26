@@ -16,6 +16,9 @@ goal, not a nicety:
 * A :class:`CircuitBreaker` opens after ``poll.max_consecutive_failures``
   consecutive failures and then refuses every call without touching the
   network, so the scheduler stops instead of hammering.
+* A 404 is an answer about one resource (a court the venue took off Hudle),
+  not a sign that Hudle is failing: it is not retried and does not count
+  toward the breaker, so one gone court cannot stop the pass.
 
 Parsing is deliberately out of scope. These methods return decoded JSON, or raw
 HTML text for the server-rendered venue page; turning that into domain objects
@@ -484,6 +487,16 @@ class HudleClient:
                 continue
 
             duration_ms = _elapsed_ms(started)
+            if response.status_code == 404:
+                logger.warning(
+                    "hudle_request_not_found",
+                    extra={
+                        "path": path,
+                        "facility_uuid": facility_uuid,
+                        "duration_ms": duration_ms,
+                    },
+                )
+                raise HudleHttpError(response.status_code, response.text, path=path)
             if response.status_code != 200:
                 self._circuit.record_failure(f"HTTP {response.status_code}")
                 logger.warning(

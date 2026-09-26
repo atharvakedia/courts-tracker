@@ -278,6 +278,35 @@ def test_the_circuit_opens_on_the_fifth_consecutive_failure_then_short_circuits(
         assert len(calls) == 5  # not one further request once open
 
 
+def test_a_404_is_not_retried_and_does_not_count_toward_the_breaker(
+    test_config: Config, clock: FakeClock
+) -> None:
+    """Regression: a court the venue took off Hudle answering 404 on every
+    attempt, so two such courts opened the breaker and stopped the daily pass
+    (24 and 25 Sep 2026: 64 of 143 courts left unread)."""
+    poll = poll_with(
+        test_config.poll,
+        request_gap_seconds=0.0,
+        max_consecutive_failures=5,
+        max_attempts=3,
+    )
+    calls: list[httpx.Request] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request)
+        return httpx.Response(404, text="not found")
+
+    client = build_client(handler, test_config.http, poll)
+    with client:
+        for _ in range(6):
+            with pytest.raises(HudleHttpError) as excinfo:
+                client.fetch_slots(PADEL_FORT_VENUE, PADEL_FORT_COURT, START_DATE, END_DATE)
+            assert excinfo.value.status == 404
+        assert len(calls) == 6, "one request per read, no retries"
+        assert client.circuit.consecutive_failures == 0
+        assert client.circuit.state is CircuitState.CLOSED
+
+
 def test_a_success_resets_the_consecutive_failure_count(
     test_config: Config, clock: FakeClock
 ) -> None:

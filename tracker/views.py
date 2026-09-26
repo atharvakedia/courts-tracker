@@ -3,7 +3,13 @@
 A view is everything the page draws for one choice of sport, window and
 venue. The slot data changes once a day, so every view is built once, by the
 daily pass, and stored whole; the API then answers a click with one row
-instead of recomputing from hundreds of thousands of slots.
+instead of recomputing from hundreds of thousands of slots. It never computes
+one itself: a build reads three months of slots, and the database's monthly
+transfer allowance pays for every byte of them.
+
+A build given a mirror (a local copy of the slots, see
+``Store.refresh_mirror``) first brings it up to date and reads the slots from
+it, so the database sends only what changed since the last build.
 
 Building a window reads its rows once and judges every court once, then
 narrows to each venue from there, so the market view and every venue view of
@@ -15,12 +21,15 @@ in Jaipur time.
 
 from __future__ import annotations
 
+import dataclasses
 import datetime as dt
 import json
+import logging
 from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any
 
+from tracker.blocks import apply_blocks
 from tracker.insights import (
     Row,
     Verdict,
@@ -40,6 +49,8 @@ from tracker.insights import (
 from tracker.store import Court, Store
 from tracker.types import Sport, local_wall_clock
 
+logger = logging.getLogger("tracker.views")
+
 WINDOWS = {"7": 7, "30": 30, "all": 90}
 #: Reliability looks this far ahead for venues holding every slot.
 LOOKAHEAD_DAYS = 14
@@ -53,19 +64,15 @@ NEXT_DAY_FROM_HOUR = 22
 
 RULE = (
     "Booked = bought by a customer on Hudle. % booked is of the court time offered "
-    "to customers; slots a venue blocks are left out."
+    "to customers; slots a venue blocks, or that are marked as blocked, are left out."
 )
-
-
-class UnknownVenueError(LookupError):
-    """The venue has no rows for this sport in this window."""
 
 
 #: Bumped whenever a view's shape or meaning changes. Stored views carry it in
 #: their key, so code reading a newer shape (a PR preview on the production
-#: database, or a deploy before the next build) computes its views on the spot
-#: rather than drawing ones built for another shape.
-VIEWS_VERSION = 3
+#: database, or a deploy before the next build) never draws views built for
+#: another shape; its own are built by running the views workflow on its branch.
+VIEWS_VERSION = 4
 
 
 def view_key(sport: Sport, window: str, venue: str | None) -> str:
@@ -78,15 +85,19 @@ def views_as_of(now: dt.datetime, tz: str) -> dt.date:
     return local.date() + dt.timedelta(days=1 if local.hour >= NEXT_DAY_FROM_HOUR else 0)
 
 
-def rows_for(store: Store, sport: Sport, today: dt.date) -> Sequence[Row]:
+def rows_for(
+    store: Store, sport: Sport, today: dt.date, *, mirror: Store | None = None
+) -> Sequence[Row]:
     """Every row any window of this sport needs: the longest window and the
-    look-ahead reliability reads."""
+    look-ahead reliability reads, with the hours people marked as blocked.
+    The slots come from ``mirror`` when given, the blocks always from ``store``."""
     longest = max(WINDOWS.values())
-    return store.slots_between(
+    rows = (mirror or store).slots_between(
         sport=sport,
         date_from=today - dt.timedelta(days=longest),
         date_to=today + dt.timedelta(days=LOOKAHEAD_DAYS),
     )
+    return apply_blocks(rows, store.blocks())
 
 
 @dataclass(frozen=True, slots=True)
@@ -98,7 +109,6 @@ class _Window:
     today: dt.date
     start: dt.date
     end: dt.date
-    rows: list[Row]
     counted: list[Row]
     per_court: dict[str, list[Row]]
     venue_rows: list[dict[str, Any]]
@@ -119,10 +129,13 @@ def _window(
     current = [r for r in rows if start <= r["business_date"] <= last]
 
     per_court = by(current, "facility_uuid")
-    verdicts = {fid: reliability(court_rows, today) for fid, court_rows in per_court.items()}
+    verdicts = {
+        fid: _judge(court_rows, courts.get(fid), today) for fid, court_rows in per_court.items()
+    }
     past = settled(current, today)
-    # Every court except a dead listing is counted; low-activity courts included,
-    # since their quiet days are real demand and leaving them out inflates it.
+    # Every court except a dead listing or a failing one is counted; low-activity
+    # courts included, since their quiet days are real demand and leaving them
+    # out inflates it.
     counted_verdicts = {Verdict.RELIABLE.value, Verdict.PARTIAL.value}
     counted = [r for r in past if verdicts[r["facility_uuid"]]["verdict"] in counted_verdicts]
 
@@ -159,6 +172,7 @@ def _window(
                     for f in court_ids
                 ],
                 "verdict": _venue_verdict([verdicts[f]["verdict"] for f in court_ids]),
+                "failing": any(verdicts[f]["failing"] for f in court_ids),
                 "price_per_hour": price_per_hour(vrows),
                 **occupancy(vrows).as_dict(),
             }
@@ -170,7 +184,6 @@ def _window(
         today,
         start,
         end,
-        current,
         counted,
         per_court,
         venue_rows,
@@ -180,8 +193,6 @@ def _window(
 def _payload(w: _Window, venue: str | None) -> dict[str, Any]:
     counted = w.counted
     if venue is not None:
-        if venue not in {r["venue_uuid"] for r in w.rows}:
-            raise UnknownVenueError(venue)
         counted = [r for r in counted if r["venue_uuid"] == venue]
     hours = lead_times(counted)
     hourly = by_hour(counted)
@@ -217,29 +228,16 @@ def _payload(w: _Window, venue: str | None) -> dict[str, Any]:
     }
 
 
-def overview(
-    rows: Sequence[Row],
-    courts: Mapping[str, Court],
-    venues: Mapping[str, dict[str, Any]],
-    *,
-    sport: Sport,
-    window: str,
-    today: dt.date,
-    venue: str | None = None,
-) -> dict[str, Any]:
-    """One view, computed on the spot. Raises UnknownVenueError for a venue
-    with no rows of this sport in the window."""
-    w = _window(rows, courts, venues, sport=sport, window=window, today=today)
-    return _payload(w, venue)
-
-
-def all_views(store: Store, today: dt.date) -> Iterator[tuple[str, dict[str, Any]]]:
+def all_views(
+    store: Store, today: dt.date, *, mirror: Store | None = None
+) -> Iterator[tuple[str, dict[str, Any]]]:
     """Every view the page can ask for, keyed by :func:`view_key`: each sport
     and window for the whole market and for each of its venues."""
     venues = store.venues()
+    last_pass = store.last_pass_started_at()
     for sport in Sport:
-        rows = rows_for(store, sport, today)
-        courts = {c.facility_uuid: c for c in store.tracked_courts(sport)}
+        rows = rows_for(store, sport, today, mirror=mirror)
+        courts = {c.facility_uuid: _unread(c, last_pass) for c in store.tracked_courts(sport)}
         for window in WINDOWS:
             w = _window(rows, courts, venues, sport=sport, window=window, today=today)
             yield view_key(sport, window, None), _payload(w, None)
@@ -247,12 +245,46 @@ def all_views(store: Store, today: dt.date) -> Iterator[tuple[str, dict[str, Any
                 yield view_key(sport, window, v["venue_uuid"]), _payload(w, v["venue_uuid"])
 
 
-def publish_views(store: Store, *, now: dt.datetime, tz: str) -> int:
-    """Build every view and replace the stored set. Returns how many were stored."""
+def publish_views(store: Store, *, now: dt.datetime, tz: str, mirror: Store | None = None) -> int:
+    """Build every view and replace the stored set, reading the slots from
+    ``mirror`` (refreshed first) when given. Returns how many were stored."""
     as_of = views_as_of(now, tz)
-    built = [(key, json.dumps(payload, default=str)) for key, payload in all_views(store, as_of)]
-    store.replace_views(built, as_of=as_of, built_at=now)
+    if mirror is not None:
+        first = as_of - dt.timedelta(days=max(WINDOWS.values()))
+        read = mirror.refresh_mirror(store, from_date=first)
+        logger.info("mirror_refreshed", extra={"rows_read": read})
+    built = [
+        (key, json.dumps(payload, default=str))
+        for key, payload in all_views(store, as_of, mirror=mirror)
+    ]
+    store.replace_views(built, version=VIEWS_VERSION, as_of=as_of, built_at=now)
     return len(built)
+
+
+def _unread(court: Court, last_pass: dt.datetime | None) -> Court:
+    """The court, failing too if the latest daily pass stopped before reading
+    it: its latest days were read only while they were still ahead."""
+    if court.read_error or not court.last_read_at or not last_pass:
+        return court
+    if court.last_read_at >= last_pass:
+        return court
+    return dataclasses.replace(court, read_error="not read in the latest daily pass")
+
+
+def _judge(court_rows: Sequence[Row], court: Court | None, today: dt.date) -> dict[str, Any]:
+    """A court's reliability verdict, overruled for a court the last pass could
+    not read: its recent days were never read, so it is left out of every
+    figure (as unreliable) and flagged ``failing`` until a read succeeds."""
+    verdict = reliability(court_rows, today)
+    if court is None or court.read_error is None:
+        return {**verdict, "failing": False}
+    reason = "the latest daily pass did not read it from Hudle; left out until one does"
+    return {
+        **verdict,
+        "verdict": Verdict.UNRELIABLE.value,
+        "reasons": [reason, *verdict["reasons"]],
+        "failing": True,
+    }
 
 
 def _venue_verdict(court_verdicts: list[str]) -> str:

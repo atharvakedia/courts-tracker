@@ -127,8 +127,32 @@
     </section>
   </main>
 
+  <dialog class="blocks" id="blocks" aria-labelledby="bk-title">
+    <form class="bk" id="bk-form" novalidate>
+      <header>
+        <h2 id="bk-title">Blocked hours</h2>
+        <button type="button" class="icon" id="bk-close" aria-label="Close">✕</button>
+      </header>
+      <p class="bk-help">Tick the hours this venue takes off sale, such as coaching or maintenance, even where Hudle shows them booked. They count as venue blocks: left out of % booked. Drag to tick many; click a day or an hour to tick its whole row or column.</p>
+      <div class="bk-list" id="bk-list" aria-live="polite"></div>
+      <div class="bk-grid" id="bk-grid" role="group" aria-label="Weekday by start hour"></div>
+      <div class="bk-fields">
+        <label>From <input type="date" id="bk-from" /></label>
+        <label>To <input type="date" id="bk-to" /></label>
+        <label>Note <input type="text" id="bk-note" maxlength="200" placeholder="e.g. coaching" autocomplete="off" /></label>
+        <label>Password <input type="password" id="bk-pass" autocomplete="current-password" /></label>
+      </div>
+      <p class="bk-help">Leave the dates empty to cover every day, past and future.</p>
+      <footer>
+        <span class="bk-status" id="bk-status" role="status"></span>
+        <button type="button" id="bk-clear">Clear</button>
+        <button type="submit" class="bk-save" id="bk-save" disabled>Save block</button>
+      </footer>
+    </form>
+  </dialog>
+
   <footer class="foot" id="foot">
-    <span class="note">Booked = bought by a customer on Hudle; % booked is of the court time offered. Slots a venue blocks are left out. Only fully elapsed days count. Jaipur time.</span>
+    <span class="note">Booked = bought by a customer on Hudle; % booked is of the court time offered. Slots a venue blocks, or marked as blocked, are left out. Only fully elapsed days count. Jaipur time.</span>
     <span class="powered">Powered by <i class="logo" role="img" aria-label="Kedia Group"></i></span>
   </footer>
   <script src="/app.js"></script>

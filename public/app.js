@@ -197,10 +197,23 @@
     load();
   }
 
+  // The views' build time, sent with every view request: a rebuild (the daily
+  // pass, or a block saved here) then asks the edge for a new URL instead of
+  // an hour-old copy. The newest one this tab has seen wins.
+  const REV_KEY = 'ht.rev';
+  let rev = null;
+  function setRev(r) {
+    if (!r || (rev && Date.parse(r) <= Date.parse(rev))) return;
+    rev = r;
+    try { sessionStorage.setItem(REV_KEY, r); } catch (_) {}
+  }
+  try { setRev(sessionStorage.getItem(REV_KEY)); } catch (_) {}
+  const health = fetch('/api/health').then((r) => r.json());
+
   async function freshness() {
     const el = $('fresh');
     try {
-      const h = await (await fetch('/api/health')).json();
+      const h = await health;
       el.dataset.s = h.status;
       if (!h.last_run) { el.lastElementChild.textContent = 'No data yet'; return; }
       const at = new Date(h.last_run.finished_at || h.last_run.started_at);
@@ -216,6 +229,7 @@
   function viewUrl(sport, win, venue) {
     const p = new URLSearchParams({ sport, window: win });
     if (venue) p.set('venue', venue);
+    if (rev) p.set('rev', rev);
     return `/api/overview?${p}`;
   }
   function fetchView(url) {
@@ -258,7 +272,8 @@
       if (ticket !== loading) return;
       // A venue from a shared link may have no rows in this window: fall back to all.
       if (err.status === 404 && state.venue) { state.venue = null; return load(); }
-      $('venue-list').innerHTML = `<p class="empty">Could not load: ${esc(err.message)}</p>`;
+      const why = err.status === 503 ? 'these charts are not built yet' : err.message;
+      $('venue-list').innerHTML = `<p class="empty">Could not load: ${esc(why)}</p>`;
     } finally { if (ticket === loading) document.body.style.cursor = ''; }
   }
 
@@ -273,9 +288,13 @@
   function draw(d) {
     const name = scopeName(d);
     $('scope').innerHTML = name
-      ? `<button class="chip" id="clear" title="Back to all venues"><span class="lbl">Venue</span><b>${esc(name)}</b><span class="x" aria-hidden="true">✕</span></button>`
+      ? `<button class="chip" id="clear" title="Back to all venues"><span class="lbl">Venue</span><b>${esc(name)}</b><span class="x" aria-hidden="true">✕</span></button>
+        <button class="chip act" id="mark" title="Mark hours this venue takes off sale">Blocked hours</button>`
       : '';
-    if (name) $('clear').addEventListener('click', () => selectVenue(state.venue));
+    if (name) {
+      $('clear').addEventListener('click', () => selectVenue(state.venue));
+      $('mark').addEventListener('click', () => openBlocks(d.venue, name));
+    }
 
     const empty = !d.totals.total_hours;
     $('grid').classList.toggle('is-empty', empty);
@@ -291,9 +310,11 @@
     const sport = d.sport === 'padel' ? 'padel' : 'pickleball';
     const other = sport === 'padel' ? 'pickleball' : 'padel';
     $('nd-title').textContent = name ? `Nothing counted at ${name}` : `No settled ${sport} days yet`;
-    $('nd-text').textContent = name
-      ? 'Its courts are blocked by the venue or have almost nothing booked on Hudle, so they are left out of every figure.'
-      : `No ${sport} court has a fully elapsed day in ${range(d)}. Charts fill in after the first daily pass that follows a played day.`;
+    const failing = d.venues.some((v) => v.venue_uuid === d.venue && v.failing);
+    $('nd-text').textContent = !name
+      ? `No ${sport} court has a fully elapsed day in ${range(d)}. Charts fill in after the first daily pass that follows a played day.`
+      : failing ? 'Hudle did not answer for its courts in the last daily pass, so they are left out of every figure until it does.'
+        : 'Its courts are blocked by the venue or have almost nothing booked on Hudle, so they are left out of every figure.';
     const acts = [];
     if (name) acts.push(['all', 'All venues']);
     if (d.window.key !== 'all') acts.push(['win', 'Try the whole history']);
@@ -371,7 +392,8 @@
         ? `${num(v.booked_hours)} of ${num(v.total_hours)} court-h offered`
         : `all ${num(v.blocked_hours)} court-h blocked`;
       const meta = `${offered} · ${n} court${n === 1 ? '' : 's'}${v.price_per_hour ? ` · ₹${num(v.price_per_hour)}/h` : ''}`;
-      const tag = v.verdict === 'partial' ? '<span class="tag v partial">low activity</span>'
+      const tag = v.failing ? '<span class="tag v failing">not updating</span>'
+        : v.verdict === 'partial' ? '<span class="tag v partial">low activity</span>'
         : v.verdict !== 'unreliable' ? ''
           : `<span class="tag v unreliable">${v.total_hours ? 'listing only' : 'all blocked'}</span>`;
       const wh = v.total_hours ? (100 * v.booked_hours) / v.total_hours : 0;
@@ -383,7 +405,7 @@
     };
     const match = (v) => !f || v.name.toLowerCase().includes(f);
     const a = counted.filter(match), b = listing.filter(match);
-    host.innerHTML = (a.map(row).join('') + (b.length ? `<div class="group">Not counted · blocked or listing only</div>${b.map(row).join('')}` : '')) || '<p class="empty">No venue matches.</p>';
+    host.innerHTML = (a.map(row).join('') + (b.length ? `<div class="group">Not counted</div>${b.map(row).join('')}` : '')) || '<p class="empty">No venue matches.</p>';
     requestAnimationFrame(() => host.querySelectorAll('.track i').forEach((el) => { el.style.width = `${el.dataset.w}%`; }));
     const sel = host.querySelector('[aria-selected="true"]');
     if (sel) sel.scrollIntoView({ block: 'nearest' });
@@ -494,7 +516,8 @@
       });
       dot.bindTooltip(
         `<b>${esc(v.name)}</b><br><span>${n} court${n === 1 ? '' : 's'} · ${num(v.booked_hours)} court-h booked (${pct(v.occupancy)})</span>`
-        + (dead ? `<br><span>${v.total_hours ? 'listing only' : 'all court time blocked'} · not counted</span>` : ''),
+        + (v.failing ? `<br><span>not updating: ${dead ? 'not counted' : 'a court left out'}</span>`
+          : dead ? `<br><span>${v.total_hours ? 'listing only' : 'all court time blocked'} · not counted</span>` : ''),
         { direction: 'top', offset: [0, -6], pane: 'tooltipPane' },
       );
       dot.on('click', () => selectVenue(v.venue_uuid));
@@ -687,6 +710,213 @@
     }
   }
 
+  // ---------- blocked hours ----------
+  // A person who knows a venue's schedule marks the hours it takes off sale
+  // (coaching, say) where Hudle shows them booked. The server rebuilds every
+  // view on a change; the page then asks for the new revision.
+  const HOURS = Array.from({ length: 24 }, (_, i) => (i + 4) % 24); // business-day order
+  const PASS_KEY = 'ht.admin';
+  const bk = { venue: null, cells: new Set(), blocks: [], paint: null };
+  const cellKey = (wd, h) => `${wd}:${h}`;
+
+  // "06:00–08:00, 18:00–19:00": runs of consecutive start hours, business-day order.
+  function hoursText(hours) {
+    const order = hours.map((h) => (h + 20) % 24).sort((a, b) => a - b);
+    const runs = [];
+    order.forEach((o) => { const r = runs[runs.length - 1]; if (r && o === r[1] + 1) r[1] = o; else runs.push([o, o]); });
+    return runs.map(([a, b]) => `${hh((a + 4) % 24)}–${hh((b + 5) % 24)}`).join(', ');
+  }
+  // "Mon–Fri", "Sat, Sun".
+  function daysText(wds) {
+    const runs = [];
+    wds.forEach((w) => { const r = runs[runs.length - 1]; if (r && w === r[1] + 1) r[1] = w; else runs.push([w, w]); });
+    return runs.map(([a, b]) => (b - a >= 2 ? `${DAYS[a]}–${DAYS[b]}` : DAYS.slice(a, b + 1).join(', '))).join(', ');
+  }
+  // Weekdays with the same hours share a line: "Mon–Fri 06:00–08:00 · Sat 07:00–09:00".
+  function describe(cells) {
+    const groups = [];
+    DAYS.forEach((_, wd) => {
+      const txt = hoursText(cells.filter(([w]) => w === wd).map(([, h]) => h));
+      if (!txt) return;
+      const g = groups.find((x) => x.txt === txt);
+      if (g) g.wds.push(wd); else groups.push({ wds: [wd], txt });
+    });
+    return groups.map((g) => `${daysText(g.wds)} ${g.txt}`).join(' · ');
+  }
+  function datesText(b) {
+    if (!b.date_from && !b.date_to) return 'every day';
+    if (!b.date_to) return `from ${fmtDay(b.date_from)}`;
+    if (!b.date_from) return `until ${fmtDay(b.date_to)}`;
+    return `${fmtDay(b.date_from)} – ${fmtDay(b.date_to)}`;
+  }
+
+  function bkStatus(text, err = false) {
+    $('bk-status').textContent = text;
+    $('bk-status').dataset.s = err ? 'err' : '';
+  }
+
+  async function failure(r, what) {
+    if (r.status === 401) return 'Wrong password.';
+    let detail = `HTTP ${r.status}`;
+    try {
+      const j = await r.json();
+      detail = Array.isArray(j.detail) ? j.detail.map((x) => x.msg).join('; ') : j.detail || detail;
+    } catch (_) {}
+    return `Could not ${what}: ${detail}`;
+  }
+
+  function drawBlocks() {
+    $('bk-list').innerHTML = bk.blocks.map((b) => `<div class="bk-rule"><span><b>${esc(describe(b.cells))}</b> · ${esc(datesText(b))}${b.note ? ` <small>· ${esc(b.note)}</small>` : ''}</span>
+      <button type="button" data-id="${b.block_id}">Remove</button></div>`).join('');
+    const had = new Set(bk.blocks.flatMap((b) => b.cells.map(([wd, h]) => cellKey(wd, h))));
+    const head = `<span></span>${HOURS.map((h, i) => `<button type="button" data-col="${h}" title="Every ${hh(h)} slot">${i % 2 ? '' : h}</button>`).join('')}`;
+    const rows = DAYS.map((d, wd) => `<button type="button" class="day" data-row="${wd}" title="All of ${LONG_DAYS[wd]}">${d}</button>${HOURS.map((h) => {
+      const k = cellKey(wd, h);
+      const tip = `${LONG_DAYS[wd]} ${hh(h)}–${hh((h + 1) % 24)}${had.has(k) ? ' · already blocked' : ''}`;
+      return `<button type="button" class="cell${had.has(k) ? ' had' : ''}" data-k="${k}" aria-pressed="${bk.cells.has(k)}" aria-label="${tip}" title="${tip}"></button>`;
+    }).join('')}`).join('');
+    $('bk-grid').innerHTML = head + rows;
+    syncSave();
+  }
+
+  function syncSave() {
+    const n = bk.cells.size;
+    $('bk-save').disabled = !n;
+    $('bk-save').textContent = n ? `Save block · ${n} hour${n === 1 ? '' : 's'} a week` : 'Save block';
+  }
+
+  function setCell(el, on) {
+    if (on) bk.cells.add(el.dataset.k); else bk.cells.delete(el.dataset.k);
+    el.setAttribute('aria-pressed', String(on));
+  }
+
+  async function loadBlocks() {
+    const r = await fetch(`/api/blocks?${new URLSearchParams({ venue: bk.venue })}`);
+    if (!r.ok) throw new Error(await failure(r, 'load the blocks'));
+    bk.blocks = (await r.json()).blocks;
+    drawBlocks();
+  }
+
+  async function openBlocks(venue, name) {
+    bk.venue = venue;
+    bk.cells.clear();
+    bk.blocks = [];
+    $('bk-title').textContent = `Blocked hours · ${name}`;
+    ['bk-from', 'bk-to', 'bk-note'].forEach((id) => { $(id).value = ''; });
+    try { $('bk-pass').value = sessionStorage.getItem(PASS_KEY) || ''; } catch (_) {}
+    bkStatus('');
+    drawBlocks();
+    $('blocks').showModal();
+    try { await loadBlocks(); } catch (err) { bkStatus(err.message, true); }
+  }
+
+  // A change is live on the server: forget every view held and ask for the new revision.
+  function changed(builtAt) {
+    setRev(builtAt);
+    views.clear();
+    load();
+  }
+
+  // A rebuild queued on GitHub lands in a few minutes: ask health (a fresh URL
+  // each time, past the edge cache) until the views are newer than the build
+  // the server had when the change was saved, then redraw. Gives up after ten
+  // minutes; the next load catches up.
+  function awaitRebuild(builtAt) {
+    const since = builtAt ? Date.parse(builtAt) : 0;
+    const until = Date.now() + 10 * 60e3;
+    const poll = async () => {
+      if (Date.now() > until) return;
+      try {
+        const h = await (await fetch(`/api/health?t=${Date.now()}`)).json();
+        if (h.views_built_at && Date.parse(h.views_built_at) > since) { changed(h.views_built_at); return; }
+      } catch (_) {}
+      setTimeout(poll, 15e3);
+    };
+    setTimeout(poll, 30e3);
+  }
+
+  // What the page says once a change is saved, by how the rebuild went.
+  const REBUILT = {
+    done: 'Every chart now reflects it.',
+    queued: 'The charts update in a few minutes.',
+    failed: 'The charts could not be rebuilt now; they update after the next daily pass.',
+  };
+
+  async function change(method, url, body, what) {
+    const pass = $('bk-pass').value;
+    if (!pass) { bkStatus(`Enter the password to ${what}.`, true); $('bk-pass').focus(); return null; }
+    bkStatus('Saving…');
+    $('bk-save').disabled = true;
+    try {
+      const r = await fetch(url, {
+        method, headers: { 'Content-Type': 'application/json', 'X-Admin-Password': pass },
+        body: body && JSON.stringify(body),
+      });
+      if (!r.ok) { bkStatus(await failure(r, what), true); return null; }
+      try { sessionStorage.setItem(PASS_KEY, pass); } catch (_) {}
+      const j = await r.json();
+      if (j.rebuild === 'done') changed(j.views_built_at);
+      else if (j.rebuild === 'queued') awaitRebuild(j.views_built_at);
+      return j;
+    } catch (err) {
+      bkStatus(`Could not ${what}: ${err.message}`, true);
+      return null;
+    } finally { syncSave(); }
+  }
+
+  $('bk-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const from = $('bk-from').value || null, to = $('bk-to').value || null;
+    if (from && to && from > to) { bkStatus('The From date is after the To date.', true); return; }
+    const body = {
+      venue_uuid: bk.venue, cells: [...bk.cells].map((k) => k.split(':').map(Number)),
+      date_from: from, date_to: to, note: $('bk-note').value.trim(),
+    };
+    const j = await change('POST', '/api/blocks', body, 'save the block');
+    if (!j) return;
+    bk.cells.clear();
+    $('bk-note').value = '';
+    await loadBlocks().catch(() => {});
+    bkStatus(`Saved. ${REBUILT[j.rebuild]}`);
+  });
+  $('bk-list').addEventListener('click', async (e) => {
+    const b = e.target.closest('button[data-id]');
+    if (!b || !confirm('Remove this block? Its hours count as Hudle reports them again.')) return;
+    const j = await change('DELETE', `/api/blocks/${b.dataset.id}`, null, 'remove the block');
+    if (!j) return;
+    await loadBlocks().catch(() => {});
+    bkStatus(`Removed. ${REBUILT[j.rebuild]}`);
+  });
+  $('bk-clear').addEventListener('click', () => { bk.cells.clear(); drawBlocks(); });
+  $('bk-close').addEventListener('click', () => $('blocks').close());
+  // Drag to tick: the first cell decides whether the stroke ticks or clears.
+  // Found by position, not by pointerover, so a finger dragging works too.
+  const grid = $('bk-grid');
+  grid.addEventListener('pointerdown', (e) => {
+    const el = e.target.closest('.cell');
+    if (!el) return;
+    e.preventDefault();
+    bk.paint = !bk.cells.has(el.dataset.k);
+    setCell(el, bk.paint);
+    syncSave();
+  });
+  grid.addEventListener('pointermove', (e) => {
+    if (bk.paint == null) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY)?.closest('.cell');
+    if (el && grid.contains(el) && bk.cells.has(el.dataset.k) !== bk.paint) { setCell(el, bk.paint); syncSave(); }
+  });
+  window.addEventListener('pointerup', () => { bk.paint = null; });
+  grid.addEventListener('click', (e) => {
+    const el = e.target.closest('button');
+    if (!el) return;
+    // A pointer already ticked the cell on pointerdown; this is the keyboard's click.
+    if (el.classList.contains('cell')) { if (e.detail === 0) { setCell(el, !bk.cells.has(el.dataset.k)); syncSave(); } return; }
+    const line = [...grid.querySelectorAll(el.dataset.row != null ? `.cell[data-k^="${el.dataset.row}:"]` : `.cell[data-k$=":${el.dataset.col}"]`)];
+    const on = !line.every((c) => bk.cells.has(c.dataset.k));
+    line.forEach((c) => setCell(c, on));
+    syncSave();
+  });
+
   // ---------- wiring ----------
   $('theme').addEventListener('click', () => {
     const next = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
@@ -707,12 +937,13 @@
     const r = e.target.closest('.row');
     if (r && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); selectVenue(r.dataset.u); }
   });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && state.venue && e.target.tagName !== 'INPUT') selectVenue(state.venue); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && state.venue && e.target.tagName !== 'INPUT' && !$('blocks').open) selectVenue(state.venue); });
 
   segmented('sport', 'sport');
   segmented('window', 'window');
   minis();
   tabs();
   freshness();
-  load();
+  // The first view waits for the revision, so it is not fetched twice.
+  health.then((h) => setRev(h.views_built_at)).catch(() => {}).finally(load);
 })();

@@ -9,6 +9,11 @@ pass and booked in today's must carry an ``updated_at`` between the two).
 Requests are sequential and spaced by the client's 15s floor. Hudle's gateway
 sometimes times out (HTTP 502) building a long grid, so a failed range is
 retried as smaller pieces rather than resent whole.
+
+Each court's read is recorded on the court. One that fails is marked failing,
+and the views leave it out until a read succeeds; a court whose last read was
+before the window (it was failing, or a pass stopped before reaching it) is
+read from that day, so the days it missed are recorded once they are settled.
 """
 
 from __future__ import annotations
@@ -37,6 +42,10 @@ LOOKBACK_DAYS = 1
 AHEAD_DAYS = 14
 #: Pieces a failed range is split into before giving up on the court.
 SPLIT_PIECES = 3
+#: The furthest back a court's read reaches for days it missed. Longer ranges
+#: make Hudle's gateway time out more often, and each timeout counts toward
+#: the circuit breaker.
+CATCH_UP_DAYS = 14
 
 
 @dataclass(frozen=True, slots=True)
@@ -57,6 +66,17 @@ def daily_window(now: dt.datetime, tz: str) -> tuple[dt.date, dt.date]:
     """Yesterday through two weeks ahead, in Jaipur dates."""
     today = local_wall_clock(now, tz).date()
     return today - dt.timedelta(days=LOOKBACK_DAYS), today + dt.timedelta(days=AHEAD_DAYS)
+
+
+def read_start(court: Court, window_start: dt.date, config: Config) -> dt.date:
+    """Where a court's read starts: the window's start, or the business date
+    of its last read if that is earlier, since a read settles only the days
+    before it. Never more than CATCH_UP_DAYS before the window."""
+    if court.last_read_at is None:
+        return window_start
+    local = local_wall_clock(court.last_read_at, config.timezone)
+    last = (local - dt.timedelta(hours=config.business_day_start_hour)).date()
+    return max(min(window_start, last), window_start - dt.timedelta(days=CATCH_UP_DAYS))
 
 
 #: Hudle's refusal when a venue keeps no public history (seen: PlayAll Orbit Mall).
@@ -119,13 +139,16 @@ def run_daily(
 ) -> DailyResult:
     """Poll every tracked court once and record what changed.
 
-    One court failing is recorded and stepped over; an open circuit breaker
-    stops the pass, because it means Hudle is refusing us and more requests
-    would only make that worse.
+    One court failing is recorded on the court and stepped over; an open
+    circuit breaker stops the pass, because it means Hudle is refusing us and
+    more requests would only make that worse. A pass over chosen ``courts`` is
+    recorded as a ``backfill``: only a ``daily`` run says which courts the
+    latest pass left unread.
     """
     window = window or daily_window(now, config.timezone)
+    job = "daily" if courts is None else "backfill"
     courts = list(courts) if courts is not None else store.tracked_courts()
-    run_id = store.start_run("daily", started_at=now, window=window)
+    run_id = store.start_run(job, started_at=now, window=window)
     ok = failed = seen = written = 0
     stopped = False
     errors: list[str] = []
@@ -135,7 +158,8 @@ def run_daily(
                 client,
                 court.venue_uuid,
                 court.facility_uuid,
-                *window,
+                read_start(court, window[0], config),
+                window[1],
                 today=local_wall_clock(now, config.timezone).date(),
             )
         except CircuitOpenError as exc:
@@ -146,6 +170,7 @@ def run_daily(
         except HudleError as exc:
             failed += 1
             errors.append(f"{court.facility_uuid}: {exc}")
+            store.record_court_read(court.facility_uuid, at=now, error=str(exc))
             logger.warning("daily_court_failed", extra={"court": court.name, "error": str(exc)})
             continue
         readings = parse_grid(
@@ -157,6 +182,7 @@ def run_daily(
             business_day_start_hour=config.business_day_start_hour,
         )
         changed = store.apply(readings, seen_at=now)
+        store.record_court_read(court.facility_uuid, at=now)
         ok += 1
         seen += len(readings)
         written += changed

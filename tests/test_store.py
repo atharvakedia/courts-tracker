@@ -181,6 +181,31 @@ def test_runs_are_recorded(store: Store) -> None:
     assert latest["courts_failed"] == 1 and latest["finished_at"] == T0 + dt.timedelta(minutes=35)
 
 
+def test_a_court_its_venue_stopped_listing_is_no_longer_tracked(store: Store) -> None:
+    """Regression: CE Indoor Courts re-created its two courts under new ids;
+    the old ones answered 404 every night and failed every pass."""
+    store.upsert_venue(venue_uuid=VENUE, name="V", slug="v", numeric_id="1", seen_at=T0)
+    for uuid in ("old-1", "old-2"):
+        store.upsert_court(
+            facility_uuid=uuid, venue_uuid=VENUE, name=uuid, sport=Sport.PICKLEBALL, seen_at=T0
+        )
+    # The next discovery lists only the new courts; the venue's padel court,
+    # seeded from config every pass, is seen later still.
+    for uuid in ("new-1", "new-2"):
+        store.upsert_court(
+            facility_uuid=uuid, venue_uuid=VENUE, name=uuid, sport=Sport.PICKLEBALL, seen_at=T1
+        )
+    store.upsert_court(
+        facility_uuid="padel", venue_uuid=VENUE, name="P", sport=Sport.PADEL, seen_at=T2
+    )
+    assert {c.facility_uuid for c in store.tracked_courts()} == {"new-1", "new-2", "padel"}
+    # Listed again, polled again.
+    store.upsert_court(
+        facility_uuid="old-1", venue_uuid=VENUE, name="old-1", sport=Sport.PICKLEBALL, seen_at=T1
+    )
+    assert "old-1" in {c.facility_uuid for c in store.tracked_courts(Sport.PICKLEBALL)}
+
+
 def test_a_database_from_before_venue_locations_gains_the_columns(tmp_path: Any) -> None:
     """Regression: Neon's venues table predates latitude/longitude; create_all
     leaves an existing table alone, so without the column step every read of

@@ -38,6 +38,7 @@ from tracker.insights import (
     by_hour,
     by_weekday,
     heatmap,
+    hudle_blocks,
     lead_summary,
     lead_times,
     occupancy,
@@ -72,7 +73,7 @@ RULE = (
 #: their key, so code reading a newer shape (a PR preview on the production
 #: database, or a deploy before the next build) never draws views built for
 #: another shape; its own are built by running the views workflow on its branch.
-VIEWS_VERSION = 4
+VIEWS_VERSION = 5
 
 
 def view_key(sport: Sport, window: str, venue: str | None) -> str:
@@ -109,6 +110,7 @@ class _Window:
     today: dt.date
     start: dt.date
     end: dt.date
+    past: list[Row]
     counted: list[Row]
     per_court: dict[str, list[Row]]
     venue_rows: list[dict[str, Any]]
@@ -184,6 +186,7 @@ def _window(
         today,
         start,
         end,
+        past,
         counted,
         per_court,
         venue_rows,
@@ -224,6 +227,11 @@ def _payload(w: _Window, venue: str | None) -> dict[str, Any]:
         "hours": hourly,
         "weekdays": weekdays,
         "heatmap": heatmap(counted),
+        # Every court of the venue, counted or not: a venue left out for being
+        # all blocked is the one whose blocks matter most.
+        "hudle_blocks": hudle_blocks(r for r in w.past if r["venue_uuid"] == venue)
+        if venue is not None
+        else [],
         "lead_time": lead_summary(hours),
     }
 

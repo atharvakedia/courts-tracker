@@ -109,6 +109,24 @@ def heatmap(rows: Iterable[Row]) -> list[dict[str, Any]]:
     ]
 
 
+def hudle_blocks(rows: Iterable[Row]) -> list[dict[str, Any]]:
+    """The heatmap's cells Hudle reports blocked, with the share of their court
+    time it blocked. Hours a person marked are left out: this is what Hudle
+    says, for the blocked-hours grid to show beside the marks."""
+    minutes: dict[tuple[int, int], list[int]] = collections.defaultdict(lambda: [0, 0])
+    for r in rows:
+        cell = minutes[(r["business_date"].weekday(), r["start_local"].hour)]
+        m = int(r["duration_minutes"])
+        cell[1] += m
+        if not r["hudle_booked"] and not r["hudle_available"]:
+            cell[0] += m
+    return [
+        {"weekday": wd, "hour": hr, "share": round(blocked / total, 2)}
+        for (wd, hr), (blocked, total) in sorted(minutes.items())
+        if blocked
+    ]
+
+
 def revenue(rows: Iterable[Row]) -> int:
     """Rupees from customer bookings, at Hudle's listed price for each slot.
 

@@ -293,7 +293,7 @@
       : '';
     if (name) {
       $('clear').addEventListener('click', () => selectVenue(state.venue));
-      $('mark').addEventListener('click', () => openBlocks(d.venue, name));
+      $('mark').addEventListener('click', () => openBlocks(d.venue, name, d));
     }
 
     const empty = !d.totals.total_hours;
@@ -716,7 +716,7 @@
   // view on a change; the page then asks for the new revision.
   const HOURS = Array.from({ length: 24 }, (_, i) => (i + 4) % 24); // business-day order
   const PASS_KEY = 'ht.admin';
-  const bk = { venue: null, cells: new Set(), blocks: [], paint: null };
+  const bk = { venue: null, cells: new Set(), blocks: [], hudle: new Map(), paint: null };
   const cellKey = (wd, h) => `${wd}:${h}`;
 
   // "06:00–08:00, 18:00–19:00": runs of consecutive start hours, business-day order.
@@ -772,8 +772,11 @@
     const head = `<span></span>${HOURS.map((h, i) => `<button type="button" data-col="${h}" title="Every ${hh(h)} slot">${i % 2 ? '' : h}</button>`).join('')}`;
     const rows = DAYS.map((d, wd) => `<button type="button" class="day" data-row="${wd}" title="All of ${LONG_DAYS[wd]}">${d}</button>${HOURS.map((h) => {
       const k = cellKey(wd, h);
-      const tip = `${LONG_DAYS[wd]} ${hh(h)}–${hh((h + 1) % 24)}${had.has(k) ? ' · already blocked' : ''}`;
-      return `<button type="button" class="cell${had.has(k) ? ' had' : ''}" data-k="${k}" aria-pressed="${bk.cells.has(k)}" aria-label="${tip}" title="${tip}"></button>`;
+      const share = bk.hudle.get(k);
+      const tip = `${LONG_DAYS[wd]} ${hh(h)}–${hh((h + 1) % 24)}`
+        + (share ? ` · Hudle reports ${pct(share)} of it blocked` : '')
+        + (had.has(k) ? ' · marked blocked here' : '');
+      return `<button type="button" class="cell${had.has(k) ? ' had' : ''}${share ? ' hudle' : ''}"${share ? ` style="--share:${Math.round(share * 100)}%"` : ''} data-k="${k}" aria-pressed="${bk.cells.has(k)}" aria-label="${tip}" title="${tip}"></button>`;
     }).join('')}`).join('');
     $('bk-grid').innerHTML = head + rows;
     syncSave();
@@ -797,11 +800,15 @@
     drawBlocks();
   }
 
-  async function openBlocks(venue, name) {
+  // The hours Hudle already reports blocked come from the view on screen, so
+  // the grid shows what the figures already leave out before anyone marks more.
+  async function openBlocks(venue, name, d) {
     bk.venue = venue;
     bk.cells.clear();
     bk.blocks = [];
+    bk.hudle = new Map((d.hudle_blocks || []).map((c) => [cellKey(c.weekday, c.hour), c.share]));
     $('bk-title').textContent = `Blocked hours · ${name}`;
+    $('bk-seen').textContent = `Shaded by how much of each hour Hudle reported blocked, ${range(d)}.`;
     ['bk-from', 'bk-to', 'bk-note'].forEach((id) => { $(id).value = ''; });
     try { $('bk-pass').value = sessionStorage.getItem(PASS_KEY) || ''; } catch (_) {}
     bkStatus('');

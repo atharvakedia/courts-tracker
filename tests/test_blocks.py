@@ -122,6 +122,30 @@ def test_the_views_read_blocks_from_the_store(tmp_path: Any) -> None:
     store.close()
 
 
+def test_a_venue_view_names_the_hours_hudle_reports_blocked(tmp_path: Any) -> None:
+    """Regression: the blocked-hours grid opening blank, so a person could not
+    tell the hours Hudle already reports blocked from the ones it misses."""
+    url = f"sqlite:///{tmp_path / 'db.sqlite'}"
+    _seed(url)
+    store = Store(url)
+    store.add_block(
+        venue_uuid="v1",
+        cells=EVERY_DAY_AT_18,
+        date_from=None,
+        date_to=None,
+        note="coaching",
+        created_at=NOON,
+    )
+    views = dict(all_views(store, TODAY))
+    # Hudle's own block at 21:00, every day; the hour marked here is not Hudle's.
+    assert views[view_key(Sport.PICKLEBALL, "7", "v1")]["hudle_blocks"] == [
+        {"weekday": wd, "hour": 21, "share": 1.0} for wd in range(7)
+    ]
+    assert views[view_key(Sport.PICKLEBALL, "7", "v2")]["hudle_blocks"] == []
+    assert views[view_key(Sport.PICKLEBALL, "7", None)]["hudle_blocks"] == []
+    store.close()
+
+
 def test_a_database_without_the_blocks_table_has_no_blocks(tmp_path: Any) -> None:
     """Regression: a preview deploy on production, before the next pass has
     created the table, failing every view it computes on the spot."""

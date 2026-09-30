@@ -310,9 +310,19 @@ class Store:
             conn.execute(stmt)
 
     def tracked_courts(self, sport: Sport | None = None) -> list[Court]:
+        """Courts the daily pass polls: switched on, and still listed. A court
+        last seen before another of its sport at its venue was dropped from the
+        venue's listing (Hudle answers 404 for it); it is polled again if it
+        reappears."""
+        sibling = courts.alias("sibling")
+        latest_listing = (
+            sa.select(sa.func.max(sibling.c.last_seen_at))
+            .where(sibling.c.venue_uuid == courts.c.venue_uuid, sibling.c.sport == courts.c.sport)
+            .scalar_subquery()
+        )
         stmt = (
             sa.select(courts)
-            .where(courts.c.tracked.is_(True))
+            .where(courts.c.tracked.is_(True), courts.c.last_seen_at >= latest_listing)
             .order_by(courts.c.venue_uuid, courts.c.name)
         )
         if sport is not None:

@@ -546,13 +546,13 @@ def test_search_venues_sends_the_city_and_sport_filters(
     poll = poll_with(test_config.poll, request_gap_seconds=0.0)
     client = build_client(handler, test_config.http, poll)
     with client:
-        client.search_venues(PICKLEBALL_SPORT_ID, 2, 50, city_id=test_config.discovery.city_id)
+        client.search_venues(PICKLEBALL_SPORT_ID, 2, 50, city_id=205)
 
     url = captured[0]
     assert url.path == "/api/v1/venue-search"
     assert url.params["page"] == "2"
     assert url.params["per_page"] == "50"
-    assert url.params["cityId"] == "8"
+    assert url.params["cityId"] == "205"
     assert url.params["preferred_sports"] == str(PICKLEBALL_SPORT_ID)
     assert url.params["venueName"] == ""
 

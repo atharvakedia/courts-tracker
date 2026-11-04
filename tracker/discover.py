@@ -157,24 +157,18 @@ class SearchPagination:
 
 @dataclass(frozen=True, slots=True)
 class VenueSearchResult:
-    """Every venue one sport's search returned, plus how it was paginated."""
+    """Every venue one sport's search returned across the configured cities.
+
+    ``reported_total`` is the sum of what Hudle said each city holds, or
+    ``None`` when a city's response carried no pagination block. ``complete``
+    is True when every city returned as many venues as it claimed.
+    """
 
     sport: Sport
     venues: tuple[VenueDim, ...]
-    pagination: SearchPagination | None
+    reported_total: int | None
     pages_fetched: int
-
-    @property
-    def reported_total(self) -> int | None:
-        """What Hudle said the full result set size is."""
-        return None if self.pagination is None else self.pagination.total
-
-    @property
-    def complete(self) -> bool:
-        """True when we hold as many venues as Hudle claims exist."""
-        if self.pagination is None:
-            return True
-        return len(self.venues) >= self.pagination.total
+    complete: bool
 
 
 def parse_search_pagination(payload: Mapping[str, Any]) -> SearchPagination | None:
@@ -280,31 +274,48 @@ def search_venues(
     config: Config,
     observed_at: dt.datetime,
 ) -> VenueSearchResult:
-    """Search one sport's venues in the configured city, across every page.
+    """Search one sport's venues in every configured city, across every page.
 
-    The client is responsible for exhausting pagination; this checks its work
-    against ``meta.pagination`` and logs when the two disagree, so a truncated
-    search is a visible event and not a quietly shrunken market.
+    Hudle files Jaipur's venues under several cities, so each is searched and
+    the results merged; a venue listed under two cities is kept once. The
+    client is responsible for exhausting pagination; this checks its work
+    against each city's ``meta.pagination`` and logs when the two disagree, so
+    a truncated search is a visible event and not a quietly shrunken market.
     """
     discovery = config.discovery
-    pages = client.search_venues_all(
-        sport_id=discovery.sport_id(sport),
-        city_id=discovery.city_id,
-        per_page=discovery.per_page,
-    )
-    venues: list[VenueDim] = []
-    pagination: SearchPagination | None = None
-    for page in pages:
-        venues.extend(parse_venue_search(page, observed_at=observed_at, tz=config.timezone))
-        page_pagination = parse_search_pagination(page)
-        if page_pagination is not None:
-            pagination = page_pagination
+    venues: dict[str, VenueDim] = {}
+    reported_total: int | None = 0
+    pages_fetched = 0
+    complete = True
+    for city_id in discovery.city_ids:
+        pages = client.search_venues_all(
+            sport_id=discovery.sport_id(sport),
+            city_id=city_id,
+            per_page=discovery.per_page,
+        )
+        pages_fetched += len(pages)
+        city_venues: list[VenueDim] = []
+        pagination: SearchPagination | None = None
+        for page in pages:
+            city_venues.extend(
+                parse_venue_search(page, observed_at=observed_at, tz=config.timezone)
+            )
+            pagination = parse_search_pagination(page) or pagination
+        for venue in city_venues:
+            venues.setdefault(venue.venue_uuid, venue)
+        if pagination is None:
+            reported_total = None
+        else:
+            if reported_total is not None:
+                reported_total += pagination.total
+            complete = complete and len(city_venues) >= pagination.total
 
     result = VenueSearchResult(
         sport=sport,
-        venues=tuple(venues),
-        pagination=pagination,
-        pages_fetched=len(pages),
+        venues=tuple(venues.values()),
+        reported_total=reported_total,
+        pages_fetched=pages_fetched,
+        complete=complete,
     )
     if not result.complete:
         logger.warning(
@@ -331,17 +342,17 @@ def search_venues(
 def search_padel_venues(
     client: VenueSearchClient, *, config: Config, observed_at: dt.datetime
 ) -> VenueSearchResult:
-    """Every padel venue in the configured city. Verified: exactly 3, one page."""
+    """Every padel venue in the configured cities."""
     return search_venues(client, Sport.PADEL, config=config, observed_at=observed_at)
 
 
 def search_pickleball_venues(
     client: VenueSearchClient, *, config: Config, observed_at: dt.datetime
 ) -> VenueSearchResult:
-    """Every pickleball venue in the configured city.
+    """Every pickleball venue in the configured cities.
 
-    Verified: 57 across 2 pages at ``per_page=50``. A single call truncates
-    silently, which is why the client must paginate and why
+    A single call truncates silently at ``per_page`` (one city once held 57
+    venues across 2 pages), which is why the client must paginate and why
     :attr:`VenueSearchResult.complete` is checked.
     """
     return search_venues(client, Sport.PICKLEBALL, config=config, observed_at=observed_at)
@@ -650,7 +661,7 @@ def compare_venue_sets(
     *,
     sport: Sport,
     alert_sport: Sport | None = None,
-    pagination: SearchPagination | None = None,
+    reported_total: int | None = None,
     top_entrants: int = DEFAULT_TOP_ENTRANTS,
 ) -> VenueSetDrift:
     """Diff a sport's discovered venue set against the configured one, by UUID.
@@ -675,8 +686,8 @@ def compare_venue_sets(
         matched=matched,
         alerting=alerting,
         discovered_count=len(discovered),
-        reported_total=None if pagination is None else pagination.total,
-        truncated=len(discovered) < (pagination.total if pagination else len(discovered)),
+        reported_total=reported_total,
+        truncated=reported_total is not None and len(discovered) < reported_total,
         top_entrants=appeared[:top_entrants],
     )
     if drift.has_drift:
@@ -825,7 +836,7 @@ def run_discovery(
                 result.venues,
                 sport=sport,
                 alert_sport=config.discovery.alert_on_venue_set_change,
-                pagination=result.pagination,
+                reported_total=result.reported_total,
             )
         )
         for rename in compare_venue_names(

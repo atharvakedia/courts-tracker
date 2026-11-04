@@ -41,8 +41,9 @@ from tracker.types import to_date_text
 
 logger = logging.getLogger("tracker.hudle")
 
-#: Jaipur. ``discovery.city_id`` in ``config.yaml`` carries the same value; it
-#: is a default here only so the client stays independent of DiscoveryConfig.
+#: Jaipur's original city id. Discovery searches every city in
+#: ``discovery.city_ids`` in ``config.yaml``; this is a default only so the
+#: client stays independent of DiscoveryConfig.
 DEFAULT_CITY_ID = 8
 
 #: Hard ceiling on pages walked by :meth:`HudleClient.search_venues_all`, so a

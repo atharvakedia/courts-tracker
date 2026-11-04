@@ -56,7 +56,10 @@ python -m tracker daily                                    + static dashboard (p
 - **Daily pass** (`.github/workflows/daily.yml`): at 23:00 IST, `python -m tracker daily`
   reads each tracked court's grid from yesterday to 14 days ahead and writes to the
   database. On Sundays (Jaipur) it runs with `--discover` first, which refreshes the
-  pickleball venues and courts. It then builds every dashboard view (see below). It can
+  pickleball venues and courts: it searches every city in `discovery.city_ids` (Hudle
+  files Jaipur's venues under several) and re-reads the page of every venue already
+  polled, so a venue that re-creates its courts under new ids is followed even when the
+  search misses it. It then builds every dashboard view (see below). It can
   also be started by hand, with or without discovery. Each court's read is recorded on
   the court; a court whose last read was before the window (it was failing, or a pass
   stopped before it) is read from that day, up to 14 days back, so the days it missed

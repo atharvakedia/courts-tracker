@@ -17,6 +17,7 @@ from tracker.config import Config
 from tracker.daily import (
     CATCH_UP_DAYS,
     daily_window,
+    discover_pickleball,
     fetch_range,
     locate_venues,
     run_daily,
@@ -279,3 +280,59 @@ def test_locating_venues_reads_each_page_once_and_survives_a_bad_one(store: Stor
     pages.fetched.clear()
     locate_venues(store, pages)  # type: ignore[arg-type]
     assert pages.fetched == ["broken"]
+
+
+class FakeDiscovery(FakePages):
+    """Venue pages plus a venue search that returns ``searched`` in city 205."""
+
+    def __init__(self, pages: dict[str, Any], searched: list[str]) -> None:
+        super().__init__(pages)
+        self.searched = searched
+
+    def search_venues_all(
+        self, sport_id: int, *, per_page: int, city_id: int
+    ) -> list[dict[str, Any]]:
+        if city_id != 205:
+            return []
+        return [
+            {"id": slug, "name": slug, "share_url": f"https://hudle.in/venues/{slug}/1"}
+            for slug in self.searched
+        ]
+
+
+def pickleball_page(venue: str, *courts: str) -> dict[str, Any]:
+    """A venue page's details listing pickleball courts by id."""
+    facilities = [{"id": c, "name": f"Court {c}"} for c in courts]
+    return {"id": venue, "activities": [{"id": 1, "name": "Pickleball", "facilities": facilities}]}
+
+
+def test_discovery_follows_a_venue_that_recreated_its_courts_when_the_search_misses_it(
+    test_config: Config, store: Store
+) -> None:
+    """Regression: a venue that deleted its courts and re-created them under
+    new ids, while the venue search no longer returned it, kept its old courts
+    polled (Hudle answering 404 for each, failing every pass) and its new ones
+    never found."""
+    for venue, court_id in (("kept", "kept-1"), ("renewed", "old-1")):
+        store.upsert_venue(venue_uuid=venue, name=venue, slug=venue, numeric_id="1", seen_at=NOW)
+        store.upsert_court(
+            facility_uuid=court_id,
+            venue_uuid=venue,
+            name="Court 1",
+            sport=Sport.PICKLEBALL,
+            seen_at=NOW,
+        )
+    later = NOW + dt.timedelta(days=7)
+    client = FakeDiscovery(
+        {
+            "kept": pickleball_page("kept", "kept-1"),
+            "renewed": pickleball_page("renewed", "new-1"),
+        },
+        searched=["kept"],
+    )
+
+    assert discover_pickleball(test_config, store, client, now=later) == (2, 2)  # type: ignore[arg-type]
+
+    assert client.fetched == ["kept", "renewed"]
+    tracked = {c.facility_uuid for c in store.tracked_courts(Sport.PICKLEBALL)}
+    assert tracked == {"kept-1", "new-1"}

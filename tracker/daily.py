@@ -256,7 +256,12 @@ class _SearchPages:
 def discover_pickleball(
     config: Config, store: Store, client: HudleClient, *, now: dt.datetime
 ) -> tuple[int, int]:
-    """Every pickleball venue in the city and its courts, into the store.
+    """Every pickleball venue in the configured cities and its courts, into the store.
+
+    The venues are those the search returns plus every venue already polled
+    for pickleball: a venue that re-creates its courts (Hudle then answers 404
+    for the old ones) gets the new ones from its page even when the search
+    misses it, and :meth:`Store.tracked_courts` stops polling the old ones.
 
     Racket and ball rentals are skipped by name; anything named "court" is kept
     regardless (``Pickleball Court`` contains the token "ball"). A venue whose
@@ -264,13 +269,22 @@ def discover_pickleball(
     the pass. Returns (venues seen, courts seen).
     """
     result = search_pickleball_venues(_SearchPages(client), config=config, observed_at=now)
+    to_read = {v.venue_uuid: (v.name, v.slug, v.numeric_id) for v in result.venues}
+    polled = {c.venue_uuid for c in store.tracked_courts(Sport.PICKLEBALL)}
+    missed = sorted(polled - to_read.keys())
+    if missed:
+        logger.warning("discover_search_missed_polled_venues", extra={"venues": len(missed)})
+    known = store.venues()
+    for venue_uuid in missed:
+        row = known[venue_uuid]
+        to_read[venue_uuid] = (row["name"], row["slug"], row["numeric_id"])
     venues_seen = courts_seen = 0
-    for venue in result.venues:
+    for venue_uuid, (name, slug, numeric_id) in to_read.items():
         try:
-            details = extract_next_data(client.fetch_venue_page_html(venue.slug, venue.numeric_id))
+            details = extract_next_data(client.fetch_venue_page_html(slug, numeric_id))
             facilities = parse_facilities(details, config=config)
         except Exception as exc:  # one unreadable page must not stop discovery
-            logger.warning("discover_venue_failed", extra={"venue": venue.name, "error": repr(exc)})
+            logger.warning("discover_venue_failed", extra={"venue": name, "error": repr(exc)})
             continue
         picked = [
             f
@@ -281,19 +295,15 @@ def discover_pickleball(
         if not picked:
             continue
         store.upsert_venue(
-            venue_uuid=venue.venue_uuid,
-            name=venue.name,
-            slug=venue.slug,
-            numeric_id=venue.numeric_id,
-            seen_at=now,
+            venue_uuid=venue_uuid, name=name, slug=slug, numeric_id=numeric_id, seen_at=now
         )
         if location := venue_location(details):
-            store.set_venue_location(venue.venue_uuid, latitude=location[0], longitude=location[1])
+            store.set_venue_location(venue_uuid, latitude=location[0], longitude=location[1])
         venues_seen += 1
         for f in picked:
             store.upsert_court(
                 facility_uuid=f.facility_uuid,
-                venue_uuid=venue.venue_uuid,
+                venue_uuid=venue_uuid,
                 name=f.facility_name,
                 sport=Sport.PICKLEBALL,
                 seen_at=now,

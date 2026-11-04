@@ -107,16 +107,40 @@ def build_ssr_html(venue_details: Mapping[str, Any]) -> str:
     )
 
 
+#: An empty city's answer: one page, and a pagination block saying so.
+EMPTY_CITY_PAGE = {
+    "code": 200,
+    "data": [],
+    "meta": {
+        "pagination": {
+            "total": 0,
+            "count": 0,
+            "per_page": 50,
+            "current_page": 1,
+            "total_pages": 1,
+        }
+    },
+}
+
+
 class FakeHudleClient:
-    """An in-memory :class:`DiscoveryClient`. No sockets, no retries, no clock."""
+    """An in-memory :class:`DiscoveryClient`. No sockets, no retries, no clock.
+
+    The recorded search pages are served for city 8, where they were recorded;
+    any other city answers as an empty one unless ``search_pages_by_city`` says
+    otherwise.
+    """
 
     def __init__(
         self,
         *,
         search_pages_by_sport_id: Mapping[int, Sequence[Mapping[str, Any]]],
         html_by_path: Mapping[str, str],
+        search_pages_by_city: Mapping[tuple[int, int], Sequence[Mapping[str, Any]]] | None = None,
     ) -> None:
-        self._search_pages_by_sport_id = search_pages_by_sport_id
+        self._search_pages = {
+            (sport_id, 8): pages for sport_id, pages in search_pages_by_sport_id.items()
+        } | dict(search_pages_by_city or {})
         self._html_by_path = html_by_path
         self.search_calls: list[tuple[int, int, int]] = []
         self.page_calls: list[str] = []
@@ -125,7 +149,7 @@ class FakeHudleClient:
         self, *, sport_id: int, city_id: int, per_page: int
     ) -> Sequence[Mapping[str, Any]]:
         self.search_calls.append((sport_id, city_id, per_page))
-        return self._search_pages_by_sport_id.get(sport_id, [])
+        return self._search_pages.get((sport_id, city_id), [EMPTY_CITY_PAGE])
 
     def fetch_venue_page(self, ssr_path: str) -> str:
         self.page_calls.append(ssr_path)
@@ -371,7 +395,7 @@ def test_search_padel_venues_returns_three_complete(
     assert len(result.venues) == 3
     assert result.reported_total == 3
     assert result.complete is True
-    assert fake_client.search_calls == [(44, 8, 50)]
+    assert fake_client.search_calls == [(44, city, 50) for city in (8, 205, 206, 207, 208)]
 
 
 def test_search_pickleball_venues_needs_both_pages_to_be_complete(
@@ -380,7 +404,7 @@ def test_search_pickleball_venues_needs_both_pages_to_be_complete(
     """57 across 2 pages: exhausting pagination is the whole point."""
     result = search_pickleball_venues(fake_client, config=test_config, observed_at=OBSERVED_AT)
 
-    assert result.pages_fetched == 2
+    assert result.pages_fetched == 2 + 4  # city 8's two, one for each empty city
     assert len(result.venues) == 57
     assert result.reported_total == 57
     assert result.complete is True
@@ -400,6 +424,63 @@ def test_search_reports_incomplete_when_the_client_fetches_one_page(
     result = search_pickleball_venues(
         single_page_client, config=test_config, observed_at=OBSERVED_AT
     )
+
+    assert len(result.venues) == 50
+    assert result.reported_total == 57
+    assert result.complete is False
+
+
+def test_search_merges_every_city_and_keeps_a_shared_venue_once(
+    test_config: Config,
+    raw_venue_search_padel: Mapping[str, Any],
+    ssr_html_by_path: Mapping[str, str],
+) -> None:
+    """Regression: Hudle split Jaipur into four cities and the search of the
+    old one alone found 1 venue of 68, so discovery stopped seeing the courts
+    venues re-created."""
+    padel = test_config.discovery.sport_id(Sport.PADEL)
+    first, *rest = raw_venue_search_padel["data"]
+    pagination = raw_venue_search_padel["meta"]["pagination"]
+
+    def city_page(rows: list[Any]) -> dict[str, Any]:
+        return {
+            "code": 200,
+            "data": rows,
+            "meta": {"pagination": {**pagination, "total": len(rows), "count": len(rows)}},
+        }
+
+    client = FakeHudleClient(
+        search_pages_by_sport_id={},
+        html_by_path=ssr_html_by_path,
+        search_pages_by_city={
+            (padel, 8): [city_page([first])],
+            (padel, 205): [city_page(rest)],
+            (padel, 206): [city_page([first])],
+        },
+    )
+
+    result = search_padel_venues(client, config=test_config, observed_at=OBSERVED_AT)
+
+    assert sorted(v.venue_uuid for v in result.venues) == sorted(
+        row["id"] for row in raw_venue_search_padel["data"]
+    )
+    assert result.reported_total == 4
+    assert result.complete is True
+
+
+def test_search_is_incomplete_when_one_city_is_truncated(
+    test_config: Config,
+    raw_venue_search_pickleball: Mapping[str, Any],
+    ssr_html_by_path: Mapping[str, str],
+) -> None:
+    """A complete city must not hide a truncated one."""
+    client = FakeHudleClient(
+        search_pages_by_sport_id={},
+        html_by_path=ssr_html_by_path,
+        search_pages_by_city={(56, 205): [raw_venue_search_pickleball]},
+    )
+
+    result = search_pickleball_venues(client, config=test_config, observed_at=OBSERVED_AT)
 
     assert len(result.venues) == 50
     assert result.reported_total == 57
@@ -737,7 +818,7 @@ def test_compare_venue_sets_reports_no_drift_against_the_frozen_padel_config(
         discovered,
         sport=Sport.PADEL,
         alert_sport=Sport.PADEL,
-        pagination=parse_search_pagination(raw_venue_search_padel),
+        reported_total=3,
     )
 
     assert drift.appeared == ()
@@ -759,7 +840,7 @@ def test_compare_venue_sets_never_alerts_per_venue_on_pickleball(
         discovered,
         sport=Sport.PICKLEBALL,
         alert_sport=test_config.discovery.alert_on_venue_set_change,
-        pagination=parse_search_pagination(raw_venue_search_pickleball),
+        reported_total=57,
     )
 
     assert drift.alerting is False

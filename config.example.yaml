@@ -37,7 +37,10 @@ poll:
 business_day_start_hour: 4
 
 discovery:
-  city_id: 8 # Jaipur
+  # Hudle splits Jaipur into South (205), East (206), North (207) and West (208)
+  # Jaipur; a few venues are still filed under the old single city (8). Each is
+  # searched and the results merged. /api/v1/cities lists the current ids.
+  city_ids: [8, 205, 206, 207, 208]
   sports:
     padel: 44
     pickleball: 56

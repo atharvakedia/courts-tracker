@@ -33,7 +33,7 @@ def test_config_loads_the_frozen_venue_tree(test_config: Config) -> None:
     assert test_config.business_day_start_hour == 4
     assert test_config.poll.request_gap_seconds == 15.0
     assert test_config.poll.backoff.max_attempts == 3
-    assert test_config.discovery.city_id == 8
+    assert test_config.discovery.city_ids == (8, 205, 206, 207, 208)
     assert test_config.discovery.sport_id(Sport.PADEL) == 44
     assert test_config.discovery.sport_id(Sport.PICKLEBALL) == 56
     assert len(test_config.venues) == 3
@@ -97,6 +97,18 @@ def test_unknown_enum_value_names_its_path(tmp_path: Path) -> None:
     broken = tmp_path / "broken.yaml"
     broken.write_text(source.replace("kind: court", "kind: pitch", 1), encoding="utf-8")
     with pytest.raises(ConfigError, match=r"venues\[0\]\.facilities\[0\]\.kind"):
+        load_config(broken)
+
+
+def test_no_search_city_is_a_config_error(tmp_path: Path) -> None:
+    """Regression: an empty city list searching nothing, so discovery quietly
+    finds no venues."""
+    source = (PROJECT_ROOT / "config.yaml").read_text(encoding="utf-8")
+    broken = tmp_path / "broken.yaml"
+    broken.write_text(
+        source.replace("city_ids: [8, 205, 206, 207, 208]", "city_ids: []", 1), encoding="utf-8"
+    )
+    with pytest.raises(ConfigError, match=r"discovery\.city_ids"):
         load_config(broken)
 
 

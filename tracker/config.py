@@ -103,7 +103,7 @@ class PollConfig:
 
 @dataclass(frozen=True, slots=True)
 class DiscoveryConfig:
-    city_id: int
+    city_ids: tuple[int, ...]
     sports: Mapping[str, int]
     per_page: int
     alert_on_venue_set_change: Sport
@@ -231,6 +231,12 @@ def load_config(path: str | Path) -> Config:
     venues_raw = _sequence(_require(root, "venues", "<root>"), "venues")
 
     sports_raw = _mapping(_require(discovery_raw, "sports", "discovery"), "discovery.sports")
+    city_ids = tuple(
+        int(c)
+        for c in _sequence(_require(discovery_raw, "city_ids", "discovery"), "discovery.city_ids")
+    )
+    if not city_ids:
+        raise ConfigError("config key discovery.city_ids must name at least one city")
 
     config = Config(
         timezone=str(_require(root, "timezone", "<root>")),
@@ -247,7 +253,7 @@ def load_config(path: str | Path) -> Config:
         ),
         business_day_start_hour=int(_require(root, "business_day_start_hour", "<root>")),
         discovery=DiscoveryConfig(
-            city_id=int(_require(discovery_raw, "city_id", "discovery")),
+            city_ids=city_ids,
             sports={str(k): int(v) for k, v in sports_raw.items()},
             per_page=int(_require(discovery_raw, "per_page", "discovery")),
             alert_on_venue_set_change=_enum(
